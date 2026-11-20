@@ -27,16 +27,15 @@ kinetic module update my-module                     # fetch it again from where 
 kinetic module remove my-module
 ```
 
-The app's Modules page does the same: paste a link, or drop a folder, archive or
-link anywhere on the app's window.
+The app's Modules page does the same: paste a link, or drop a folder, archive
+or link on the window.
 
-Installing fetches the module and every dependency it would bring into a
-staging folder first, runs nothing from them, and shows what it found: each
-module, why it is coming, where from (and the commit), how many files, its app
-pages, and whether it runs a step on install. Nothing is installed without a
-yes, on the terminal (`--yes` answers it) or in the app. Modules you add live in
-`~/.local/share/kinetic-modules/`, apart from Kinetic, so reinstalling Kinetic
-keeps them. They can't use the id of one of Kinetic's own modules.
+Installing first fetches the module and everything it would bring into a
+staging folder, runs none of it, and shows each module: why it's coming, where
+from (and the commit), its files, its pages, and whether it runs an install
+step. Nothing installs without a yes, in the terminal (`--yes`) or the app.
+Added modules live in `~/.local/share/kinetic-modules/`, so reinstalling Kinetic
+keeps them, and can't reuse a built-in module's id.
 
 ## module.json
 
@@ -65,13 +64,13 @@ keeps them. They can't use the id of one of Kinetic's own modules.
 
 | Key | |
 |---|---|
-| `id` | Lowercase letters, digits and dashes, starting with a letter. It is also the command: `kinetic aurora-clock ...`, so Kinetic's own commands can't be ids (`app`, `panel`, `status`, `reload`, `update`, `settings`, `modules`, `module`, `version`, `help`) |
+| `id` | Lowercase letters, digits and dashes, starting with a letter. It is also the command (`kinetic aurora-clock ...`), so it can't be one of Kinetic's: `app`, `panel`, `status`, `reload`, `update`, `settings`, `modules`, `module`, `version`, `help` |
 | `name`, `summary`, `icon`, `author` | How it shows in `kinetic modules` and the app. `icon` is a Nerd Font glyph |
-| `version` | [Semantic Versioning](https://semver.org): `MAJOR.MINOR.PATCH`, like `1.2.0` (a pre-release is `1.2.0-beta.1`). Raise MAJOR when a change breaks modules that use yours, MINOR for new features, PATCH for fixes. Others can require a version of yours (`>=1.2`), compared by SemVer's rules |
+| `version` | [Semantic Versioning](https://semver.org), like `1.2.0` or `1.2.0-beta.1`: MAJOR for changes that break modules using yours, MINOR for features, PATCH for fixes. Others can require one (`>=1.2`) |
 | `order` | Where it sorts in lists and in the app's sidebar (Kinetic's own use 10 to 90) |
-| `kinetic` | The Kinetic it needs: `>=0.1.0-dev`. Install refuses an older one. Under SemVer a development build ranks below its release (`0.1.0-dev` < `0.1.0`), so `>=0.1` would refuse `0.1.0-dev` |
+| `kinetic` | The Kinetic it needs, like `>=0.1.0-dev`; install refuses an older one. A development build ranks below its release, so `>=0.1` refuses `0.1.0-dev` |
 | `requires` | What it needs. Each is an id, or `{id, why, version, source, optional}`. `source` is a link Kinetic fetches the dependency from if it is not installed (it asks first, with the rest). `optional`: used if there, never installed or switched on for you |
-| `pages` | Its pages in the app: `{id, label, icon, qml, order}`, plus an optional one-line `about` (kept with the page; the app doesn't show it now). A page id can't be `modules` or `settings`, the app's own. `qml` is a file in the module. A page's `order` sorts it among the module's own pages (it defaults to the module's). With several pages the module is a group in the sidebar: the first page is its row and the others nest under it, folding away (as Library and Engine sit under Wallpaper) |
+| `pages` | Its app pages: `{id, label, icon, qml, order}` and an optional `about` (not shown now). `qml` is a file in the module; `order` sorts the module's own pages. Ids `modules` and `settings` are the app's. Several pages make a group in the sidebar: the first is the row, the rest nest under it (as Library and Engine do under Wallpaper) |
 | `engineGroups` | Option groups of the wallpaper engine your module shows on its own page (the Engine page leaves them out) |
 | `hooks` | `install` and `uninstall`: Kinetic runs `module.sh install` after copying it in (if it fails, nothing of the module is kept) and `module.sh uninstall` before removing it |
 

@@ -38,21 +38,21 @@
     {
       "key": "passThrough", "group": "Workspaces", "type": "bool", "default": false,
       "label": "Pass through",
-      "description": "Super + 5 from workspace 1 slides past 2, 3 and 4 on the way, on the switch curve, and the wallpaper travels with them. Slides only"
+      "description": "Super + 5 from workspace 1 slides past 2, 3 and 4 on one curve, the wallpaper with them. Slides only"
     },
     {
       "key": "passSameTime", "group": "Workspaces", "type": "bool", "default": false,
       "label": "Same time for every switch",
-      "description": "Pass through: 1 to 5 takes as long as 1 to 2 (the switch duration), and the time per workspace passed adjusts itself"
+      "description": "Pass through: 1 to 5 takes as long as 1 to 2"
     },
     {
       "key": "passMs", "group": "Workspaces", "type": "int", "default": 110, "min": 40, "max": 400, "step": 10,
-      "label": "Time per workspace passed (ms)", "description": "Pass through: added to the switch duration for each workspace beyond the first. Unused with the same time for every switch"
+      "label": "Time per workspace passed (ms)", "description": "Pass through: added for each workspace beyond the first, unless every switch takes the same time"
     },
     {
       "key": "parallax", "group": "Wallpaper", "type": "float", "default": 0.25, "min": 0, "max": 0.5, "step": 0.001,
       "label": "Parallax",
-      "description": "How far a live wallpaper moves per workspace, in screens, while the windows move a whole one (0.01 is about 19 px on a 1920 px screen; type a value for the finest steps). Every wallpaper that moves follows it: endless ones pan whole, layered ones (Aurora, Skyline, Starfield, Snow) move each layer by its depth. 0 holds them all still"
+      "description": "How far a live wallpaper moves per workspace, in screens, while windows move a whole one (0.01 is about 19 px at 1920 px). Layered wallpapers move each layer by its depth; 0 holds them still"
     },
     {
       "key": "windowsIn", "group": "Windows", "type": "choice", "default": "popin",

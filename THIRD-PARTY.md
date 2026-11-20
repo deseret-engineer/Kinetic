@@ -1,8 +1,8 @@
 # Third-party notices
 
-Kinetic is MIT licensed (see [LICENSE](LICENSE)). It includes, or follows closely,
-a few pieces of other people's work, listed here with their notices. The app shows
-this list under **Settings → Attributions**.
+Kinetic is MIT licensed ([LICENSE](LICENSE)). It includes or closely follows a
+few pieces of other people's work, listed here with their notices and in the
+app under **Settings → Attributions**.
 
 ## Included
 
@@ -40,10 +40,10 @@ THIS SOFTWARE.
 
 ### Hyprland's corner rounding
 
-Kinetic's Hyprland plugin (`modules/glass/plugin/kinetic-glass.cpp`) draws window
-glass with the same corner test and edge smoothing as Hyprland's own
-`rounding.glsl`, so the glass ends exactly where the window does. The plugin is
-built against Hyprland's headers. [Hyprland](https://github.com/hyprwm/Hyprland):
+Kinetic's Hyprland plugin (`modules/glass/plugin/kinetic-glass.cpp`) uses the
+same corner test and edge smoothing as Hyprland's `rounding.glsl`, so window
+glass ends exactly where the window does, and builds against Hyprland's headers.
+[Hyprland](https://github.com/hyprwm/Hyprland):
 
 ```
 BSD 3-Clause License

@@ -15,10 +15,9 @@ Live wallpapers, rendered glass and fluid motion, as modules you can switch off,
 </div>
 
 > [!WARNING]
-> **Kinetic is in early development and may be unstable.** Expect bugs and
-> breaking changes between releases. Part of it runs inside Hyprland as a
-> plugin, so a bug there can crash your session. Try it on a setup you can
-> recover, and keep `./uninstall.sh` in mind.
+> **Kinetic is in early development.** Expect bugs and breaking changes. Part
+> of it runs inside Hyprland as a plugin, so a bug there can crash your
+> session. Try it on a setup you can recover; `./uninstall.sh` removes it.
 
 <div align="center">
 
@@ -26,14 +25,9 @@ Live wallpapers, rendered glass and fluid motion, as modules you can switch off,
 
 </div>
 
-Kinetic adds live wallpapers, a floating glass bar, glass behind windows, a
-glow around the focused window and workspace animations with parallax to
-Omarchy. The parts work together: the glass bends the real wallpaper behind
-it, and the wallpaper moves in step with your windows when you switch
-workspaces.
-
-Every part is a module. Switch off the ones you don't want, add new ones from
-a link, or write your own.
+The parts work together: the glass bends the real wallpaper behind it, and the
+wallpaper moves with your windows when you switch workspaces. Every part is a
+module: switch off what you don't want, add more from a link, or write your own.
 
 ## Contents
 
@@ -54,25 +48,24 @@ a link, or write your own.
 
 ## Features
 
-- **33 live wallpapers** that follow your Omarchy theme, and can react to
-  sound or pause when covered.
+- **33 live wallpapers** in your Omarchy theme's colors, reacting to sound or
+  pausing when covered.
 - **Glass** under the bar and behind see-through windows that bends, frosts
   and tints what's behind it.
-- **A floating pill bar** built on Omarchy's own bar: one capsule or separate
+- **A floating pill bar** built on Omarchy's own: one capsule or separate
   islands, in five styles.
-- **A selection glow** around the focused window, with animations and an
-  attention pulse.
+- **A selection glow** around the focused window, animated, with an attention
+  pulse.
 - **Motion with parallax**: workspace and window animations, with the
   wallpaper sliding along at its own depth.
-- **Presets** that save a wallpaper, bar and motion setup and apply it in one step.
-- **Add-ons**: add wallpapers and modules from a link, a folder or an archive.
+- **Presets**: a wallpaper, bar and motion, applied in one step.
+- **Add-ons**: wallpapers and modules from a link, a folder or an archive.
 - **One app and one CLI** for all of it.
 
 ## Installation
 
-You need Omarchy with Hyprland 0.56 or newer. Kinetic is built on your
-machine, and Omarchy already has everything it needs, so there's nothing else
-to install first:
+You need Omarchy with Hyprland 0.56 or newer. Omarchy already has everything
+Kinetic builds with:
 
 ```bash
 git clone https://github.com/deseret-engineer/Kinetic.git
@@ -80,11 +73,10 @@ cd Kinetic
 ./install.sh
 ```
 
-The installer runs as your user, without root. If you've removed something it
-builds with, it tells you which packages to add back. It installs Kinetic under
-`~/.local`, adds it to the launcher and to **Omarchy menu → Appearance**, and
-starts the wallpaper engine. It writes only Kinetic's own files and never
-deletes yours. If the bar doesn't change right away, run
+The installer runs as your user, without root, and writes only Kinetic's own
+files. It installs under `~/.local`, adds Kinetic to the launcher and to
+**Omarchy menu → Appearance**, and starts the wallpaper engine. If you've
+removed a package it needs, it names it. If the bar doesn't change, run
 `omarchy restart shell`.
 
 ## Quick start
@@ -99,14 +91,13 @@ kinetic light enable              # a glow around the focused window
 kinetic motion preset parallax    # sliding workspaces with wallpaper parallax
 kinetic status                    # everything, as JSON
 kinetic reload                    # restart the engine, glass plugin, bar and app
-kinetic update                    # what is installed; kinetic update check to look for a newer one
+kinetic update                    # what's installed (kinetic update check for newer)
 ```
 
-The app is also in the launcher (**Kinetic**) and under **Omarchy menu →
-Appearance → Kinetic**. The 󰸉 widget on the bar handles the wallpaper; its
-gear (or <kbd>o</kbd>) opens the app. In the app, <kbd>Ctrl</kbd> +
-<kbd>1</kbd>–<kbd>9</kbd> and <kbd>Ctrl</kbd> + <kbd>Tab</kbd> move between
-pages.
+The app is also in the launcher and under **Omarchy menu → Appearance →
+Kinetic**. The 󰸉 widget on the bar handles the wallpaper; its gear (or
+<kbd>o</kbd>) opens the app, where <kbd>Ctrl</kbd> + <kbd>1</kbd>–<kbd>9</kbd>
+and <kbd>Ctrl</kbd> + <kbd>Tab</kbd> move between pages.
 
 ## Modules
 
@@ -116,8 +107,8 @@ kinetic light disable             # switch one off
 kinetic light enable              # and back on
 ```
 
-Switching a module on also switches on what it needs; switching one off asks
-first if others depend on it. The app's Modules page does the same.
+Switching a module on switches on what it needs; switching one off asks first
+if others depend on it. The app's Modules page does the same.
 
 | Module | What it does |
 |---|---|
@@ -137,19 +128,19 @@ kinetic module install https://github.com/someone/kinetic-thing   # or a folder,
 kinetic module remove kinetic-thing
 ```
 
-Kinetic shows you everything it would install and waits for you to confirm.
-In the app, paste a link on the Modules page or drop it onto the window.
+Kinetic shows everything it would install and waits for your yes. In the app,
+paste a link on the Modules page or drop it onto the window.
 
-To write a module, see [MODULES.md](MODULES.md). The built-in modules use
-nothing a module you add couldn't, so they double as examples.
+To write one, see [MODULES.md](MODULES.md). The built-in modules use nothing
+yours couldn't, so they double as examples.
 
 ## Live wallpapers
 
 ![A dozen of Kinetic's wallpapers](docs/wallpapers.png)
 
-Wallpapers take their colors from your Omarchy theme. Some simulate a world
-(particles, ants, fluid, a garden) that picks up where it left off; others
-react to sound, the time of day or a workspace switch.
+Some wallpapers simulate a world (particles, ants, fluid, a garden) that picks
+up where it left off; others react to sound, the time of day or a workspace
+switch.
 
 ```bash
 kinetic wall list                 # every wallpaper
@@ -169,9 +160,8 @@ kinetic wall added                                               # the ones you 
 kinetic wall remove nebula
 ```
 
-A source can hold one wallpaper or a whole collection. Kinetic checks that
-each one builds before adding it. In the app, paste a link into the Library
-page or drop it onto the window.
+A source can hold one wallpaper or a collection; each must build before it's
+added. In the app, paste a link on the Library page or drop it onto the window.
 
 ### Making your own
 
@@ -180,17 +170,17 @@ kinetic wall new mine             # scaffold one in ~/.config/kinetic/wallpapers
 kinetic wall set mine             # it reloads live as you edit
 ```
 
-Wallpapers are GLSL shaders plus a `wallpaper.toml`; the format is in
-[modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md). Share them as a Git
+A wallpaper is GLSL shaders plus a `wallpaper.toml`, described in
+[modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md). Share it as a Git
 repository and anyone can `kinetic wall add` the link.
 
 ## Glass
 
 ![The glass three ways: clear, frosted and prismatic](docs/glass.png)
 
-Kinetic's glass bends what's actually behind it, most strongly at the rim. It
-can also frost, split into color fringes and catch a rim light. The same
-settings apply to both the bar and the windows:
+The glass bends what's actually behind it, most at the rim, and can frost,
+split into color fringes and catch a rim light. One set of options covers the
+bar and the windows:
 
 ```bash
 kinetic glass set refraction 24
@@ -207,19 +197,17 @@ kinetic glass set dispersion 0.3
 | `saturation`, `brightness` | The color of what shows through |
 | `specular`, `lightAngle` | Light catching the rim, and where it comes from |
 
-By default, window glass goes only behind windows you can see through:
-translucent windows and terminals. Change which apps count with
-`kinetic glass apps <class|class*|tag> ...`, or cover more windows with
+Window glass goes behind windows you can see through: translucent ones and
+terminals. Choose which apps count with
+`kinetic glass apps <class|class*|tag> ...`, or cover more with
 `kinetic glass windows floating` or `all`.
 
-Window glass is drawn by a small Hyprland plugin. The installer builds it, and
-Kinetic rebuilds it after Omarchy updates Hyprland. Check on it with
-`kinetic glass plugin`.
+A small Hyprland plugin draws window glass. The installer builds it and Kinetic
+rebuilds it when Omarchy updates Hyprland; `kinetic glass plugin` shows its state.
 
 ## The pill bar
 
-The pill is Omarchy's own bar with a new shape, so it keeps up with Omarchy
-updates.
+The pill is Omarchy's own bar in a new shape, so it keeps up with Omarchy.
 
 ```bash
 kinetic bar on liquid             # the pill, in the liquid style
@@ -237,10 +225,10 @@ saved under `bar.pill` in `~/.config/omarchy/shell.json`.
 
 ![A workspace switch: the windows move a whole screen, the wallpaper a quarter of one](docs/parallax.gif)
 
-`kinetic motion` sets how workspaces switch, how windows open, close and move,
-and how menus and notifications appear, each with its own duration and curve.
-With **parallax**, the wallpaper pans a fraction of a screen per workspace
-while the windows move a whole one.
+`kinetic motion` sets how workspaces switch, windows open, close and move, and
+menus and notifications appear, each with its own duration and curve. With
+**parallax**, the wallpaper pans a fraction of a screen per workspace while the
+windows move a whole one.
 
 ```bash
 kinetic motion preset parallax    # slide with the wallpaper at 0.25 screens per workspace
@@ -254,15 +242,14 @@ Presets: `parallax`, `vertical`, `deep`, `springy`, `snappy`, `calm` and `omarch
 
 ![Pass-through: Super + 4 from workspace 1 slides past 2 and 3 on a single curve](docs/pass-through.gif)
 
-**Pass-through** (`kinetic motion set passThrough true`) slides through every
-workspace in between when you jump several at once, instead of cutting
-straight to the last.
+**Pass-through** (`kinetic motion set passThrough true`) slides past every
+workspace in between when you jump several at once.
 
 `omarchy toggle animations` still turns all animation off.
 
 ## Presets
 
-A preset saves a wallpaper, a bar and motion together.
+A preset is a wallpaper, a bar and motion, saved together.
 
 ```bash
 kinetic preset list
@@ -270,7 +257,9 @@ kinetic preset apply ink
 kinetic preset save mine          # save what's showing now
 ```
 
-Your presets are JSON files in `~/.config/kinetic/presets/`:
+Yours are JSON files in `~/.config/kinetic/presets/`. Every part is optional,
+and a preset changes only what it names, including the bar's and motion's own
+presets:
 
 ```json
 {
@@ -281,30 +270,24 @@ Your presets are JSON files in `~/.config/kinetic/presets/`:
 }
 ```
 
-Every part is optional; a preset changes only what it names. The bar and
-motion each have their own presets too (`kinetic bar preset`, `kinetic motion
-preset`), which a preset can name.
-
-Presets were called looks before 0.1.0. Reinstalling moves your saved looks
-into `~/.config/kinetic/presets/`, and `kinetic look` still works for now.
+Presets were called looks before 0.1.0: reinstalling moves saved looks over,
+and `kinetic look` still works for now.
 
 ## Updating
 
-Kinetic updates itself from a branch of the repository you installed it from:
-`main` for releases, `dev` for the newest work. Until you pick one, it follows
-the branch you installed from.
+Kinetic updates from a branch of the repository you installed it from: `main`
+for releases, `dev` for the newest work. Until you choose, it follows the branch
+you installed from.
 
 ```bash
 kinetic update check              # look for a newer version
 kinetic update apply              # install it (asks first), then restart the bar and the app
 kinetic settings set updateBranch main
-kinetic settings set updateCheck off   # don't look once a day when the app opens
+kinetic settings set updateCheck off   # stop the daily check when the app opens
 ```
 
-The app does the same under **Settings** (the gear beside Reload), with
-what the update brings. Updates are fetched into a clone of Kinetic's own in
-`~/.cache/kinetic/source`, never into your working copy, and installed with its
-`install.sh`.
+In the app: **Settings**, the gear beside Reload. Updates are fetched into
+Kinetic's own copy in `~/.cache/kinetic/source`, never your working copy.
 
 ## Troubleshooting
 
@@ -323,12 +306,12 @@ Hyprland update, the rebuilt plugin loads at your next login.
 
 | Path | Contents |
 |---|---|
-| `~/.config/kinetic/` | Your settings, wallpapers and presets (the app's own in `settings.json`) |
+| `~/.config/kinetic/` | Your settings, wallpapers and presets (the app's in `settings.json`) |
 | `~/.config/omarchy/shell.json` | The bar's options, under `bar.pill` |
 | `~/.local/state/kinetic/` | Live state and saved wallpaper worlds |
 | `~/.local/share/kinetic/` | The installed suite and bundled wallpapers |
 | `~/.local/share/kinetic-modules/` | Modules you added |
-| `~/.cache/kinetic/` | Wallpaper previews, and the copy updates are fetched into |
+| `~/.cache/kinetic/` | Wallpaper previews, and the copy updates come from |
 
 ## Uninstalling
 
@@ -336,24 +319,23 @@ Hyprland update, the rebuilt plugin loads at your next login.
 ./uninstall.sh            # add --purge to also remove your settings and added modules
 ```
 
-This removes everything Kinetic installed and returns the bar to Omarchy's own.
-Without `--purge`, your settings, wallpapers and added modules are kept.
+This removes everything Kinetic installed and gives the bar back to Omarchy.
+Without `--purge`, your settings, wallpapers and added modules stay.
 
 ## Development
 
 ```bash
-make -C modules/wall -j          # build the engine into modules/wall/build
+make -C modules/wall -j           # build the engine into modules/wall/build
 tests/run.sh                      # every offline test
 docs/media.py                     # re-render this README's images
 ```
 
-Tests and media rendering run offscreen without touching your desktop.
+Tests and media render offscreen, without touching your desktop.
 [AGENTS.md](AGENTS.md) covers the layout and internals. Kinetic follows
-[Semantic Versioning](https://semver.org); development builds carry a `-dev`
-label. Changes between releases are in [CHANGELOG.md](CHANGELOG.md).
+[Semantic Versioning](https://semver.org); development builds carry `-dev`.
+Changes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-[MIT](LICENSE). Kinetic includes or follows a little of other people's work;
-their notices are in [THIRD-PARTY.md](THIRD-PARTY.md), and the app lists them
-under **Settings → Attributions**.
+[MIT](LICENSE). Notices for the work of others that Kinetic includes or follows
+are in [THIRD-PARTY.md](THIRD-PARTY.md) and under **Settings → Attributions**.

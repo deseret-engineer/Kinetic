@@ -22,8 +22,8 @@ BRANCH = re.compile(r"^(?!-)(?!.*\.\.)[A-Za-z0-9._/-]{1,100}(?<![./])$")
 # key -> type, default, label, description (and options for a choice)
 SCHEMA = {
     "updateBranch": {"type": "branch", "default": "main", "label": "Update from",
-                     "description": "The branch updates come from: main for releases, dev for the newest work. "
-                                    "Until you pick one, the branch Kinetic was installed from"},
+                     "description": "main for releases, dev for the newest work. Until you choose, "
+                                    "the branch Kinetic was installed from"},
     "updateCheck": {"type": "bool", "default": True, "label": "Check for updates",
                     "description": "Once a day, when the app opens"},
 }

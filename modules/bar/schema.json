@@ -81,7 +81,7 @@
       "options": ["auto", "wallpaper", "blur", "none"],
       "default": { "by": "style", "values": { "solid": "none", "outline": "none" }, "else": "auto" },
       "label": "Glass",
-      "description": "Wallpaper: the live wallpaper bends behind the pill. Blur: Hyprland blurs. Auto uses the wallpaper while it runs"
+      "description": "Wallpaper: the live wallpaper bends behind the pill. Blur: Hyprland blurs. Auto: the wallpaper while it runs"
     },
     {
       "key": "refraction", "group": "Glass", "type": "float", "min": 0, "max": 60, "step": 0.5,
