@@ -41,7 +41,7 @@ Item {
     }
     for (var j = 0; j < out.length; j++)
       out[j].last = out[j].parent !== "" && (j + 1 === out.length || out[j + 1].parent !== out[j].parent)
-    out.push({ id: "modules", module: "", label: kinetic.tr("app.modules"), about: kinetic.tr("app.modules.about"),
+    out.push({ id: "modules", module: "", label: kinetic.tr("app.modules"),
                icon: "󰕰", builtin: true, url: Qt.resolvedUrl("pages/ModulesPage.qml"), props: {},
                parent: "", parentLabel: "", children: 0, last: false })
     return out
@@ -138,6 +138,7 @@ Item {
         var rows = root.rowIds
         if (event.key === Qt.Key_Escape && !kinetic.editingValue) { window.visible = false; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key >= Qt.Key_1 && event.key <= Qt.Key_9 && event.key - Qt.Key_1 < rows.length) { kinetic.tab = rows[event.key - Qt.Key_1]; event.accepted = true }
+        else if (event.key === Qt.Key_F5 || ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_R)) { kinetic.reload(); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Tab) { root.step(1); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Backtab) { root.step(-1); event.accepted = true }
       }
@@ -166,7 +167,7 @@ Item {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: brand.bottom
-          anchors.bottom: keyHint.top
+          anchors.bottom: reloadButton.top
           anchors.topMargin: Style.space(16)
           anchors.bottomMargin: Style.space(10)
           anchors.leftMargin: Style.space(10)
@@ -231,15 +232,6 @@ Item {
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: Style.space(1)
                   PlainText { width: parent.width; text: entry.modelData.label; font.bold: entry.current }
-                  PlainText {
-                    width: parent.width
-                    text: entry.modelData.about
-                    visible: text !== "" && !entry.nested
-                    wrapMode: Text.WordWrap
-                    maximumLineCount: 2
-                    opacity: 0.5
-                    font.pixelSize: Style.font.caption
-                  }
                 }
                 MouseArea {
                   id: hover
@@ -276,6 +268,22 @@ Item {
               }
             }
           }
+        }
+
+        // When something looks wrong: read everything again and reload the pages.
+        Button {
+          id: reloadButton
+          anchors.left: parent.left
+          anchors.bottom: keyHint.top
+          anchors.leftMargin: Style.space(10)
+          anchors.bottomMargin: Style.space(6)
+          text: kinetic.tr("app.reload")
+          iconText: "󰑐"
+          iconSpinning: kinetic.reloading
+          tooltipText: kinetic.tr("app.reload.about")
+          foreground: kinetic.fg
+          fontFamily: kinetic.fontFamily
+          onClicked: { kinetic.reload(); keys.forceActiveFocus() }
         }
 
         PlainText {
@@ -354,7 +362,6 @@ Item {
               font.pixelSize: Style.font.caption
             }
             PlainText { text: root.current.label; font.pixelSize: Style.font.title; font.bold: true }
-            PlainText { width: parent.width; text: root.current.about; opacity: 0.55; font.pixelSize: Style.font.bodySmall }
           }
           TextField {
             id: search
@@ -413,6 +420,16 @@ Item {
                 visible: here && !(kinetic.offline && modelData.module === "wall")
                 onHereChanged: if (here && !wanted) { wanted = true; setSource(modelData.url, Object.assign({ ctx: kinetic }, modelData.props)) }
                 Component.onCompleted: if (here) { wanted = true; setSource(modelData.url, Object.assign({ ctx: kinetic }, modelData.props)) }
+                // reload(): the page showing loads again now, the others when next shown
+                Connections {
+                  target: kinetic
+                  function onGenerationChanged() {
+                    if (!pageLoader.wanted) return
+                    pageLoader.setSource("")
+                    if (pageLoader.here) pageLoader.setSource(pageLoader.modelData.url, Object.assign({ ctx: kinetic }, pageLoader.modelData.props))
+                    else pageLoader.wanted = false
+                  }
+                }
                 onStatusChanged: if (status === Loader.Error) console.warn("Kinetic: page " + modelData.id + " did not load: " + modelData.url)
               }
             }
