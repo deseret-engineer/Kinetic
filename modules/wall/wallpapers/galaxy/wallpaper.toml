@@ -1,13 +1,72 @@
 name = "Galaxy Collision"
 author = "Kinetic"
-description = "Two spiral galaxies, 131,072 stars, colliding under gravity: tidal tails, bridges and a slow merger. A new encounter begins every few minutes"
+description = "Spiral galaxies, up to 131,072 stars, colliding under gravity: tidal tails, bridges and a slow merger. A new encounter begins every few minutes"
 fps = 60
 scale = 1.0
 pointer = false
-adaptive = false
+adaptive = true
 preview_time = 41
 preview_warmup = 40
 common = "common.glsl"
+
+[param.galaxies]
+type = "int"
+label = "Galaxies"
+min = 1
+max = 5
+default = 2
+restart = true
+
+[param.galsize]
+label = "Galaxy size"
+min = 0.3
+max = 2.5
+step = 0.05
+default = 1
+restart = true
+
+[param.variety]
+label = "Size differences"
+description = "0: every galaxy alike, 1: the others between a third and nearly the first one's mass"
+min = 0
+max = 1
+step = 0.05
+default = 1
+restart = true
+
+[param.separation]
+label = "Starting distance"
+min = 0.3
+max = 2.5
+step = 0.05
+default = 1
+restart = true
+
+[param.impact]
+label = "Near miss"
+description = "0: head-on, higher: the galaxies swing past each other"
+min = 0
+max = 1.2
+step = 0.05
+default = 0.55
+restart = true
+
+[param.approach]
+label = "Approach speed"
+description = "Below 1 they fall together, above about 1.15 they fly apart"
+min = 0.3
+max = 1.4
+step = 0.05
+default = 1
+restart = true
+
+[param.arms]
+label = "Spiral arms"
+min = 0
+max = 1.5
+step = 0.05
+default = 0.7
+restart = true
 
 [param.speed]
 label = "Speed"
@@ -26,10 +85,11 @@ default = 2
 [param.seed]
 type = "int"
 label = "Encounter"
-description = "Which pair of galaxies and which orbit"
+description = "Which galaxies and which orbits"
 min = 0
 max = 999
 default = 0
+restart = true
 
 [param.stars]
 type = "int"
@@ -37,7 +97,21 @@ label = "Stars"
 min = 8192
 max = 131072
 step = 8192
-default = 131072
+default = 65536
+
+[param.zoom]
+label = "Zoom"
+min = 0.3
+max = 4
+step = 0.05
+default = 1.2
+
+[param.turn]
+label = "Camera turn"
+min = 0
+max = 360
+step = 5
+default = 0
 
 [param.tilt]
 label = "Viewing angle"
@@ -45,6 +119,20 @@ min = 0
 max = 1.3
 step = 0.05
 default = 0.5
+
+[param.panx]
+label = "Camera left / right"
+min = -0.8
+max = 0.8
+step = 0.02
+default = 0
+
+[param.pany]
+label = "Camera up / down"
+min = -0.5
+max = 0.5
+step = 0.02
+default = 0
 
 [param.glow]
 label = "Glow"
@@ -67,8 +155,37 @@ max = 0.9
 step = 0.01
 default = 0.3
 
-# Texels 0 and 1 are the galaxy cores (heavy), texel 2 remembers which encounter
-# is running, and every other texel is a star: position (xy) and velocity (zw).
+[preset.Pair]
+galaxies = 2
+galsize = 1
+separation = 1
+impact = 0.55
+zoom = 1.2
+
+[preset."Close up"]
+galaxies = 2
+zoom = 2.2
+tilt = 0.3
+
+[preset.Crowd]
+galaxies = 4
+galsize = 0.7
+separation = 1.4
+zoom = 0.9
+
+[preset."Head-on"]
+galaxies = 2
+impact = 0.05
+approach = 0.9
+
+[preset.Lone]
+galaxies = 1
+galsize = 1.8
+zoom = 1.6
+tilt = 0.9
+
+# Texels 0-4 are the galaxy cores (heavy), texel 5 remembers which encounter
+# is running, and every texel from 8 on is a star: position (xy) and velocity (zw).
 # Two half-steps a frame keep close passes stable.
 [[buffer]]
 name = "state"
