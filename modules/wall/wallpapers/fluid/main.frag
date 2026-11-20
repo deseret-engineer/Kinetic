@@ -14,8 +14,8 @@ void mainImage(out vec4 o, in vec2 fc) {
   float spec = pow(max(dot(n, normalize(L + vec3(0.0, 0.0, 1.0))), 0.0), 40.0);
 
   float a = 1.0 - exp(-dens * 2.0);
-  vec3 ink = tint * (0.85 + 0.45 * min(dens, 1.0)) * mix(1.0, diff, gloss);
-  vec3 col = lw_blend(uBackground, ink, a);
+  vec3 shade = tint * (0.85 + 0.45 * min(dens, 1.0)) * mix(1.0, diff, gloss);
+  vec3 col = lw_blend(uBackground, shade, a);
   col += spec * gloss * 0.5 * smoothstep(0.02, 0.3, dens);
   float vig = 1.0 - 0.25 * dot(uv - 0.5, uv - 0.5);
   o = vec4(lw_dither(col * vig, fc), 1.0);

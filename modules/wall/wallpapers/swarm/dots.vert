@@ -1,4 +1,5 @@
-void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4 color) {
+// `point` is the point size; `size` is the Particle size setting
+void mainVertex(int id, vec4 state, inout vec4 pos, inout float point, inout vec4 color) {
   float sp = length(state.zw);
   vec3 c;
   if (colors < 0.5) c = lw_palette(lw_rand(id, 7) * 0.35 + state.x * 0.4 + state.y * 0.25 + iTime * 0.01);
@@ -7,7 +8,7 @@ void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4
   else c = uForeground;
   float b = 0.35 * brightness * (0.5 + lw_rand(id, 3));
   color = vec4(c * b, 1.0);
-  size = size * iResolution.y / 1200.0 * (0.8 + 0.4 * lw_rand(id, 5));
-  size *= 1.0 + uSound.x;
+  point = size * iResolution.y / 1200.0 * (0.8 + 0.4 * lw_rand(id, 5));
+  point *= 1.0 + uSound.x;
   color.rgb *= 1.0 + uSound.x * 1.5;
 }

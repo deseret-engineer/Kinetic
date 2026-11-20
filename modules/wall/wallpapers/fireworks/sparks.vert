@@ -9,7 +9,8 @@ vec3 shell_color(int key, int type) {
   return uAccent * 1.2;
 }
 
-void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4 color) {
+// `point` is the point size; `size` is the Spark size setting
+void mainVertex(int id, vec4 state, inout vec4 pos, inout float point, inout vec4 color) {
   int slot = id / PER, j = id % PER;
   float asp = iResolution.x / iResolution.y, age, gap = 1.0 / rate;
   int key;
@@ -40,12 +41,12 @@ void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4
   if (rise) burst = vec2(launch.x + (lw_rand(key, 5) - 0.5) * 0.1, 0.5 + 0.25 * lw_rand(key, 6));
   else age -= 10.0 - trise;                  // skip straight to the burst
   float life = type == 2 ? 3.6 : 2.4;
-  if (age < 0.0 || age > trise + life) { size = 0.0; return; }
+  if (age < 0.0 || age > trise + life) { point = 0.0; return; }
 
   float b, sz = 1.0;
   vec3 c = shell_color(key, type);
   if (age < trise) {                        // the rocket climbs, easing out; a short trail of embers
-    if (j >= 12 || !rise) { size = 0.0; return; }
+    if (j >= 12 || !rise) { point = 0.0; return; }
     float t = max(age - float(j) * 0.025, 0.0) / trise;
     float e = 1.0 - (1.0 - t) * (1.0 - t);
     pos.xy = mix(launch, burst, vec2(t, e));
@@ -53,7 +54,7 @@ void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4
     c = mix(vec3(1.0, 0.75, 0.45), uForeground, 0.3);
     b = 1.2 * (1.0 - float(j) / 12.0);
   } else {
-    if (j >= int(sparks)) { size = 0.0; return; }
+    if (j >= int(sparks)) { point = 0.0; return; }
     float tau = age - trise;
     float ru = lw_rand(id, key), rp = lw_rand(id, key + 1) * 6.2831853;
     vec2 dir;
@@ -77,7 +78,7 @@ void mainVertex(int id, vec4 state, inout vec4 pos, inout float size, inout vec4
     c = mix(c, vec3(1.0, 0.6, 0.3), clamp(tau / life - 0.5, 0.0, 0.5));                      // embers cool
     sz = 1.0 + 0.5 * step(0.92, lw_rand(id, key + 3));
   }
-  if (pos.y < HORIZON) { size = 0.0; return; }
+  if (pos.y < HORIZON) { point = 0.0; return; }
   color = vec4(c * b, 1.0);
-  size = size * sz * max(1.0, iResolution.y / 1000.0);
+  point = size * sz * max(1.0, iResolution.y / 1000.0);
 }

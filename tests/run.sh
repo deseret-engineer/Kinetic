@@ -136,6 +136,29 @@ for m in modules/*/module.sh; do
     || { echo "$m: no active/enable/disable"; exit 1; }
 done
 echo "every module answers active/enable/disable ($n modules)"
+# A wallpaper's parameters are uniforms by their own names, so a variable, function argument
+# or #define of the same name in its GLSL hides the setting there (it has bitten three times).
+python3 - <<'PY' || exit 1
+import glob, os, re, sys
+types = r"(?:float|int|uint|bool|[iu]?vec[234]|mat[234](?:x[234])?)"
+bad = []
+for d in sorted(glob.glob("modules/wall/wallpapers/*/")):
+    toml = open(d + "wallpaper.toml").read()
+    names = set(re.findall(r"^\[param\.([A-Za-z_]\w*)\]", toml, re.M))
+    m = re.search(r"^\[params\]\n(.*?)(?=^\[|\Z)", toml, re.M | re.S)
+    if m:
+        names |= set(re.findall(r"^([A-Za-z_]\w*)\s*=", m.group(1), re.M))
+    for f in sorted(glob.glob(d + "*")):
+        if not f.endswith((".frag", ".vert", ".glsl")):
+            continue
+        code = re.sub(r"//[^\n]*|/\*.*?\*/", "", open(f).read(), flags=re.S)
+        for n in sorted(names):
+            if re.search(types + r"\s+(?:\w+\s*(?:=[^,;()]*)?,\s*)*" + n + r"\b", code) or re.search(r"#define\s+" + n + r"\b", code):
+                bad.append(f"{f}: declares '{n}', which is one of its parameters")
+if bad:
+    print("\n".join(bad)); sys.exit(1)
+print("no wallpaper hides a parameter behind a GLSL name")
+PY
 # The bundled presets name only bar presets, motion presets, wallpapers and wallpaper presets that exist.
 python3 - <<'PY' || exit 1
 import glob, json, os, re, sys

@@ -53,6 +53,11 @@ The first release.
 
 ### Fixed
 
+- The Size setting of Swarm, Particle Life and Fireworks did nothing: the
+  shaders' point size had the same name and hid it. Their default look is
+  unchanged (Fireworks' and Particle Life's defaults are now 1, the size they
+  always drew at), and `tests/run.sh` now fails on any parameter a GLSL name
+  hides.
 - Galaxy Collision drew a dense ring of stars around each galaxy, where stars
   beyond the disk's edge had been piled onto it.
 - Galaxy Collision dimmed on workspaces with windows, where the engine runs at
