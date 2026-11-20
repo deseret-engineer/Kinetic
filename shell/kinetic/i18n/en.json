@@ -64,7 +64,7 @@
   "app.subtitle": "For Omarchy",
   "app.keys": "Ctrl + 1–9 or Ctrl + Tab: pages · Ctrl + R: reload · Esc: close",
   "app.reload": "Reload",
-  "app.reload.about": "Reload the pages",
+  "app.reload.about": "Restart the engine, glass, bar and this app",
   "app.wallpaper": "Wallpaper",
   "app.library": "Library",
   "app.bar": "Bar",

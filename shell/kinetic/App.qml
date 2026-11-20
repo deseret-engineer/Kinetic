@@ -138,7 +138,7 @@ Item {
         var rows = root.rowIds
         if (event.key === Qt.Key_Escape && !kinetic.editingValue) { window.visible = false; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key >= Qt.Key_1 && event.key <= Qt.Key_9 && event.key - Qt.Key_1 < rows.length) { kinetic.tab = rows[event.key - Qt.Key_1]; event.accepted = true }
-        else if (event.key === Qt.Key_F5 || ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_R)) { kinetic.reload(); event.accepted = true }
+        else if (event.key === Qt.Key_F5 || ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_R)) { kinetic.reloadAll(); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Tab) { root.step(1); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Backtab) { root.step(-1); event.accepted = true }
       }
@@ -270,7 +270,7 @@ Item {
           }
         }
 
-        // When something looks wrong: read everything again and reload the pages.
+        // When something looks wrong: restart every part (engine, glass plugin, bar, this app).
         Button {
           id: reloadButton
           anchors.left: parent.left
@@ -279,11 +279,10 @@ Item {
           anchors.bottomMargin: Style.space(6)
           text: kinetic.tr("app.reload")
           iconText: "󰑐"
-          iconSpinning: kinetic.reloading
           tooltipText: kinetic.tr("app.reload.about")
           foreground: kinetic.fg
           fontFamily: kinetic.fontFamily
-          onClicked: { kinetic.reload(); keys.forceActiveFocus() }
+          onClicked: kinetic.reloadAll()
         }
 
         PlainText {
@@ -420,16 +419,6 @@ Item {
                 visible: here && !(kinetic.offline && modelData.module === "wall")
                 onHereChanged: if (here && !wanted) { wanted = true; setSource(modelData.url, Object.assign({ ctx: kinetic }, modelData.props)) }
                 Component.onCompleted: if (here) { wanted = true; setSource(modelData.url, Object.assign({ ctx: kinetic }, modelData.props)) }
-                // reload(): the page showing loads again now, the others when next shown
-                Connections {
-                  target: kinetic
-                  function onGenerationChanged() {
-                    if (!pageLoader.wanted) return
-                    pageLoader.setSource("")
-                    if (pageLoader.here) pageLoader.setSource(pageLoader.modelData.url, Object.assign({ ctx: kinetic }, pageLoader.modelData.props))
-                    else pageLoader.wanted = false
-                  }
-                }
                 onStatusChanged: if (status === Loader.Error) console.warn("Kinetic: page " + modelData.id + " did not load: " + modelData.url)
               }
             }

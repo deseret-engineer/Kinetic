@@ -97,6 +97,7 @@ kinetic glass enable              # glass under the bar and behind see-through w
 kinetic light enable              # a glow around the focused window
 kinetic motion preset parallax    # sliding workspaces with wallpaper parallax
 kinetic status                    # everything, as JSON
+kinetic reload                    # restart the engine, glass plugin, bar and app
 ```
 
 The app is also in the launcher (**Kinetic**) and under **Omarchy menu →

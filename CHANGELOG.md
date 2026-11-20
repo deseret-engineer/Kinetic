@@ -29,6 +29,8 @@ The first release.
   folder or an archive (`kinetic module install`).
 - The Kinetic app, the bar widget, the `kinetic` CLI, and rows in the Omarchy
   menu.
+- `kinetic reload`, and a Reload button in the Kinetic app (Ctrl + R or F5): restarts
+  the engine, the glass plugin, the bar and the app when something looks wrong.
 
 ### Changed
 

@@ -198,33 +198,12 @@ Item {
 
   function refresh() { if (!describeProc.running) describeProc.running = true }
   function refreshPresets() { if (!presetsProc.running) presetsProc.running = true }
+  // Starts every part over (`kinetic reload`: the engine, the glass plugin, the shell with
+  // the bar and this app). It outlives the shell, which it restarts, so it runs as a user unit.
+  function reloadAll() {
+    Quickshell.execDetached(["systemd-run", "--user", "--quiet", "--collect", "--unit=kinetic-reload", KineticEnv.KINETIC, "reload"])
+  }
   function refocus() { if (focusItem) focusItem.forceActiveFocus() }
-
-  // Start over when something looks wrong: read every file again, ask the engine,
-  // the presets and the modules afresh (stopping a read that hangs), clear the
-  // messages, and have the host load its pages again (`generation`). Commands
-  // waiting to run and an install under way are left alone.
-  property int generation: 0
-  readonly property bool reloading: describeProc.running || presetsProc.running || modulesProc.running
-  function restart(proc) {
-    if (proc.running) { proc.again = true; proc.running = false }
-    else proc.running = true
-  }
-  function reload() {
-    moduleError = ""
-    moduleNote = ""
-    wallError = ""
-    wallNote = ""
-    askDisable = null
-    shellFile.reload()
-    motionFile.reload()
-    presetFile.reload()
-    signalFile.reload()
-    restart(describeProc)
-    restart(presetsProc)
-    restart(modulesProc)
-    generation++
-  }
 
   // Scrolls the host by a wheel event that a control under the pointer caught
   // (SettingRow's sliders do, so the wheel scrolls instead of changing them).
@@ -305,12 +284,9 @@ Item {
 
   Process {
     id: describeProc
-    property bool again: false
-    onRunningChanged: if (!running && again) { again = false; running = true }
     command: [KineticEnv.WALL, "describe"]
     stdout: StdioCollector { id: describeOut; waitForEnd: true }
     onExited: function(exitCode) {
-      if (again) return // stopped by reload(): it runs again
       var d = exitCode === 0 ? Model.parseDescribe(describeOut.text) : null
       root.offline = d === null
       if (d) root.info = d
@@ -319,11 +295,9 @@ Item {
 
   Process {
     id: presetsProc
-    property bool again: false
-    onRunningChanged: if (!running && again) { again = false; running = true }
     command: [KineticEnv.KINETIC, "preset", "list", "--json"]
     stdout: StdioCollector { id: presetsOut; waitForEnd: true }
-    onExited: function(exitCode) { if (again) return; if (exitCode === 0) root.presets = Model.parsePresets(presetsOut.text) }
+    onExited: function(exitCode) { if (exitCode === 0) root.presets = Model.parsePresets(presetsOut.text) }
   }
 
   Process {
@@ -375,12 +349,9 @@ Item {
 
   Process {
     id: modulesProc
-    property bool again: false
-    onRunningChanged: if (!running && again) { again = false; running = true }
     command: [KineticEnv.KINETIC, "modules", "--json"]
     stdout: StdioCollector { id: modulesOut; waitForEnd: true }
     onExited: function(exitCode) {
-      if (again) return // stopped by reload(): it runs again
       if (exitCode !== 0) return
       try { var m = JSON.parse(modulesOut.text); if (Array.isArray(m)) root.modules = m } catch (e) {}
     }
@@ -401,7 +372,6 @@ Item {
 
   // The bar's options: shell.json, read as it changes (any writer: panel, CLI, editor).
   FileView {
-    id: shellFile
     path: Quickshell.env("HOME") + "/.config/omarchy/shell.json"
     watchChanges: true
     printErrors: false
@@ -410,7 +380,6 @@ Item {
   }
 
   FileView {
-    id: motionFile
     path: KineticEnv.MOTION_CONFIG
     watchChanges: true
     printErrors: false
@@ -420,7 +389,6 @@ Item {
   }
 
   FileView {
-    id: presetFile
     path: KineticEnv.PRESET_STATE
     watchChanges: true
     printErrors: false
@@ -431,7 +399,6 @@ Item {
 
   // The engine changed (on, off, restarted): its signal file says so.
   FileView {
-    id: signalFile
     path: KineticEnv.WALL_SIGNAL
     watchChanges: true
     printErrors: false
