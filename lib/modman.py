@@ -360,9 +360,15 @@ def check_tree(root):
             raise Refused("too big (over 4000 files or 64 MB)")
 
 
+def check_archive(sizes):
+    """The size limits, checked before anything is unpacked (an archive can expand a thousandfold)."""
+    if len(sizes) > MAX_FILES or sum(sizes) > MAX_BYTES:
+        raise Refused("too big (over 4000 files or 64 MB)")
+
+
 def find_root(d, sub):
     root = os.path.normpath(os.path.join(d, sub)) if sub else d
-    if not root.startswith(d):
+    if os.path.commonpath([root, d]) != d:  # not startswith: /x/src2 starts with /x/src
         raise Refused("that subfolder leaves the repository")
     if os.path.isfile(os.path.join(root, "module.sh")):
         return root
@@ -402,10 +408,12 @@ def fetch(src, into, find=None):
                 name = info.filename
                 if name.startswith("/") or ".." in name.split("/") or (info.external_attr >> 16) & 0o170000 == 0o120000:
                     raise Refused(f"the archive has an unsafe entry: {name}")
+            check_archive([i.file_size for i in z.infolist() if not i.is_dir()])
             z.extractall(base)
     else:
         base = os.path.join(into, "src")
         with tarfile.open(loc) as t:
+            check_archive([m.size for m in t.getmembers() if m.isfile()])
             t.extractall(base, filter="data")  # refuses paths outside, absolute paths and outside links
     check_tree(base)
     root = (find or find_root)(base, sub)

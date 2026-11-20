@@ -53,6 +53,10 @@ The first release.
 
 ### Fixed
 
+- Installing a module from an archive checks the size limits before
+  unpacking, so an archive that expands to gigabytes is refused before it
+  fills the disk, and a link's subfolder can no longer point at a sibling
+  folder whose name starts the same (`../src2` beside `src`).
 - The Size setting of Swarm, Particle Life and Fireworks did nothing: the
   shaders' point size had the same name and hid it. Their default look is
   unchanged (Fireworks' and Particle Life's defaults are now 1, the size they
