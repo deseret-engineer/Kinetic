@@ -58,6 +58,8 @@ The first release.
   unchanged (Fireworks' and Particle Life's defaults are now 1, the size they
   always drew at), and `tests/run.sh` now fails on any parameter a GLSL name
   hides.
+- `kinetic reload` said the engine restarted when it wasn't running, and
+  left the plugin alone when only the selection light was on.
 - Galaxy Collision drew a dense ring of stars around each galaxy, where stars
   beyond the disk's edge had been piled onto it.
 - Galaxy Collision dimmed on workspaces with windows, where the engine runs at

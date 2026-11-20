@@ -64,9 +64,13 @@ panel() {
 # Hyprland's config (which reloads the glass plugin), then the shell, which holds the
 # bar and the app, so it goes last. Changes nothing the user set, and leaves off what is off.
 reload() {
-  if systemctl --user try-restart kinetic-wall.service 2>/dev/null; then echo "engine restarted"; fi
-  if [[ $(run_module glass active 2>/dev/null || true) == true ]]; then
-    hyprctl reload >/dev/null 2>&1 && echo "Hyprland reloaded (glass plugin)"
+  if systemctl --user is-active --quiet kinetic-wall.service; then
+    systemctl --user restart kinetic-wall.service && echo "engine restarted"
+  fi
+  # the plugin draws both the window glass and the selection light
+  if [[ $(run_module glass active 2>/dev/null || true) == true || $(run_module light active 2>/dev/null || true) == true ]]; then
+    hypr_reload
+    echo "Hyprland reloaded (glass plugin)"
   fi
   echo "restarting the shell (bar and app)"
   omarchy-restart-shell
