@@ -181,6 +181,18 @@ max = 4
 step = 0.1
 default = 1
 
+[param.sky]
+type = "choice"
+label = "Background"
+description = "The theme's background, black, or a color of your own"
+options = ["theme", "black", "custom"]
+default = "theme"
+
+[param.skyColor]
+type = "color"
+label = "Custom background"
+default = "#05070d"
+
 [param.glow]
 label = "Glow"
 min = 0

@@ -47,7 +47,8 @@ The first release.
   (spiral, irregular, ring, lenticular, elliptical or mixed), size and spin,
   how much they differ, how far apart they start, the collision angle and
   speed and how much each encounter varies them, the spiral arms (strength,
-  count, winding), the background stars, and a camera (zoom, turn, pan). It
+  count, winding), the background stars, the background color (the theme's,
+  black or your own), and a camera (zoom, turn, pan). It
   has presets, draws 65,536 stars by default, skips stars off the screen, and
   Start over begins a new encounter.
 - Wallpapers can have up to 38 parameters (was 22), and one with more fails
