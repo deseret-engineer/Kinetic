@@ -145,21 +145,33 @@ static int handle(char *cmd, char *out, size_t len) {
 static void on_accept(void *data, uint32_t ev) {
   int fd = accept4(listen_fd, NULL, NULL, SOCK_CLOEXEC);
   if (fd < 0) return;
-  struct timeval tv = {.tv_usec = 200000};
-  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof tv);
-  char cmd[512];
+  /* bounded both ways, so a client that sends or reads nothing cannot hold up the frame loop */
+  struct timeval rtv = {.tv_usec = 200000}, wtv = {.tv_usec = 500000};
+  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &rtv, sizeof rtv);
+  setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &wtv, sizeof wtv);
+  char cmd[4096]; /* a lens line with all 16 capsules is about 650 bytes */
   size_t n = 0;
+  bool line = false;
   while (n < sizeof cmd - 1) {
     ssize_t r = read(fd, cmd + n, sizeof cmd - 1 - n);
     if (r <= 0) break;
     n += (size_t)r;
-    if (memchr(cmd, '\n', n)) break;
+    if (memchr(cmd, '\n', n)) { line = true; break; }
   }
   cmd[n] = 0;
   static char out[262144];
-  int len = handle(cmd, out, sizeof out);
-  if (len > (int)sizeof out) len = sizeof out;
-  if (len > 0 && write(fd, out, (size_t)len) < 0) lw_dbg("ipc write: %s", strerror(errno));
+  int len;
+  if (!line && n == sizeof cmd - 1) /* cut off: refuse it rather than act on part of it */
+    len = snprintf(out, sizeof out, "error: command longer than %zu bytes\n", sizeof cmd - 2);
+  else
+    len = handle(cmd, out, sizeof out);
+  if (len > (int)sizeof out - 1) len = (int)sizeof out - 1;
+  for (size_t done = 0; len > 0 && done < (size_t)len;) {
+    ssize_t w = send(fd, out + done, (size_t)len - done, MSG_NOSIGNAL);
+    if (w < 0 && errno == EINTR) continue;
+    if (w <= 0) { lw_dbg("ipc write: %s", strerror(errno)); break; }
+    done += (size_t)w;
+  }
   close(fd);
 }
 

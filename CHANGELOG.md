@@ -62,6 +62,10 @@ The first release.
   folder whose name starts the same (`../src2` beside `src`).
 - The app could miss the last change: a refresh asked for while another was
   running was dropped. It now runs once more when that one ends.
+- The engine read at most 511 bytes of a command, so a `lens` line for many
+  capsules was cut off and applied wrong; it now takes 4 KB and refuses
+  anything longer. A client that never reads its reply can no longer hold up
+  the engine.
 - The Size setting of Swarm, Particle Life and Fireworks did nothing: the
   shaders' point size had the same name and hid it. Their default look is
   unchanged (Fireworks' and Particle Life's defaults are now 1, the size they

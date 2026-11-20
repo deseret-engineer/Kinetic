@@ -359,8 +359,14 @@ int main(int argc, char **argv) {
     return lw_ipc_client(cmd, false);
   }
   /* everything else goes to the daemon */
-  char cmd[512];
+  char cmd[4096]; /* the daemon reads as much (a lens line with 16 capsules is about 650 bytes) */
   size_t n = 0;
-  for (int i = 1; i < argc && n < sizeof cmd - 1; i++) n += (size_t)snprintf(cmd + n, sizeof cmd - n, "%s%s", i > 1 ? "\x1f" : "", argv[i]);
+  for (int i = 1; i < argc; i++) {
+    n += (size_t)snprintf(cmd + n, sizeof cmd - n, "%s%s", i > 1 ? "\x1f" : "", argv[i]);
+    if (n >= sizeof cmd - 1) {
+      fprintf(stderr, "error: command longer than %zu bytes\n", sizeof cmd - 2);
+      return 1;
+    }
+  }
   return lw_ipc_client(cmd, false);
 }
