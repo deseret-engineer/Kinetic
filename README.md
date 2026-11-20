@@ -2,7 +2,9 @@
 
 # Kinetic
 
-**Live wallpapers, rendered glass and fluid motion for [Omarchy](https://omarchy.org).**
+**A modular look-and-feel suite for [Omarchy](https://omarchy.org).**
+
+Live wallpapers, rendered glass and fluid motion, as modules you can switch off, swap out or build on.
 
 ![Version D0.1](https://img.shields.io/badge/version-D0.1-5b8def)
 ![Status: early development](https://img.shields.io/badge/status-early%20development-e5a50a)
@@ -25,18 +27,25 @@
 
 </div>
 
-Kinetic is a look-and-feel suite for Omarchy (Arch Linux, Hyprland and the
-Omarchy shell). It brings live wallpapers, a floating glass bar, glass behind
-windows, a selection glow and workspace animations together under one
-command and one app. Because the parts know about each other, the glass bends
-the real wallpaper behind it, and every workspace switch moves the wallpaper in
-step with the windows, at its own depth.
+Kinetic is a modular look-and-feel suite for Omarchy (Arch Linux, Hyprland and
+the Omarchy shell). Its core is a framework rather than a feature: one command,
+one app, and a module system that installs modules, switches them on and off in
+the right order, shows their pages in the app, and gives them shared tools for
+working with Hyprland, the Omarchy shell and each other. Everything you see is
+a module, including everything Kinetic ships with.
 
-Kinetic is modular by design. Every component is a module that you can switch
-off on its own, so you keep only the parts you want, and new modules can be
-added from a link, a folder or an archive to extend it. Wallpapers are just as
-easy to add: give Kinetic a link, a folder or an archive, or drop one on the
-app, and it joins the library. See [Modules](#modules) and
+The built-in modules serve two purposes. They're ready to use: live wallpapers,
+a floating glass bar, glass behind windows, a selection glow, workspace
+animations with parallax, and saved looks. Because they know about each other,
+the glass bends the real wallpaper behind it, and every workspace switch moves
+the wallpaper in step with the windows, at its own depth. They're also
+examples: each one is written exactly the way a module you add would be, so
+together they're a working reference for building your own.
+
+Any module can be switched off on its own, so you keep only the parts you want,
+and new ones can be added from a link, a folder or an archive. Wallpapers are
+just as easy to add: give Kinetic a link, a folder or an archive, or drop one
+on the app, and it joins the library. See [Modules](#modules) and
 [Adding wallpapers](#adding-wallpapers).
 
 ## Contents
@@ -45,12 +54,12 @@ app, and it joins the library. See [Modules](#modules) and
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick start](#quick-start)
+- [Modules](#modules)
 - [Live wallpapers](#live-wallpapers)
 - [Glass](#glass)
 - [The pill bar](#the-pill-bar)
 - [Motion and parallax](#motion-and-parallax)
 - [Looks](#looks)
-- [Modules](#modules)
 - [Troubleshooting](#troubleshooting)
 - [Files](#files)
 - [Uninstalling](#uninstalling)
@@ -59,6 +68,9 @@ app, and it joins the library. See [Modules](#modules) and
 
 ## Features
 
+- **A modular suite.** Every part is a module with its own commands, app pages
+  and dependencies. Switch any of them off, add new ones from a link, a folder
+  or an archive, or write your own using the built-in modules as examples.
 - **33 live wallpapers** drawn by `kinetic-wall`, a native C engine (EGL and
   OpenGL ES 3 on the Wayland layer shell). They follow your Omarchy theme, can
   react to sound, pause when covered, and scale their own resolution to stay
@@ -82,8 +94,6 @@ app, and it joins the library. See [Modules](#modules) and
   Each is compiled before it's added, so a broken one never reaches the screen.
 - **Looks** save a wallpaper, bar and motion setup together and apply it in
   one step.
-- **Modules.** Every part is a module you can switch off, and you can install
-  more from a link, a folder or an archive.
 - **One app** for all of it, in the launcher and the Omarchy menu, with a
   matching CLI for scripts.
 
@@ -141,6 +151,59 @@ opens the app.
 In the app, the sidebar lists the modules that are on, each with its pages.
 <kbd>Ctrl</kbd> + <kbd>1</kbd>–<kbd>9</kbd> and <kbd>Ctrl</kbd> + <kbd>Tab</kbd>
 move between pages.
+
+## Modules
+
+Kinetic is built around its modules. A module is a folder with two files: a
+`module.json` that says what it is, what it needs and which pages it adds to the
+app, and an executable `module.sh` that answers `enable`, `disable` and
+`active` and carries the module's own commands. Kinetic finds it, lists it,
+switches it on with what it needs, and shows its pages in the app.
+
+```bash
+kinetic modules                   # every module, on or off, and its version
+kinetic light disable             # switch one off (the app's Modules page does the same)
+kinetic light enable              # and back on, with whatever it needs
+```
+
+Switching a module on also switches on the modules it needs, and switching one
+off asks first if others depend on it. A module that's off stops entirely and
+leaves the app's sidebar.
+
+### Built-in modules: features and examples
+
+Kinetic's own modules live in [`modules/`](modules/) and use nothing a module
+you add couldn't. Use them as they are, switch off the ones you don't want, or
+read them as worked examples of the different things a module can do:
+
+| Module | What it does | As an example of |
+|---|---|---|
+| [`light`](modules/light/) | The selection glow around windows | The smallest one: a few commands over the engine's options, and an app page |
+| [`look`](modules/look/) | Saved looks across the other modules | A module that runs nothing in the background: just files and commands |
+| [`motion`](modules/motion/) | Hyprland's animations, wallpaper parallax and pass-through | Writing Hyprland configuration safely: generated, verified with Hyprland, then installed |
+| [`bar`](modules/bar/) | The pill bar: a capsule or islands, in five styles | Extending the Omarchy shell by hooking into its own bar instead of forking it |
+| [`glass`](modules/glass/) | Glass under the bar and behind windows | Depending on another module, and shipping a Hyprland plugin |
+| [`wall`](modules/wall/) | Live wallpapers on the native engine, and the glass under the bar | A native daemon run as a systemd service, with its own command-line interface |
+
+Each has `kinetic <module> help`.
+
+### Adding and writing modules
+
+```bash
+kinetic module install https://github.com/someone/kinetic-thing   # or a folder, or an archive
+kinetic module remove kinetic-thing
+```
+
+Kinetic fetches the module and its dependencies, shows you everything it would
+install, and installs nothing until you confirm. In the app, you can also paste
+a link on the Modules page or drop a folder, archive or link onto the window.
+
+To write one, start from [MODULES.md](MODULES.md), the guide to the manifest,
+the commands and the tools Kinetic gives modules, and from the built-in module
+closest to what you have in mind. A module can be shared as a Git repository
+and installed by anyone with its link; other modules can depend on it.
+
+The sections below cover the built-in modules in detail.
 
 ## Live wallpapers
 
@@ -333,33 +396,6 @@ kinetic look save mine            # snapshot what's showing now
 ```
 
 Every part is optional, and a look changes only what it names.
-
-## Modules
-
-| Module | What it does | Help |
-|---|---|---|
-| `wall` | Live wallpapers on the native engine, and the glass under the bar | `kinetic wall help` |
-| `bar` | The pill bar: a capsule or islands, in five styles | `kinetic bar help` |
-| `glass` | Glass under the bar and behind windows, one look for both | `kinetic glass help` |
-| `light` | The selection glow around windows | `kinetic light help` |
-| `motion` | Hyprland's animations, wallpaper parallax and pass-through | `kinetic motion help` |
-| `look` | Saved looks across all of the above | `kinetic look help` |
-
-`kinetic <module> enable` and `disable` switch a module (so does the app's
-Modules page). Switching a module on also switches on the modules it needs, and
-switching one off asks first if others depend on it.
-
-You can add modules from a GitHub link, a folder or an archive:
-
-```bash
-kinetic module install https://github.com/someone/kinetic-thing
-kinetic modules                   # every module, on or off, and its version
-```
-
-Kinetic fetches the module and its dependencies, shows you everything it would
-install, and installs nothing until you confirm. In the app, you can also drop
-a folder, archive or link onto the window. [MODULES.md](MODULES.md) is the
-guide to writing a module.
 
 ## Troubleshooting
 
