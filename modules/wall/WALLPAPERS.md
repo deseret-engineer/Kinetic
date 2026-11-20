@@ -141,6 +141,14 @@ kinetic wall set mine       # saving main.frag now hot-reloads it
 kinetic wall validate mine
 ```
 
+**Sharing one.** A wallpaper is its folder. Put it (or several, side by side or
+in a `wallpapers/` folder) in a Git repository or an archive, and anyone can add
+it with `kinetic wall add <link|archive|folder>`, or by dropping it on the
+Kinetic app. Each wallpaper is compiled before it is added; the folder's name
+becomes its id (lowercase letters, digits, `-` and `_`), and it may not reuse
+the id of a bundled wallpaper (`--as <id>` picks another). Keep it free of
+symlinks and under 64 MB.
+
 `wallpaper.toml`:
 
 ```toml

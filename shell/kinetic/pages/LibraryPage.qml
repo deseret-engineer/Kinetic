@@ -2,7 +2,8 @@ import QtQuick
 import qs.Commons
 import qs.Ui
 
-// Every installed wallpaper with its rendered preview. Click to switch.
+// Every installed wallpaper with its rendered preview. Click to switch. Above
+// them: add wallpapers from a link, a folder or an archive (kinetic wall add).
 Column {
   id: page
   property var ctx: null
@@ -14,6 +15,48 @@ Column {
     font.family: page.ctx.fontFamily
     font.pixelSize: Style.font.body
     elide: Text.ElideRight
+  }
+
+  // ---------- add wallpapers ----------
+  Item {
+    width: parent.width
+    implicitHeight: source.implicitHeight
+    TextField {
+      id: source
+      anchors.left: parent.left
+      anchors.right: add.left
+      anchors.rightMargin: Style.space(8)
+      placeholderText: page.ctx.tr("wall.addPlaceholder")
+      foreground: page.ctx.fg
+      onAccepted: if (text.trim() !== "") page.ctx.addWallpaper(text, false)
+      onActiveFocusChanged: page.ctx.editingValue = activeFocus
+    }
+    Button {
+      id: add
+      anchors.right: parent.right
+      anchors.verticalCenter: source.verticalCenter
+      text: page.ctx.wallBusy ? page.ctx.tr("wall.adding") : page.ctx.tr("wall.add")
+      bordered: true
+      foreground: page.ctx.fg
+      fontFamily: page.ctx.fontFamily
+      onClicked: if (!page.ctx.wallBusy && source.text.trim() !== "") page.ctx.addWallpaper(source.text, false)
+    }
+  }
+  PlainText {
+    width: parent.width
+    visible: page.ctx.wallError !== ""
+    text: page.ctx.wallError
+    color: page.ctx.accent
+    wrapMode: Text.Wrap
+    elide: Text.ElideNone
+    font.pixelSize: Style.font.bodySmall
+  }
+  PlainText {
+    width: parent.width
+    visible: page.ctx.wallNote !== ""
+    text: page.ctx.wallNote
+    opacity: 0.7
+    font.pixelSize: Style.font.bodySmall
   }
 
   PlainText {

@@ -342,11 +342,11 @@ def check_tree(root):
         for n in dirnames + filenames:
             p = os.path.join(dirpath, n)
             if os.path.islink(p):
-                raise Refused(f"modules may not contain links ({os.path.relpath(p, root)})")
+                raise Refused(f"it may not contain links ({os.path.relpath(p, root)})")
         files += len(filenames)
         size += sum(os.path.getsize(os.path.join(dirpath, f)) for f in filenames)
         if files > MAX_FILES or size > MAX_BYTES:
-            raise Refused("too big for a module (over 4000 files or 64 MB)")
+            raise Refused("too big (over 4000 files or 64 MB)")
 
 
 def find_root(d, sub):
@@ -361,8 +361,9 @@ def find_root(d, sub):
     raise Refused("no module.sh there: a module is a folder with module.sh and module.json")
 
 
-def fetch(src, into):
-    """Fetches a source into `into` (runs nothing from it); -> (root, record)."""
+def fetch(src, into, find=None):
+    """Fetches a source into `into` (runs nothing from it); -> (root, record).
+    find(base, sub) picks the root in what was fetched (a module's, by default)."""
     kind, loc, ref, sub = parse_source(src)
     os.makedirs(into)
     record = {"source": src, "fetched": int(time.time())}
@@ -396,7 +397,7 @@ def fetch(src, into):
         with tarfile.open(loc) as t:
             t.extractall(base, filter="data")  # refuses paths outside, absolute paths and outside links
     check_tree(base)
-    root = find_root(base, sub)
+    root = (find or find_root)(base, sub)
     shutil.rmtree(os.path.join(root, ".git"), ignore_errors=True)
     return root, record
 

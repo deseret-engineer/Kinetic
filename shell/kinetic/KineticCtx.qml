@@ -136,6 +136,27 @@ Item {
     planDisableProc.running = true
   }
 
+  // Adding wallpapers: fetched the way modules are, each compiled first, then
+  // kept in ~/.config/kinetic/wallpapers (`kinetic wall add`). A wallpaper runs
+  // no code, so what you paste or drop is added without a second question.
+  // fromDrop: something dropped on the window that holds no wallpaper is
+  // handed to the module installer instead.
+  property bool wallBusy: wallAddProc.running
+  property string wallError: ""
+  property string wallNote: ""
+  function addWallpaper(source, fromDrop) {
+    var s = String(source).trim()
+    if (s.indexOf("file://") === 0) s = decodeURIComponent(s.slice(7))
+    if (wallAddProc.running) return
+    if (!safeSource(s)) { wallError = tr("wall.badSource"); return }
+    wallError = ""
+    wallNote = ""
+    wallAddProc.fromDrop = !!fromDrop
+    wallAddProc.source = s
+    wallAddProc.command = [KineticEnv.KINETIC, "wall", "add", "--json", "--yes", s]
+    wallAddProc.running = true
+  }
+
   // ---------- glass ----------
   // One look for the bar's glass and the windows': the engine stores the windows'
   // (wall.toml), the bar its own (shell.json). Kind "glass" sets both at once.
@@ -289,6 +310,23 @@ Item {
         if (kind === "install") root.modulePlan = null
       }
       root.refreshModules()
+    }
+  }
+
+  Process {
+    id: wallAddProc
+    property bool fromDrop: false
+    property string source: ""
+    stdout: StdioCollector { id: wallAddOut; waitForEnd: true }
+    onExited: function(exitCode) {
+      var r = null
+      try { r = JSON.parse(wallAddOut.text) } catch (e) {}
+      if (r && r.notWallpaper && fromDrop) { root.tab = "modules"; root.inspectModule(source); return }
+      if (!r || r.error) { root.wallError = r && r.error ? r.error : root.tr("wall.addFailed"); return }
+      var added = r.added || [], skipped = r.skipped || []
+      if (added.length) root.wallNote = root.tr("wall.added").replace("%1", added.map(function(a) { return a.name }).join(", "))
+      if (skipped.length) root.wallError = skipped.map(function(k) { return k.id + ": " + String(k.why).split("\n")[0] }).join("\n")
+      root.refresh()
     }
   }
 

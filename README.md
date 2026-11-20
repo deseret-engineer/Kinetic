@@ -34,7 +34,10 @@ step with the windows, at its own depth.
 
 Kinetic is modular by design. Every component is a module that you can switch
 off on its own, so you keep only the parts you want, and new modules can be
-added from a link, a folder or an archive to extend it. See [Modules](#modules).
+added from a link, a folder or an archive to extend it. Wallpapers are just as
+easy to add: give Kinetic a link, a folder or an archive, or drop one on the
+app, and it joins the library. See [Modules](#modules) and
+[Adding wallpapers](#adding-wallpapers).
 
 ## Contents
 
@@ -74,6 +77,9 @@ added from a link, a folder or an archive to extend it. See [Modules](#modules).
   wallpaper on exactly the same curve, a fraction of a screen per workspace.
 - **Pass-through switching.** Jumping several workspaces slides through each one
   on a single curve, instead of cutting straight to the last.
+- **Easy to add wallpapers.** Add one, or a whole collection, from a GitHub
+  link, a folder or an archive with one command or by dropping it on the app.
+  Each is compiled before it's added, so a broken one never reaches the screen.
 - **Looks** save a wallpaper, bar and motion setup together and apply it in
   one step.
 - **Modules.** Every part is a module you can switch off, and you can install
@@ -151,11 +157,41 @@ kinetic wall list                 # every wallpaper
 kinetic wall set aurora           # show one
 kinetic wall next                 # the next one in the library
 kinetic wall pause                # hold the current frame
-kinetic wall new mine             # scaffold your own in ~/.config/kinetic/wallpapers/
 ```
 
-Saving a wallpaper's files reloads it live. The format, uniforms and helpers are
-documented in [modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md).
+### Adding wallpapers
+
+```bash
+kinetic wall add https://github.com/someone/kinetic-wallpapers   # a link
+kinetic wall add ~/Downloads/nebula.zip                          # an archive (.zip, .tar.gz, .tar.xz)
+kinetic wall add ~/src/my-wallpaper                              # a folder
+kinetic wall add ./nebula --as nebula-2                          # under another name
+kinetic wall added                                               # the ones you added
+kinetic wall remove nebula
+```
+
+A source can hold one wallpaper or a whole collection (wallpaper folders at its
+top, or in a folder inside it). GitHub, GitLab and Codeberg links work, including
+a branch and subfolder (`…/tree/main/wallpapers`). Kinetic compiles each
+wallpaper before keeping it and skips any that don't build, then copies the rest
+into `~/.config/kinetic/wallpapers/`, renders their previews, and the library
+shows them right away. A wallpaper is only shaders and a settings file, so
+nothing in it runs on your CPU.
+
+In the app, paste a link, folder or archive into the field at the top of the
+Library page, or drop it anywhere on the app's window.
+
+### Making your own
+
+```bash
+kinetic wall new mine             # scaffold one in ~/.config/kinetic/wallpapers/mine
+kinetic wall set mine             # saving its files now reloads it live
+```
+
+The format, uniforms and helpers are documented in
+[modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md). To share one, put its
+folder (or several) in a Git repository; anyone can add it with
+`kinetic wall add <link>`.
 
 ## Glass
 

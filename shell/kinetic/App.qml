@@ -292,8 +292,9 @@ Item {
         }
       }
 
-      // Drop a module (a folder, an archive, a link) anywhere: Kinetic inspects it
-      // and the Modules page asks before installing anything.
+      // Drop a wallpaper or a module (a folder, an archive, a link) anywhere. A
+      // wallpaper (or a collection of them) is added to the library; anything
+      // else goes to the Modules page, which asks before installing anything.
       DropArea {
         id: drop
         anchors.fill: parent
@@ -301,8 +302,8 @@ Item {
         onDropped: function(d) {
           var src = d.hasUrls && d.urls.length ? String(d.urls[0]) : d.hasText ? String(d.text).trim().split("\n")[0] : ""
           if (src === "") return
-          kinetic.tab = "modules"
-          kinetic.inspectModule(src)
+          kinetic.tab = "library"
+          kinetic.addWallpaper(src, true)
           d.accept(Qt.CopyAction)
         }
       }
