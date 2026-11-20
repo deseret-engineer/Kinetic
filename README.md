@@ -32,6 +32,10 @@ command and one app. Because the parts know about each other, the glass bends
 the real wallpaper behind it, and every workspace switch moves the wallpaper in
 step with the windows, at its own depth.
 
+Kinetic is modular by design. Every component is a module that you can switch
+off on its own, so you keep only the parts you want, and new modules can be
+added from a link, a folder or an archive to extend it. See [Modules](#modules).
+
 ## Contents
 
 - [Features](#features)
