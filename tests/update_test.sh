@@ -63,10 +63,15 @@ KINETIC_UPDATE_INSTALL="sh -c 'pwd > ran; echo installing'" up apply --yes >/dev
 [[ $(git -C "$T/cache/kinetic/source" rev-parse HEAD) == "$c3" ]] || fail "the clone is not at the branch tip"
 [[ $(cat "$T/cache/kinetic/source/ran") == "$T/cache/kinetic/source" ]] || fail "the install did not run in the clone"
 [[ $(cat "$T/state/kinetic/update.log") == installing ]] || fail "the install's output was not logged"
+# through the dispatcher, as the app runs it: kinetic takes --yes off and passes KINETIC_YES=1
+installed "$T/remote.git" dev "$c1"
+KINETIC_UPDATE_INSTALL="true" ./kinetic update apply --yes </dev/null >/dev/null || fail "kinetic update apply --yes did not install"
+[[ $(st .status) == current ]] || fail "through kinetic: $(st .status)"
 KINETIC_UPDATE_INSTALL="false" up apply --yes >/dev/null 2>&1 && fail "a failed install reported success"
 [[ $(st .status) == failed ]] || fail "after a failed install: $(st .status)"
 installed "$T/remote.git" dev "$c3"; [[ $(KINETIC_UPDATE_INSTALL=false up apply --yes) == *"up to date"* ]] || fail "applied with nothing new"
 installed "$T/remote.git" dev "$c1"; up apply </dev/null >/dev/null 2>&1 && fail "applied without --yes and no terminal"
+[[ $(st .error) == *"needs --yes"* ]] || fail "a refused apply should say why: $(st .error)"
 
 # one update at a time
 installed "$T/remote.git" dev "$c1"

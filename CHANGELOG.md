@@ -58,6 +58,9 @@ The first release. Changed and Fixed are against `0.1.0-dev`.
 
 ### Fixed
 
+- The app's Update button did nothing: `kinetic` passes `--yes` on as
+  `KINETIC_YES`, which `kinetic update` didn't read. An update refused for want
+  of a yes now says so in Settings.
 - Swarm, Particle Life and Fireworks: the Size setting did nothing (a shader
   name hid it). Their default look is unchanged.
 - Galaxy Collision drew a dense ring around each galaxy, and dimmed on

@@ -223,7 +223,12 @@ def apply(yes):
         return 0
     if not yes:
         say(s)
-        if not (sys.stdin.isatty() and input("Install it? [y/N] ").strip().lower() in ("y", "yes")):
+        if not sys.stdin.isatty():  # nobody to ask: say so where the app can see it
+            s.update(status="error", error="nothing installed: an update needs --yes without a terminal")
+            write_state(s)
+            print("left as it is (no terminal to ask: add --yes)", file=sys.stderr)
+            return 1
+        if input("Install it? [y/N] ").strip().lower() not in ("y", "yes"):
             print("left as it is")
             return 1
     fd = lock()
@@ -277,7 +282,8 @@ def finished(rc):
 def main(argv):
     args = argv[1:]
     as_json = "--json" in args
-    yes = "--yes" in args or "-y" in args
+    # the kinetic dispatcher takes --yes off every command and passes it on as KINETIC_YES=1
+    yes = "--yes" in args or "-y" in args or os.environ.get("KINETIC_YES") == "1"
     args = [a for a in args if a not in ("--json", "--yes", "-y")]
     cmd = args[0] if args else "status"
     try:
