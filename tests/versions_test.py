@@ -17,7 +17,7 @@ for lo, hi in zip(ORDER, ORDER[1:]):
 assert modman.vkey("1.0.0+build.5") == modman.vkey("1.0.0"), "build metadata does not count"
 assert modman.vkey("1.2") == modman.vkey("1.2.0"), "a missing PATCH is 0"
 
-cases = [("1.2.0", ">=1.2", True), ("1.10.0", ">1.9", True), ("1.2.0-rc.1", ">=1.2", False), ("0.1.0", ">=0.1", True),
+cases = [("1.2.0", ">=1.2", True), ("1.10.0", ">1.9", True), ("1.2.0-rc.1", ">=1.2", False), ("0.1.0", ">=0.1", True), ("0.1.0-dev", ">=0.1", False), ("0.1.0-dev", ">=0.1.0-dev", True),
          ("2.0.0", "<2", False), ("1.4.2", "==1.4.2+meta", True), ("1.4.2", "1.4", True), ("0.9.9", "1.0", False)]
 for have, want, ok in cases:
     assert modman.satisfies(have, want) == ok, f"{have} {want} should be {ok}"

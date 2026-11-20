@@ -6,7 +6,7 @@
 
 Live wallpapers, rendered glass and fluid motion, as modules you can switch off, swap out or build on.
 
-![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-5b8def)
+![Version 0.1.0-dev](https://img.shields.io/badge/version-0.1.0--dev-5b8def)
 ![Status: early development](https://img.shields.io/badge/status-early%20development-e5a50a)
 ![License MIT](https://img.shields.io/badge/license-MIT-3fb68b)
 ![Hyprland 0.56](https://img.shields.io/badge/Hyprland-0.56-58e1ff)
@@ -15,7 +15,8 @@ Live wallpapers, rendered glass and fluid motion, as modules you can switch off,
 </div>
 
 > [!WARNING]
-> **Kinetic is in early development and may be unstable.** Expect bugs, rough
+> **Kinetic is in early development and may be unstable.** This is a
+> development build (`0.1.0-dev`), not a release. Expect bugs, rough
 > edges and breaking changes between releases: options, commands and file
 > formats can change without notice. Part of it runs inside Hyprland as a
 > plugin, so a bug there can crash your session. Try it on a setup you can
@@ -462,7 +463,9 @@ Kinetic follows [Semantic Versioning](https://semver.org). Versions are
 `MAJOR.MINOR.PATCH`: a release that breaks compatibility raises MAJOR, one
 that adds features raises MINOR, and one that only fixes bugs raises PATCH.
 While MAJOR is 0, as now, Kinetic is in initial development and any release
-may change options, commands or file formats. Modules are versioned the same
+may change options, commands or file formats. Development builds carry a `-dev`
+pre-release label (`0.1.0-dev`, tagged `v0.1.0-dev`): SemVer ranks them below
+the release they lead up to, so `0.1.0-dev` comes before `0.1.0`. Modules are versioned the same
 way, so a module can require a minimum version of Kinetic or of another module
 (`>=1.2`).
 

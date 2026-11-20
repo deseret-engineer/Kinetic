@@ -71,6 +71,8 @@ in `lib/kinetic.sh`; the engine (`modules/wall/meson.build`), both shell
 manifests and the Hyprland plugin (`kinetic-glass.cpp`, twice) carry the same
 one, and `tests/versions_test.py` fails when they drift. Breaking change:
 MAJOR; feature: MINOR; fix: PATCH (while MAJOR is 0, anything may change).
+Development builds are pre-releases, `X.Y.Z-dev`, tagged `vX.Y.Z-dev` (annotated);
+drop `-dev` only for a real release.
 `modman.py` checks module versions and `requires` by SemVer precedence (`vkey`).
 
 ## Contracts (other parts depend on these)
