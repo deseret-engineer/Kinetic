@@ -67,9 +67,9 @@ keeps them. They can't use the id of one of Kinetic's own modules.
 |---|---|
 | `id` | Lowercase letters, digits and dashes, starting with a letter. It is also the command: `kinetic aurora-clock ...` |
 | `name`, `summary`, `icon`, `author` | How it shows in `kinetic modules` and the app. `icon` is a Nerd Font glyph |
-| `version` | Like `1.2.0`. Others can require a version of yours |
+| `version` | [Semantic Versioning](https://semver.org): `MAJOR.MINOR.PATCH`, like `1.2.0` (a pre-release is `1.2.0-beta.1`). Raise MAJOR when a change breaks modules that use yours, MINOR for new features, PATCH for fixes. Others can require a version of yours (`>=1.2`), compared by SemVer's rules |
 | `order` | Where it sorts in lists and in the app's sidebar (Kinetic's own use 10 to 90) |
-| `kinetic` | The Kinetic it needs: `>=0.1` (development releases such as `D0.1` compare as `0.1`). Install refuses an older one |
+| `kinetic` | The Kinetic it needs: `>=0.1`. Install refuses an older one |
 | `requires` | What it needs. Each is an id, or `{id, why, version, source, optional}`. `source` is a link Kinetic fetches the dependency from if it is not installed (it asks first, with the rest). `optional`: used if there, never installed or switched on for you |
 | `pages` | Its pages in the app: `{id, label, about, icon, qml, order}`. `qml` is a file in the module. A page's `order` sorts it among the module's own pages (it defaults to the module's). With several pages the module is a group in the sidebar: the first page is its row and the others nest under it, folding away (as Library and Engine sit under Wallpaper) |
 | `engineGroups` | Option groups of the wallpaper engine your module shows on its own page (the Engine page leaves them out) |

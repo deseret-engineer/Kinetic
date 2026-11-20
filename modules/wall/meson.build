@@ -1,4 +1,4 @@
-project('kinetic-wall', 'c', version: 'D0.1',
+project('kinetic-wall', 'c', version: '0.1.0',
   default_options: ['c_std=gnu11', 'buildtype=release', 'warning_level=2', 'b_lto=true'])
 
 cc = meson.get_compiler('c')

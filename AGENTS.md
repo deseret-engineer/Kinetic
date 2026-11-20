@@ -64,6 +64,15 @@ KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall thumbn
 ./install.sh                                                   # installs + migrates; touches the live desktop
 ```
 
+## Versioning
+
+[Semantic Versioning](https://semver.org). Kinetic's version is `KINETIC_VERSION`
+in `lib/kinetic.sh`; the engine (`modules/wall/meson.build`), both shell
+manifests and the Hyprland plugin (`kinetic-glass.cpp`, twice) carry the same
+one, and `tests/versions_test.py` fails when they drift. Breaking change:
+MAJOR; feature: MINOR; fix: PATCH (while MAJOR is 0, anything may change).
+`modman.py` checks module versions and `requires` by SemVer precedence (`vkey`).
+
 ## Contracts (other parts depend on these)
 
 | Interface | Detail |

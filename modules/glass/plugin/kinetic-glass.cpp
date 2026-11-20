@@ -768,7 +768,7 @@ static std::string status() {
     int covered = 0;
     for (auto const& w : Desktop::windowState()->windows())
         covered += coversWindow(w) ? 1 : 0;
-    return std::format("{{\"plugin\":\"kinetic-glass\",\"version\":\"D0.1\",\"glass\":\"{}\",\"light\":\"{}\",\"covered\":{},\"lit\":{},\"shaders\":{}}}", S.glass, S.light, covered,
+    return std::format("{{\"plugin\":\"kinetic-glass\",\"version\":\"0.1.0\",\"glass\":\"{}\",\"light\":\"{}\",\"covered\":{},\"lit\":{},\"shaders\":{}}}", S.glass, S.light, covered,
                        g_lit.size(), g_glFailed ? "false" : "true");
 }
 
@@ -841,7 +841,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     // Kinetic's engine answers this with every setting
     g_pEventManager->postEvent(SHyprIPCEvent{.event = "kinetic-glass", .data = "ready"});
 
-    return {"kinetic-glass", "Kinetic's window glass and selection light, drawn in Hyprland's frame", "Kinetic", "D0.1"};
+    return {"kinetic-glass", "Kinetic's window glass and selection light, drawn in Hyprland's frame", "Kinetic", "0.1.0"};
 }
 
 APICALL EXPORT void PLUGIN_EXIT() {

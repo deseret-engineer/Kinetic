@@ -47,7 +47,9 @@ APP_UI = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".
 RECORD = ".kinetic-install.json"
 
 ID = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
-VERSION = re.compile(r"^[Dd]?\d+(\.\d+){0,3}([-+][0-9A-Za-z.-]+)?$")  # D0.1: a development release
+# Semantic Versioning (semver.org): MAJOR.MINOR.PATCH, an optional -pre.release and +build.
+# MINOR and PATCH may be left out (1.2 is 1.2.0), as in a requirement such as >=1.2.
+VERSION = re.compile(r"^(0|[1-9]\d*)(\.(0|[1-9]\d*)){0,2}(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$")
 MAX_FILES, MAX_BYTES, MAX_DEPTH = 4000, 64 * 1024 * 1024, 8
 
 
@@ -66,8 +68,17 @@ def kinetic_version():
 
 
 def vkey(v):
-    v = re.sub(r"^[Dd](?=\d)", "", str(v))  # D0.1 compares as 0.1
-    return [int(x) if x.isdigit() else 0 for x in re.split(r"[.+-]", v)[:4]]
+    """A sort key in Semantic Versioning's order: by MAJOR, MINOR, PATCH; a
+    pre-release (1.0.0-beta.2) ranks below its release, its identifiers compared
+    one by one (numbers numerically and below words); build metadata (+...) is
+    ignored. Something unreadable ranks as 0.0.0."""
+    m = re.match(r"^\s*v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?\s*$", str(v))
+    if not m:
+        return ((0, 0, 0), (1,))
+    core = tuple(int(x or 0) for x in m.group(1, 2, 3))
+    if not m.group(4):
+        return (core, (1,))
+    return (core, (0,) + tuple((0, int(p), "") if p.isdigit() else (1, 0, p) for p in m.group(4).split(".")))
 
 
 def satisfies(have, want):
