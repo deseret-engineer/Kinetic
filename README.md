@@ -22,7 +22,7 @@ Live wallpapers, rendered glass and fluid motion, as modules you can switch off,
 
 <div align="center">
 
-![Four of Kinetic's live wallpapers: Aurora, Swarm, Wormhole and Reaction](docs/wallpapers.gif)
+![Four of Kinetic's live wallpapers: Aurora, Galaxy Collision (a whole encounter, sped up), Wormhole and Topo](docs/wallpapers.gif)
 
 </div>
 

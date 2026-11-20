@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Renders the README's images, offscreen, with the wallpaper engine.
 
-    docs/media.py [name ...]     all of them, or: gallery wallpapers glass parallax passthrough
+    docs/media.py [--theme NAME] [name ...]   all of them, or: gallery wallpapers glass parallax passthrough
 
 Needs a built engine (make -C modules/wall) and ImageMagick. Nothing
-touches the desktop: every frame is `kinetic-wall thumbnail`. Colors follow the
-current Omarchy theme, so render with the theme you want shown.
+touches the desktop: every frame is `kinetic-wall thumbnail`, run with its own
+scratch state, so the colors are always those of one Omarchy theme (Hackerman,
+unless --theme names another) and no saved wallpaper settings creep in.
 """
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -16,19 +18,53 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs")
 ENGINE = os.path.join(ROOT, "modules/wall/build/kinetic-wall")
-ENV = dict(os.environ, KINETIC_WALL_PATH=os.path.join(ROOT, "modules/wall/wallpapers"))
+WALLPAPERS = os.path.join(ROOT, "modules/wall/wallpapers")
+ENV = dict(os.environ, KINETIC_WALL_PATH=WALLPAPERS)
+THEME = "hackerman"  # the README's images all use one theme
 FONT = "Noto-Sans-Medium"
 BG = "#0d0f14"
 INK = "#e6e9ef"
 MUTED = "#9aa3b2"
 
 
-def run(*args):
-    subprocess.run([str(a) for a in args], check=True, env=ENV, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def run(*args, env=None):
+    subprocess.run([str(a) for a in args], check=True, env=env or ENV, stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
+
+
+def use_theme(name, tmp):
+    """Render with this Omarchy theme: a scratch state folder whose current theme is it."""
+    for base in (os.path.expanduser("~/.config/omarchy/themes"), "/usr/share/omarchy/themes"):
+        d = os.path.join(base, name)
+        if os.path.isfile(os.path.join(d, "colors.toml")):
+            break
+    else:
+        sys.exit(f"no Omarchy theme named {name}")
+    state = os.path.join(tmp, "state")
+    os.makedirs(os.path.join(state, "omarchy/current"))
+    os.symlink(d, os.path.join(state, "omarchy/current/theme"))
+    with open(os.path.join(state, "omarchy/current/theme.name"), "w") as f:
+        f.write(name + "\n")
+    ENV.update(XDG_STATE_HOME=state, XDG_CONFIG_HOME=os.path.join(tmp, "config"), XDG_CACHE_HOME=os.path.join(tmp, "cache"))
 
 
 def frame(wall, path, w, h, t, *extra):
     run(ENGINE, "thumbnail", wall, path, f"{w}x{h}", t, *extra)
+
+
+def timelapse(wall, tmp, path, w, h, t):
+    """A simulation as it stands t seconds after it starts. A thumbnail only simulates the
+    wallpaper's preview_warmup before t, so this renders a copy whose warmup is all of t:
+    one encounter, played from the beginning, frame after frame."""
+    walls = os.path.join(tmp, "timelapse")
+    toml = os.path.join(walls, wall, "wallpaper.toml")
+    if not os.path.isdir(os.path.join(walls, wall)):
+        shutil.copytree(os.path.join(WALLPAPERS, wall), os.path.join(walls, wall))
+    with open(toml) as f:
+        s = f.read()
+    with open(toml, "w") as f:
+        f.write(re.sub(r"(?m)^preview_warmup = .*$", f"preview_warmup = {t:.3f}", s))
+    run(ENGINE, "thumbnail", wall, path, f"{w}x{h}", f"{t:.3f}", env=dict(ENV, KINETIC_WALL_PATH=walls))
 
 
 def gif(frames, out, delay, colors=160):
@@ -61,15 +97,23 @@ def gallery(tmp):
 
 
 # ---------- a few of them moving ----------
+# Galaxy Collision as a time-lapse: a whole encounter (approach, first pass and tidal
+# tails, merger: about 55 s) in the loop, the others in real time.
+COLLISION = 55
+
+
 def wallpapers_gif(tmp):
-    walls, n, w, h = ["aurora", "swarm", "wormhole", "reaction"], 36, 360, 225
+    walls, n, w, h = ["aurora", "galaxy", "wormhole", "topo"], 48, 360, 225
     frames = []
     for i in range(n):
         t = 6 + i / 12
         tiles = []
         for wall in walls:
             p = os.path.join(tmp, f"m-{wall}-{i}.png")
-            frame(wall, p, w, h, t)
+            if wall == "galaxy":
+                timelapse(wall, tmp, p, w, h, max(1 / 60, COLLISION * i / (n - 1)))
+            else:
+                frame(wall, p, w, h, t)
             tiles.append(p)
         f = os.path.join(tmp, f"m-{i:03}.png")
         run("magick", "montage", *tiles, "-tile", "2x", "-geometry", "+3+3", "-background", BG, f)
@@ -170,11 +214,20 @@ if __name__ == "__main__":
         sys.exit("build the engine first: make -C modules/wall")
     if not shutil.which("magick"):
         sys.exit("needs ImageMagick (magick)")
-    names = sys.argv[1:] or list(JOBS)
+    args = sys.argv[1:]
+    theme = THEME
+    if "--theme" in args:
+        i = args.index("--theme")
+        if i + 1 >= len(args):
+            sys.exit("--theme needs a name")
+        theme = args[i + 1]
+        del args[i:i + 2]
+    names = args or list(JOBS)
     for n in names:
         if n not in JOBS:
             sys.exit(f"no image named {n} ({', '.join(JOBS)})")
     with tempfile.TemporaryDirectory() as tmp:
+        use_theme(theme, tmp)
         for n in names:
             JOBS[n](tmp)
             print(n)
