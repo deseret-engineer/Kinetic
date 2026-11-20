@@ -10,13 +10,13 @@ vec4 core_start(int i, float e, int n, float M) {
   float r = n == 1 ? 0.0 : R * (n > 2 ? 0.75 + 0.5 * lw_rand(20 + i, k) : (M - m) / M * 2.0);
   vec2 p = vec2(cos(a), sin(a)) * r;
   if (n < 2) return vec4(p, 0.0, 0.0);
-  // fall in toward the others, off-center by the impact angle: a two-body
+  // fall in toward the others, off-center by the collision angle: a two-body
   // orbit's speed for this core, 86% of escape so a pair stays bound. A crowd
   // goes slower, or close three-body passes fling galaxies off the screen
   float mo = M - m, meff = mo * mo * mo / (M * M);
-  float side = lw_rand(4, k) < 0.5 ? 1.0 : -1.0;
-  float imp = impact * (0.6 + 0.8 * lw_rand(2, k)) * side;
-  vec2 v = rot(-normalize(p), imp) * sqrt(2.0 * G * meff / max(r, 0.05)) * (n == 2 ? 0.86 : 0.7) * approach;
+  float imp = angle * 0.01745329 * (1.0 + vary * (lw_rand(2, k) - 0.5)) * oside(e);
+  float spd = (n == 2 ? 0.86 : 0.7) * approach * (1.0 + vary * 0.2 * (lw_rand(30 + i, k) - 0.5));
+  vec2 v = rot(-normalize(p), imp) * sqrt(2.0 * G * meff / max(r, 0.05)) * spd;
   return vec4(p, v);
 }
 
@@ -40,22 +40,54 @@ vec4 seed_state(int id, float e) {
   vec4 c = C[0];
   for (int i = 1; i < MAXG; i++) if (i == g) c = C[i];
   float m = gmass(g, e);
-  float spin = lw_rand(5 + g, k) < 0.5 ? 1.0 : -1.0;
-  float Rd = 0.17 * galsize * sqrt(m);                             // disk edge
-  float u = lw_rand(id, k + 1), r;
-  if (lw_rand(id, k + 4) < 0.12) {
-    r = Rd * 0.09 * sqrt(-log(1.0 - u * 0.999));                 // the bulge: a compact, round core
+  int sh = gshape(g, e);                                        // 0 spiral 1 irregular 2 ring 3 lenticular 4 elliptical
+  float sp = gspin(g, e);
+  float Rd = 0.17 * galsize * sqrt(m);                          // disk edge
+  float u = lw_rand(id, k + 1), th = lw_rand(id, k + 2) * 6.2831853, r;
+  float pick = lw_rand(id, k + 4);
+  float bulge = sh == 0 ? 0.12 : sh == 1 ? 0.04 : sh == 3 ? 0.4 : sh == 4 ? 1.0 : 0.15;
+  bool hot = pick < bulge;                                      // bulge and ellipticals: stars on every kind of orbit
+  vec2 off;
+  if (hot) {
+    // Plummer sphere seen flat, cut off so no star starts unbound
+    float a0 = Rd * (sh == 4 ? 0.3 : 0.07);
+    r = a0 / sqrt(pow(0.02 + u * 0.93, -2.0 / 3.0) - 1.0);
+    off = vec2(cos(th), sin(th)) * r;
+  } else if (sh == 1 && pick < bulge + 0.45) {
+    // irregular: knots of stars scattered through the disk, sheared into arcs as it turns
+    int knot = int(lw_rand(id, k + 5) * 7.0);
+    float kr = Rd * (0.2 + 0.7 * lw_rand(60 + knot, k + g * 13)), kt = lw_rand(70 + knot, k + g * 13) * 6.2831853;
+    float gr = Rd * 0.07 * sqrt(-2.0 * log(max(u, 1e-4)));
+    off = vec2(cos(kt), sin(kt)) * kr + vec2(cos(th), sin(th)) * gr;
+    r = length(off);
+    th = atan(off.y, off.x);
   } else {
-    // exponential disk with scale length 0.25, truncated at the edge (sampled
-    // from its own CDF, so nothing piles up on the rim)
-    r = Rd * -0.25 * log(1.0 - u * (1.0 - exp(-1.0 / 0.25)));
+    if (sh == 2) {
+      // a ring: most of the disk in a band near the edge
+      float gs = sqrt(-2.0 * log(max(u, 1e-4))) * cos(lw_rand(id, k + 5) * 6.2831853);
+      r = Rd * clamp(0.75 + 0.1 * gs, 0.3, 1.0);
+    } else {
+      // exponential disk with scale length 0.25, truncated at the edge (sampled
+      // from its own CDF, so nothing piles up on the rim)
+      r = Rd * -0.25 * log(1.0 - u * (1.0 - exp(-1.0 / 0.25)));
+    }
+    if (sh == 0) th += arms * 0.5 * sin(armcount * th + r / Rd * 6.0 * winding) * step(0.4, lw_rand(id, k + 3));
+    off = vec2(cos(th), sin(th)) * r;
   }
-  float th = lw_rand(id, k + 2) * 6.2831853;
-  // spiral arms in the initial disk
-  th += arms * 0.5 * sin(2.0 * th + r / Rd * 6.0) * step(0.4, lw_rand(id, k + 3));
-  vec2 off = vec2(cos(th), sin(th)) * r;
   float eps = 0.012, vc = sqrt(G * m * r * r / pow(r * r + eps * eps, 1.5));
-  return vec4(c.xy + off, c.zw + spin * vc * vec2(-sin(th), cos(th)));
+  vec2 v;
+  if (hot) {
+    float va = lw_rand(id, k + 7) * 6.2831853;                  // a random direction, slower than circular
+    v = 0.75 * vc * vec2(cos(va), sin(va));
+    v += sp * vc * 0.25 * vec2(-sin(th), cos(th));              // with a little net turn
+  } else {
+    v = sp * vc * vec2(-sin(th), cos(th));
+    if (sh == 1) {                                              // irregular: a ragged disk, not thin rings
+      float va = lw_rand(id, k + 7) * 6.2831853;
+      v += 0.08 * vc * sqrt(lw_rand(id, k + 8)) * vec2(cos(va), sin(va));
+    }
+  }
+  return vec4(c.xy + off, c.zw + v);
 }
 
 void mainImage(out vec4 o, in vec2 fc) {

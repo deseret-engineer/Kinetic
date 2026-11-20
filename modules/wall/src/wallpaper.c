@@ -137,6 +137,10 @@ static const char *preamble =
     "  p = p * 2.02 + vec2(17.3, 9.1); a *= 0.5; } return s; }\n"
     "vec3 lw_dither(vec3 c, vec2 fc){ return c + (lw_hash(fc + fract(iTime)) - 0.5) / 255.0; }\n"
     "float lw_luma(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }\n"
+    /* what one frame adds to a `fade` trail, scaled so the trail holds the same light at
+       any frame rate (the fade itself is per second): 1 at 60 fps, more at fewer */
+    "float lw_trail_gain(float fade){ return fade <= 0.0 || fade >= 1.0 ? 1.0 :"
+    " (1.0 - pow(fade, min(iTimeDelta, 0.25) * 60.0)) / (1.0 - fade); }\n"
     /* glow on dark themes, ink on light ones */
     "vec3 lw_blend(vec3 base, vec3 c, float a){ return mix(mix(base, c, clamp(a, 0.0, 1.0)), base + c * a, uDark); }\n"
     /* aspect-correct 'cover' coordinates for a texture of the given size */
@@ -376,6 +380,14 @@ static struct lw_toml *read_manifest(const char *dir, struct lw_wallpaper_info *
   info->fill_reverse = info->fill && lw_toml_bool(t, "fill", "reverse", false);
   read_params(t, info);
   inject_params(t, info);
+  int want = 2; /* room for the engine's own (When the screen fills, React to sound) */
+  for (int i = 0; lw_toml_each(t, "params", i, &(const char *){0}, &(const struct lw_tval *){0}); i++) want++;
+  for (int i = 0; lw_toml_table(t, i); i++) want += !strncmp(lw_toml_table(t, i), "param.", 6);
+  if (want > LW_MAX_PARAMS) {
+    snprintf(err, errlen, "%d parameters: at most %d (with the engine's own %d)", want - 2, LW_MAX_PARAMS - 2, 2);
+    lw_toml_free(t);
+    return NULL;
+  }
   return t;
 }
 

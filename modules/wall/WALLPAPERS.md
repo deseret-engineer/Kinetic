@@ -210,6 +210,7 @@ stage) and `preview_warmup` (seconds simulated before a thumbnail is taken).
 A restored `persist` buffer resumes at its saved frame, so `iFrame < 2` seeding is
 skipped; buffers that are not persistent start from zero alongside it.
 A parameter with `restart = true` restarts the simulation when it changes (seeds).
+A wallpaper has at most 38 parameters.
 
 A simulation that can fill the screen declares how to measure it, and gets the
 **When the screen fills** setting for free:
@@ -294,5 +295,7 @@ landscape, so a vertical slide does not lift the horizon off the screen.
 Helpers: `lw_hash`, `lw_hash2`, `lw_rand(id, salt)` (exact integer hash, for particles),
 `lw_uhash`, `lw_noise`, `lw_fbm`, `lw_palette(t)` (gradient through theme colors),
 `lw_dither`, `lw_luma`, `lw_blend(base, color, amount)` (glow on dark themes, ink on
-light), `lw_cover(uv, texSize, res)` and `lw_perspective`.
+light), `lw_cover(uv, texSize, res)`, `lw_perspective` and `lw_trail_gain(fade)` (multiply what a
+`fade` pass draws by it, with the same fade, so its trails hold the same brightness at
+any frame rate: the engine drops to `fps_occupied` on workspaces with windows).
 

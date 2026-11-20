@@ -42,22 +42,46 @@ step = 0.05
 default = 1
 restart = true
 
-[param.impact]
-label = "Near miss"
-description = "0: head-on, higher: the galaxies swing past each other"
+[param.angle]
+label = "Collision angle"
+description = "0: head-on, higher: the galaxies swing past each other (degrees)"
 min = 0
-max = 1.2
-step = 0.05
-default = 0.55
+max = 75
+step = 1
+default = 30
 restart = true
 
 [param.approach]
-label = "Approach speed"
+label = "Collision speed"
 description = "Below 1 they fall together, above about 1.15 they fly apart"
 min = 0.3
 max = 1.4
 step = 0.05
 default = 1
+restart = true
+
+[param.vary]
+label = "Variation"
+description = "How much each new encounter changes the angle and speed"
+min = 0
+max = 1
+step = 0.05
+default = 0.5
+restart = true
+
+[param.shape]
+type = "choice"
+label = "Galaxy shape"
+options = ["spiral", "irregular", "ring", "lenticular", "elliptical", "mixed"]
+default = "spiral"
+restart = true
+
+[param.spin]
+type = "choice"
+label = "Spin"
+description = "Which way the galaxies turn against their orbits: with them they throw long tails, against them they stay whole"
+options = ["random", "with the orbit", "against the orbit", "one each way"]
+default = "random"
 restart = true
 
 [param.arms]
@@ -66,6 +90,22 @@ min = 0
 max = 1.5
 step = 0.05
 default = 0.7
+restart = true
+
+[param.armcount]
+type = "int"
+label = "Arms"
+min = 1
+max = 6
+default = 2
+restart = true
+
+[param.winding]
+label = "Arm winding"
+min = 0
+max = 3
+step = 0.05
+default = 1
 restart = true
 
 [param.speed]
@@ -134,6 +174,13 @@ max = 0.5
 step = 0.02
 default = 0
 
+[param.bgstars]
+label = "Background stars"
+min = 0
+max = 4
+step = 0.1
+default = 1
+
 [param.glow]
 label = "Glow"
 min = 0
@@ -159,7 +206,7 @@ default = 0.3
 galaxies = 2
 galsize = 1
 separation = 1
-impact = 0.55
+angle = 30
 zoom = 1.2
 
 [preset."Close up"]
@@ -175,11 +222,23 @@ zoom = 0.9
 
 [preset."Head-on"]
 galaxies = 2
-impact = 0.05
+angle = 3
 approach = 0.9
+
+[preset."Long tails"]
+galaxies = 2
+spin = "with the orbit"
+angle = 35
+variety = 0.3
+
+[preset.Mixed]
+galaxies = 3
+shape = "mixed"
+zoom = 1
 
 [preset.Lone]
 galaxies = 1
+shape = "spiral"
 galsize = 1.8
 zoom = 1.6
 tilt = 0.9

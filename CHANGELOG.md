@@ -38,17 +38,24 @@ The first release.
 - Looks are now called presets: `kinetic preset`, the Presets page, and
   `~/.config/kinetic/presets/`. Reinstalling moves saved looks over, and
   `kinetic look` and `kinetic app looks` still work for now.
-- Galaxy Collision has more settings: one to five galaxies, their size, how
-  much they differ, how far apart they start, how closely they pass and how
-  fast they approach, the spiral arms, and a camera (zoom, turn, pan). It has
-  presets, draws 65,536 stars by default, skips stars off the screen, and
+- Galaxy Collision has more settings: one to five galaxies, their shape
+  (spiral, irregular, ring, lenticular, elliptical or mixed), size and spin,
+  how much they differ, how far apart they start, the collision angle and
+  speed and how much each encounter varies them, the spiral arms (strength,
+  count, winding), the background stars, and a camera (zoom, turn, pan). It
+  has presets, draws 65,536 stars by default, skips stars off the screen, and
   Start over begins a new encounter.
+- Wallpapers can have up to 38 parameters (was 22), and one with more fails
+  to load instead of silently losing the rest.
 - The app's Start over button no longer carries a description.
 
 ### Fixed
 
 - Galaxy Collision drew a dense ring of stars around each galaxy, where stars
   beyond the disk's edge had been piled onto it.
+- Galaxy Collision dimmed on workspaces with windows, where the engine runs at
+  a lower frame rate and its trails held less light. Wallpapers with trails
+  can use `lw_trail_gain` to stay as bright at any frame rate.
 - `kinetic motion options` printed true/false defaults as `True`/`False`.
 - The engine skipped a wallpaper folder whose path was too long instead of
   checking a cut-off path, and no longer lists a wallpaper twice when its name

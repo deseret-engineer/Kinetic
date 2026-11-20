@@ -10,7 +10,7 @@
 #define LW_MAX_BUFFERS 8
 #define LW_MAX_PASSES (LW_MAX_BUFFERS + 1)
 #define LW_MAX_CHANNELS 8
-#define LW_MAX_PARAMS 24
+#define LW_MAX_PARAMS 40
 #define LW_MAX_PRESETS 16
 #define LW_MAX_OPTIONS 12
 #define LW_PATH 512

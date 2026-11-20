@@ -9,6 +9,18 @@ float encounter() { return floor(iTime / (cycle * 60.0)) + seed * 1000.0; }
 int esalt(float e) { return int(mod(e, 1000000.0)) + int(uEpoch) * 7919; }   // Start over rolls a new one
 // core 0 weighs 1, the others less, by how varied the galaxies are
 float gmass(int i, float e) { return i == 0 ? 1.0 : mix(1.0, 0.35 + 0.6 * lw_rand(3 + i, esalt(e)), variety); }
+// which way the cores swing past each other (fixed for the encounter)
+float oside(float e) { return lw_rand(4, esalt(e)) < 0.5 ? 1.0 : -1.0; }
+// each galaxy's shape: the setting, or a roll for each one on "mixed"
+int gshape(int g, float e) { return shape < 4.5 ? int(shape + 0.5) : int(lw_rand(50 + g, esalt(e)) * 4.999); }
+// which way a galaxy turns: with its orbit (prograde) or against it
+float gspin(int g, float e) {
+  float pro = -oside(e);                                        // the core's orbit turns against its side's swing
+  if (spin < 0.5) return lw_rand(5 + g, esalt(e)) < 0.5 ? 1.0 : -1.0;
+  if (spin < 1.5) return pro;
+  if (spin < 2.5) return -pro;
+  return g == 0 ? pro : -pro;
+}
 // which galaxy a star was born in (fixed for the encounter), by mass
 int home(int id, float e) {
   int n = ngal();
