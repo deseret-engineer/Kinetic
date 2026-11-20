@@ -57,6 +57,33 @@ Item {
   property var presets: []
   property string currentPreset: ""
 
+  // ---------- the app's own settings, and updates ----------
+  property var appSettings: []          // `kinetic settings --json`: rows like a module's options
+  property var update: ({})             // `kinetic update status --json`: what is installed, the last check
+  property var branches: []             // the repository's branches (fetched when Settings opens)
+  property bool updateChecking: updateCheckProc.running
+  readonly property string updateStatus: update.status || ""
+  readonly property string updateLog: KineticEnv.UPDATE_STATE.replace(/update\.json$/, "update.log")
+  readonly property bool updateWaiting: ["available", "different", "unknown"].indexOf(updateStatus) >= 0
+  function appSetting(key) {
+    for (var i = 0; i < appSettings.length; i++) if (appSettings[i].key === key) return appSettings[i]
+    return null
+  }
+  function refreshSettings() { if (settingsProc.running) settingsAgain = true; else settingsProc.running = true }
+  function refreshUpdate() { if (updateStatusProc.running) updateAgain = true; else updateStatusProc.running = true }
+  function refreshBranches() { if (!branchesProc.running) branchesProc.running = true }
+  function checkUpdates() { if (!updateCheckProc.running && updateStatus !== "updating") updateCheckProc.running = true }
+  // The install replaces this app and restarts the shell, so it runs as a user unit of its own.
+  function applyUpdate() {
+    if (updateStatus === "updating") return
+    Quickshell.execDetached(["systemd-run", "--user", "--quiet", "--collect", "--unit=kinetic-update",
+                             KineticEnv.KINETIC, "update", "apply", "--yes"])
+  }
+  // When the app opens: once a day at most, if the setting is on (read fresh from its file).
+  function maybeCheckUpdates() { autoCheckProc.running = true }
+  property bool settingsAgain: false
+  property bool updateAgain: false
+
   // ---------- modules ----------
   // `kinetic modules --json`: every module (Kinetic's and the ones you added), its
   // manifest, whether it is on, what it needs. Until it has answered, everything counts as on.
@@ -248,6 +275,7 @@ Item {
     if (kind === "param") return [["wall", ["param", key, String(value)]]]
     if (kind === "config") return [["wall", ["config", key, String(value)]]]
     if (kind === "motion") return [["motion", ["set", key, String(value)]]]
+    if (kind === "settings") return [["settings", ["set", key, String(value)]]]
     if (kind === "glass") { // the windows' glass, and the bar's matching option
       var c = [["wall", ["config", key, String(value)]]]
       if (glassLook[key]) c.push(["bar", ["set", glassLook[key], String(value)]])
@@ -259,7 +287,7 @@ Item {
   function sendAll(cmds) { for (var i = 0; i < cmds.length; i++) send(cmds[i][0], cmds[i][1]) }
 
   function setValue(kind, key, value) {
-    if (typeof value === "boolean") value = kind === "bar" || kind === "motion" ? (value ? "true" : "false") : (value ? "1" : "0")
+    if (typeof value === "boolean") value = kind === "bar" || kind === "motion" || kind === "settings" ? (value ? "true" : "false") : (value ? "1" : "0")
     sendAll(commandsFor(kind, key, value))
   }
 
@@ -370,6 +398,7 @@ Item {
     property string module: ""
     onExited: function(exitCode) {
       if (module === "preset") root.refreshPresets()
+      if (module === "settings") { root.refreshSettings(); root.refreshUpdate() }
       if (root.queue.length > 0) root.pump()
       else {
         if (module !== "bar" && module !== "motion") root.refresh()
@@ -385,6 +414,66 @@ Item {
     printErrors: false
     onFileChanged: reload()
     onLoaded: { var c = Model.parseShell(text()); if (c) root.shellCfg = c }
+  }
+
+  Process {
+    id: settingsProc
+    command: [KineticEnv.KINETIC, "settings", "--json"]
+    stdout: StdioCollector { id: settingsOut; waitForEnd: true }
+    onExited: function(exitCode) {
+      if (exitCode === 0) try { var s = JSON.parse(settingsOut.text); if (Array.isArray(s)) root.appSettings = s } catch (e) {}
+      if (root.settingsAgain) { root.settingsAgain = false; running = true }
+    }
+  }
+
+  Process {
+    id: updateStatusProc
+    command: [KineticEnv.KINETIC, "update", "status", "--json"]
+    stdout: StdioCollector { id: updateStatusOut; waitForEnd: true }
+    onExited: function(exitCode) {
+      if (exitCode === 0) try { var u = JSON.parse(updateStatusOut.text); if (u && typeof u === "object") root.update = u } catch (e) {}
+      if (root.updateAgain) { root.updateAgain = false; running = true }
+    }
+  }
+
+  // Network: the check writes update.json, which the FileView below picks up.
+  Process {
+    id: updateCheckProc
+    command: [KineticEnv.KINETIC, "update", "check"]
+    onExited: root.refreshUpdate() // also when update.json did not exist to be watched yet
+  }
+
+  Process {
+    id: branchesProc
+    command: [KineticEnv.KINETIC, "update", "branches", "--json"]
+    stdout: StdioCollector { id: branchesOut; waitForEnd: true }
+    onExited: function(exitCode) {
+      if (exitCode === 0) try { var b = JSON.parse(branchesOut.text); if (Array.isArray(b)) root.branches = b.filter(Model.safeArg) } catch (e) {}
+    }
+  }
+
+  // The daily check, decided from the files themselves: the setting, and when the last check was.
+  Process {
+    id: autoCheckProc
+    command: ["sh", "-c", "[ \"$(" + "\"$1\" settings get updateCheck)\" = true ] || exit 1; "
+              + "last=$(jq -r '.checked // 0' \"$2\" 2>/dev/null || echo 0); [ $(( $(date +%s) - ${last:-0} )) -gt 86400 ]",
+              "kinetic-autocheck", KineticEnv.KINETIC, KineticEnv.UPDATE_STATE]
+    onExited: function(exitCode) { if (exitCode === 0) root.checkUpdates() }
+  }
+
+  // update.json: written by every check and every step of an update, from the app or the terminal
+  FileView {
+    path: KineticEnv.UPDATE_STATE
+    watchChanges: true
+    printErrors: false
+    onFileChanged: { reload(); root.refreshUpdate() }
+  }
+
+  FileView {
+    path: KineticEnv.SETTINGS_CONFIG
+    watchChanges: true
+    printErrors: false
+    onFileChanged: { reload(); root.refreshSettings() }
   }
 
   FileView {
@@ -422,6 +511,8 @@ Item {
     refresh()
     refreshPresets()
     refreshModules()
+    refreshSettings()
+    refreshUpdate()
     Qt.callLater(root.refocus)
   }
   Component.onCompleted: refresh()

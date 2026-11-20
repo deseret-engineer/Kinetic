@@ -65,8 +65,16 @@ systemctl --user stop kinetic-wall.service 2>/dev/null || true
 step "Installing to $HOME_DIR"
 mkdir -p "$HOME_DIR" "$BIN"
 rm -rf "${HOME_DIR:?}/lib" "${HOME_DIR:?}/modules" "${HOME_DIR:?}/shell" "${HOME_DIR:?}/wallpapers"
-cp kinetic "$HOME_DIR/"
+cp kinetic THIRD-PARTY.md "$HOME_DIR/"
 cp -r lib shell "$HOME_DIR/"
+# Where this install came from, for `kinetic update`: the repository's remote, branch and
+# commit, and whether it had changes of its own (an install from a folder has none of these)
+git_info() { git -C "$PWD" "$@" 2>/dev/null || true; }
+jq -n --arg version "$(sed -n 's/^KINETIC_VERSION=//p' lib/kinetic.sh)" \
+  --arg source "$(git_info remote get-url origin)" --arg branch "$(git_info rev-parse --abbrev-ref HEAD)" \
+  --arg commit "$(git_info rev-parse HEAD)" --arg dirty "$(git_info status --porcelain --untracked-files=no | head -c1)" \
+  '{version: $version, source: ($source | select(. != "") // null), branch: ($branch | select(. != "" and . != "HEAD") // null),
+    commit: ($commit | select(. != "") // null), dirty: ($dirty != ""), installed: now | floor}' > "$HOME_DIR/install.json"
 mkdir -p "$HOME_DIR/modules"
 # every module but the wall, whose engine make installs (its scripts follow)
 for m in modules/*/; do

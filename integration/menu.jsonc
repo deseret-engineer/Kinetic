@@ -16,6 +16,7 @@
   "appearance.kinetic.motion": {"icon":"󰁔","label":"Motion…","description":"Animations, parallax and pass-through","action":"kinetic app motion"},
   "appearance.kinetic.presets": {"icon":"󰏘","label":"Presets…","description":"Wallpaper, bar and motion, saved together","aliases":["looks"],"action":"kinetic app presets"},
   "appearance.kinetic.modules": {"icon":"󰕰","label":"Modules…","description":"Switch, add and remove modules","action":"kinetic app modules"},
+  "appearance.kinetic.settings": {"icon":"󰒓","label":"Settings…","description":"Updates, about and attributions","aliases":["update kinetic"],"action":"kinetic app settings"},
   "appearance.top-bar.background.pill": {"icon":"󰍜","label":"Pill","description":"Kinetic's floating glass capsule","aliases":["pill","pill bar"],"checked":"[[ $(omarchy-bar background) == \"pill\" ]]","action":"kinetic bar on"},
   "appearance.top-bar.background.pill-settings": {"icon":"󰒓","label":"Pill settings…","description":"Style, shape, glass, spacing and shadow","aliases":["pill settings"],"action":"kinetic app bar"},
   // kinetic:end

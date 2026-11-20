@@ -29,6 +29,15 @@ The first release.
   folder or an archive (`kinetic module install`).
 - The Kinetic app, the bar widget, the `kinetic` CLI, and rows in the Omarchy
   menu.
+- A Settings page in the app (Ctrl + ,) for the app's own settings: updates,
+  about, and attributions for the work Kinetic includes or follows (also in
+  `THIRD-PARTY.md`).
+- `kinetic update`: check for and install updates from a branch of the
+  repository Kinetic came from (main, dev or another), from the terminal or
+  Settings, which can also look once a day when the app opens. Updates are
+  fetched into a clone of Kinetic's own, never your working copy.
+- `kinetic settings`: the app's own settings (the update branch, and whether to
+  check).
 - `kinetic reload`, and a Reload button in the Kinetic app (Ctrl + R or F5): restarts
   the engine, the glass plugin, the bar and the app when something looks wrong.
 

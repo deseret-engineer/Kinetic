@@ -33,6 +33,8 @@ Suite:
   status            Everything at a glance, as JSON
   reload            Restart the engine, reload Hyprland's config (the glass plugin) and
                     restart the Omarchy shell (the bar and the app), for when something is wrong
+  update [check|apply]  Check for and install updates from a branch: kinetic update help
+  settings ...      The app's own settings (the update branch and checks): kinetic settings help
   modules [--json]  Every module, whether it is on, its version, what it needs
   module ...        Add and remove modules: kinetic module help
   version
@@ -110,6 +112,9 @@ case "$cmd" in
   panel) panel "$@" ;;
   status) status ;;
   reload) reload ;;
+  # exec: an update replaces this very file, which bash would otherwise go on reading
+  update) rm -f "$KINETIC_FACTS"; exec python3 "$KINETIC_HOME/lib/update.py" "$@" ;;
+  settings) rm -f "$KINETIC_FACTS"; exec python3 "$KINETIC_HOME/lib/settings.py" "$@" ;;
   *)
     module_dir "$cmd" >/dev/null || { usage >&2; exit 2; }
     case "${1:-}" in

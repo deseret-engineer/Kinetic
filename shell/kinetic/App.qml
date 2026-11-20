@@ -44,6 +44,9 @@ Item {
     out.push({ id: "modules", module: "", label: kinetic.tr("app.modules"),
                icon: "󰕰", builtin: true, url: Qt.resolvedUrl("pages/ModulesPage.qml"), props: {},
                parent: "", parentLabel: "", children: 0, last: false })
+    out.push({ id: "settings", module: "", label: kinetic.tr("app.settings"),
+               icon: "󰒓", builtin: true, url: Qt.resolvedUrl("pages/SettingsPage.qml"), props: {},
+               parent: "", parentLabel: "", children: 0, last: false })
     return out
   }
   readonly property var ids: entries.map(function(p) { return p.id })
@@ -89,6 +92,7 @@ Item {
     window.visible = true
     kinetic.refresh()
     kinetic.refreshModules()
+    kinetic.maybeCheckUpdates() // once a day at most, if the setting is on
   }
 
   ShellIpc {
@@ -139,6 +143,7 @@ Item {
         if (event.key === Qt.Key_Escape && !kinetic.editingValue) { window.visible = false; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key >= Qt.Key_1 && event.key <= Qt.Key_9 && event.key - Qt.Key_1 < rows.length) { kinetic.tab = rows[event.key - Qt.Key_1]; event.accepted = true }
         else if (event.key === Qt.Key_F5 || ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_R)) { kinetic.reloadAll(); event.accepted = true }
+        else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Comma) { kinetic.tab = "settings"; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Tab) { root.step(1); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Backtab) { root.step(-1); event.accepted = true }
       }
@@ -231,7 +236,19 @@ Item {
                   anchors.rightMargin: Style.space(entry.group ? 4 : 10)
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: Style.space(1)
-                  PlainText { width: parent.width; text: entry.modelData.label; font.bold: entry.current }
+                  PlainText { width: parent.width - (updateDot.visible ? updateDot.width + Style.space(6) : 0); text: entry.modelData.label; font.bold: entry.current }
+                }
+                // an update is waiting (Settings)
+                Rectangle {
+                  id: updateDot
+                  visible: entry.modelData.id === "settings" && kinetic.updateWaiting
+                  anchors.right: parent.right
+                  anchors.rightMargin: Style.space(12)
+                  anchors.verticalCenter: parent.verticalCenter
+                  width: Style.space(8)
+                  height: width
+                  radius: width / 2
+                  color: kinetic.accent
                 }
                 MouseArea {
                   id: hover

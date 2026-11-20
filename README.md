@@ -46,6 +46,7 @@ a link, or write your own.
 - [The pill bar](#the-pill-bar)
 - [Motion and parallax](#motion-and-parallax)
 - [Presets](#presets)
+- [Updating](#updating)
 - [Troubleshooting](#troubleshooting)
 - [Files](#files)
 - [Uninstalling](#uninstalling)
@@ -98,6 +99,7 @@ kinetic light enable              # a glow around the focused window
 kinetic motion preset parallax    # sliding workspaces with wallpaper parallax
 kinetic status                    # everything, as JSON
 kinetic reload                    # restart the engine, glass plugin, bar and app
+kinetic update                    # what is installed; kinetic update check to look for a newer one
 ```
 
 The app is also in the launcher (**Kinetic**) and under **Omarchy menu →
@@ -286,6 +288,24 @@ preset`), which a preset can name.
 Presets were called looks before 0.1.0. Reinstalling moves your saved looks
 into `~/.config/kinetic/presets/`, and `kinetic look` still works for now.
 
+## Updating
+
+Kinetic updates itself from a branch of the repository you installed it from:
+`main` for releases, `dev` for the newest work. Until you pick one, it follows
+the branch you installed from.
+
+```bash
+kinetic update check              # look for a newer version
+kinetic update apply              # install it (asks first), then restart the bar and the app
+kinetic settings set updateBranch main
+kinetic settings set updateCheck off   # don't look once a day when the app opens
+```
+
+The app does the same under **Settings** (<kbd>Ctrl</kbd> + <kbd>,</kbd>), with
+what the update brings. Updates are fetched into a clone of Kinetic's own in
+`~/.cache/kinetic/source`, never into your working copy, and installed with its
+`install.sh`.
+
 ## Troubleshooting
 
 **The wallpaper didn't come up.** Check the engine's log:
@@ -303,7 +323,7 @@ Hyprland update, the rebuilt plugin loads at your next login.
 
 | Path | Contents |
 |---|---|
-| `~/.config/kinetic/` | Your settings, wallpapers and presets |
+| `~/.config/kinetic/` | Your settings, wallpapers and presets (the app's own in `settings.json`) |
 | `~/.config/omarchy/shell.json` | The bar's options, under `bar.pill` |
 | `~/.local/state/kinetic/` | Live state and saved wallpaper worlds |
 | `~/.local/share/kinetic/` | The installed suite and bundled wallpapers |
@@ -333,4 +353,6 @@ label. Changes between releases are in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Kinetic includes or follows a little of other people's work;
+their notices are in [THIRD-PARTY.md](THIRD-PARTY.md), and the app lists them
+under **Settings → Attributions**.

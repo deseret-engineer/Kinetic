@@ -21,6 +21,7 @@ python3 tests/trip_test.py
 python3 tests/pass_through_test.py
 tests/modules_test.sh
 tests/wallpapers_test.sh
+tests/update_test.sh
 python3 tests/versions_test.py
 for m in modules/*/; do python3 lib/modman.py validate "$m" >/dev/null || exit 1; done
 echo "every built-in module's manifest is valid"

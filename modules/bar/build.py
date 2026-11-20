@@ -314,6 +314,8 @@ def env_js():
         "BLUR": os.path.join(bindir, "kinetic-bar-blur"),
         "WALL_SIGNAL": os.path.join(state, "kinetic/signals/wall"),
         "PRESET_STATE": os.path.join(state, "kinetic/preset"),
+        "UPDATE_STATE": os.path.join(state, "kinetic/update.json"),
+        "SETTINGS_CONFIG": os.path.join(config, "kinetic/settings.json"),
         "MOTION_CONFIG": os.path.join(config, "kinetic/motion.json"),
     }
     lines = [".pragma library",

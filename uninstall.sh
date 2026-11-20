@@ -40,7 +40,8 @@ rm -f "$HOME/.local/share/applications/kinetic.desktop"
 rm -f "$HOME/.config/omarchy/hooks/post-update.d/kinetic-bar"
 rm -f "$BIN/kinetic" "$BIN/kinetic-wall" "$BIN/kinetic-wall-pick" "$BIN/kinetic-bar-blur" "$BIN/kinetic-window-blur"
 rm -rf "$HOME/.local/share/kinetic/lib" "$HOME/.local/share/kinetic/modules" "$HOME/.local/share/kinetic/shell" \
-       "$HOME/.local/share/kinetic/wallpapers" "$HOME/.local/share/kinetic/integration" "$HOME/.local/share/kinetic/kinetic"
+       "$HOME/.local/share/kinetic/wallpapers" "$HOME/.local/share/kinetic/integration" "$HOME/.local/share/kinetic/kinetic" \
+       "$HOME/.local/share/kinetic/install.json" "$HOME/.local/share/kinetic/THIRD-PARTY.md"
 rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/kinetic"
 if (( PURGE )); then
   rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/kinetic" "${XDG_STATE_HOME:-$HOME/.local/state}/kinetic"
