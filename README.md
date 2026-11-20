@@ -2,26 +2,35 @@
 
 # Kinetic
 
-**Live wallpapers, liquid glass and fluid motion for [Omarchy](https://omarchy.org).**
+**Live wallpapers, rendered glass and fluid motion for [Omarchy](https://omarchy.org).**
 
 ![Version D0.1](https://img.shields.io/badge/version-D0.1-5b8def)
+![Status: early development](https://img.shields.io/badge/status-early%20development-e5a50a)
 ![License MIT](https://img.shields.io/badge/license-MIT-3fb68b)
 ![Hyprland 0.56](https://img.shields.io/badge/Hyprland-0.56-58e1ff)
 ![Omarchy](https://img.shields.io/badge/Omarchy-Arch%20Linux-1793d1)
+
+</div>
+
+> [!WARNING]
+> **Kinetic is in early development and may be unstable.** Expect bugs, rough
+> edges and breaking changes between releases: options, commands and file
+> formats can change without notice. Part of it runs inside Hyprland as a
+> plugin, so a bug there can crash your session. Try it on a setup you can
+> recover, and keep `./uninstall.sh` in mind.
+
+<div align="center">
 
 ![Four of Kinetic's live wallpapers: Aurora, Swarm, Wormhole and Reaction](docs/wallpapers.gif)
 
 </div>
 
 Kinetic is a look-and-feel suite for Omarchy (Arch Linux, Hyprland and the
-Omarchy shell). It brings live wallpapers, a floating glass bar, liquid glass
-behind windows, a selection glow and workspace animations together under one
+Omarchy shell). It brings live wallpapers, a floating glass bar, glass behind
+windows, a selection glow and workspace animations together under one
 command and one app. Because the parts know about each other, the glass bends
 the real wallpaper behind it, and every workspace switch moves the wallpaper in
 step with the windows, at its own depth.
-
-> **Development release D0.1.** Kinetic is usable day to day, but options and
-> interfaces may still change between releases.
 
 ## Contents
 
@@ -30,7 +39,7 @@ step with the windows, at its own depth.
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Live wallpapers](#live-wallpapers)
-- [Liquid glass](#liquid-glass)
+- [Glass](#glass)
 - [The pill bar](#the-pill-bar)
 - [Motion and parallax](#motion-and-parallax)
 - [Looks](#looks)
@@ -47,7 +56,7 @@ step with the windows, at its own depth.
   OpenGL ES 3 on the Wayland layer shell). They follow your Omarchy theme, can
   react to sound, pause when covered, and scale their own resolution to stay
   within a GPU budget.
-- **Liquid glass** under the bar and behind see-through windows. It bends,
+- **Rendered glass** under the bar and behind see-through windows. It bends,
   frosts and splits the real pixels behind it, with an adjustable edge profile,
   dispersion, tint and rim light.
 - **Window glass drawn by Hyprland itself.** A small Hyprland plugin draws the
@@ -144,7 +153,7 @@ kinetic wall new mine             # scaffold your own in ~/.config/kinetic/wallp
 Saving a wallpaper's files reloads it live. The format, uniforms and helpers are
 documented in [modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md).
 
-## Liquid glass
+## Glass
 
 ![The glass in three looks: clear, frosted and prismatic](docs/glass.png)
 
@@ -291,7 +300,7 @@ Every part is optional, and a look changes only what it names.
 |---|---|---|
 | `wall` | Live wallpapers on the native engine, and the glass under the bar | `kinetic wall help` |
 | `bar` | The pill bar: a capsule or islands, in five styles | `kinetic bar help` |
-| `glass` | Liquid glass under the bar and behind windows, one look for both | `kinetic glass help` |
+| `glass` | Glass under the bar and behind windows, one look for both | `kinetic glass help` |
 | `light` | The selection glow around windows | `kinetic light help` |
 | `motion` | Hyprland's animations, wallpaper parallax and pass-through | `kinetic motion help` |
 | `look` | Saved looks across all of the above | `kinetic look help` |

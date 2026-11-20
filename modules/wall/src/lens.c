@@ -1,4 +1,4 @@
-/* Liquid glass under the bar: the wallpaper, bent behind the pill's capsules.
+/* Rendered glass under the bar: the wallpaper, bent behind the pill's capsules.
  *
  * Hyprland can only blur what lies behind a surface. The wallpaper engine has
  * the actual pixels, so it can bend them. The bar sends its capsules over the

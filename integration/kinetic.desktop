@@ -2,7 +2,7 @@
 Type=Application
 Name=Kinetic
 GenericName=Look and feel
-Comment=Live wallpapers, the pill bar, liquid glass, motion and looks for Omarchy
+Comment=Live wallpapers, the pill bar, glass, motion and looks for Omarchy
 Exec=@KINETIC@ app
 Icon=preferences-desktop-wallpaper
 Terminal=false

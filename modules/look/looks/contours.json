@@ -1,6 +1,6 @@
 {
   "name": "Contours",
-  "description": "A fresh relief map of islands under liquid-glass islands; workspaces slide over it with parallax",
+  "description": "A fresh relief map of islands under glass islands; workspaces slide over it with parallax",
   "wall": {
     "wallpaper": "topo",
     "preset": "Archipelago"

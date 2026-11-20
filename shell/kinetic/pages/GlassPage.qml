@@ -4,7 +4,7 @@ import qs.Ui
 import "../components"
 import "../Model.js" as Model
 
-// Liquid glass: the wallpaper bent behind the bar's capsules and behind windows.
+// Rendered glass: the wallpaper bent behind the bar's capsules and behind windows.
 // One switch for all of it, one look for both (kind "glass" sets the engine's
 // window options and the bar's matching ones together), then what only the bar,
 // only the windows, and the background have.

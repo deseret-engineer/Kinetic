@@ -39,7 +39,7 @@ shell/kinetic/            the bar widget (Panel.qml, wallpaper and library) and 
                           both on KineticCtx.qml (state + commands); pages/, components/, Model.js.
                           Installed twice: plugins/kinetic (bar-widget) and plugins/kinetic.app (service,
                           manifest shell/app-manifest.json, enabled through shell.json plugins[])
-modules/wall/src/lens.c   liquid glass under the bar: capsules (socket), optics, placement. plugin.c: sends the plugin its settings
+modules/wall/src/lens.c   rendered glass under the bar: capsules (socket), optics, placement. plugin.c: sends the plugin its settings
 modules/wall/src/mod_shell.c the guard: keeps Kinetic's layer the one on screen over the shell's background and covers and owe's layer
 modules/wall/src/layers.c reads Hyprland's j/layers (what is stacked over Kinetic's layer); json.c: the mini JSON walker it and mod_hyprland share
 integration/              Omarchy menu rows (menu.jsonc + menu.py), post-update hook

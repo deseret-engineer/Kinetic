@@ -1,5 +1,5 @@
 #!/bin/bash
-# kinetic:summary=Liquid glass: the wallpaper bent behind the bar and windows
+# kinetic:summary=Rendered glass: the wallpaper bent behind the bar and windows
 # The glass lives in two places: the bar's options (shell.json: glass, refraction,
 # frost ...) and the wallpaper engine's (wall.toml: window_glass, window_refract ...).
 # This switches both together and sets one look on both. The glass behind windows

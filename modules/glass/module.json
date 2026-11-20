@@ -1,7 +1,7 @@
 {
   "id": "glass",
   "name": "Glass",
-  "summary": "Liquid glass: the wallpaper bent behind the bar and windows",
+  "summary": "Rendered glass: the wallpaper bent behind the bar and windows",
   "author": "Kinetic",
   "icon": "󰂵",
   "order": 30,
@@ -18,7 +18,7 @@
     {
       "id": "glass",
       "label": "Glass",
-      "about": "Liquid glass under the bar and behind windows",
+      "about": "Glass under the bar and behind windows",
       "qml": "builtin:GlassPage"
     }
   ]

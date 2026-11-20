@@ -60,7 +60,7 @@
     {
       "key": "highlight", "group": "Look", "type": "float", "min": 0, "max": 2, "step": 0.05,
       "default": { "by": "style", "values": { "liquid": 1, "glass": 0, "frosted": 0.35, "solid": 0, "outline": 0 } },
-      "label": "Light", "description": "Sheen, rim light and glint on liquid and frosted glass"
+      "label": "Light", "description": "Sheen, rim light and glint in the liquid and frosted styles"
     },
     {
       "key": "border", "group": "Look", "type": "float", "min": 0, "max": 8, "step": 0.5,

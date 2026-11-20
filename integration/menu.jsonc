@@ -11,7 +11,7 @@
   "appearance.kinetic.wallpaper.library": {"icon":"󰋩","label":"Library…","description":"Every live wallpaper, to pick from","action":"kinetic app library"},
   "appearance.kinetic.wallpaper.engine": {"icon":"󰒓","label":"Engine…","description":"Performance, sound, battery, behavior","action":"kinetic app engine"},
   "appearance.kinetic.bar": {"icon":"󰍜","label":"Bar…","description":"The pill: style, shape, spacing, shadow","action":"kinetic app bar"},
-  "appearance.kinetic.glass": {"icon":"󰂵","label":"Glass…","description":"Liquid glass under the bar and behind windows","action":"kinetic app glass"},
+  "appearance.kinetic.glass": {"icon":"󰂵","label":"Glass…","description":"Glass under the bar and behind windows","action":"kinetic app glass"},
   "appearance.kinetic.light": {"icon":"󰛨","label":"Light…","description":"A glow around windows, under the glass","action":"kinetic app light"},
   "appearance.kinetic.motion": {"icon":"󰁔","label":"Motion…","description":"Animations, parallax and pass-through","action":"kinetic app motion"},
   "appearance.kinetic.looks": {"icon":"󰏘","label":"Looks…","description":"Wallpaper, bar and motion, saved together","action":"kinetic app looks"},
