@@ -66,6 +66,9 @@ The first release.
 
 ### Fixed
 
+- A module you added could take a name that `kinetic` itself answers to
+  (`update`, `settings`, `status` and the like), leaving it unreachable, or a
+  page id the app's own pages use. Those names are refused now.
 - The wlr-layer-shell protocol file Kinetic includes had lost its authors'
   copyright and permission notice; it is back, and the glass plugin's corner
   rounding, which follows Hyprland's, carries Hyprland's notice.

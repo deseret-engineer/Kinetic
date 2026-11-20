@@ -47,6 +47,9 @@ APP_UI = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".
 RECORD = ".kinetic-install.json"
 
 ID = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
+# the dispatcher's own commands, which it matches before any module, and the app's own pages
+RESERVED = {"help", "version", "modules", "module", "app", "panel", "status", "reload", "update", "settings"}
+RESERVED_PAGES = {"modules", "settings"}
 # Semantic Versioning (semver.org): MAJOR.MINOR.PATCH, an optional -pre.release and +build.
 # MINOR and PATCH may be left out (1.2 is 1.2.0), as in a requirement such as >=1.2.
 VERSION = re.compile(r"^(0|[1-9]\d*)(\.(0|[1-9]\d*)){0,2}(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$")
@@ -122,6 +125,8 @@ def load_manifest(d, builtin=False):
     mid = m.get("id")
     if not isinstance(mid, str) or not ID.match(mid):
         problems.append("id: lowercase letters, digits and dashes, starting with a letter")
+    elif mid in RESERVED and not builtin:
+        problems.append(f"id: {mid} is one of kinetic's own commands")
     m.setdefault("name", (mid or "?").capitalize())
     m.setdefault("summary", summary_line(sh))
     m.setdefault("version", kinetic_version() if builtin else "0.0.0")
@@ -156,6 +161,9 @@ def load_manifest(d, builtin=False):
     for p in m["pages"] if isinstance(m["pages"], list) else [None]:
         if not isinstance(p, dict) or not isinstance(p.get("id"), str) or not ID.match(p["id"]) or not isinstance(p.get("qml"), str):
             problems.append("pages: entries are {id, label, about, icon, qml, order}")
+            continue
+        if p["id"] in RESERVED_PAGES:
+            problems.append(f"pages: {p['id']} is one of the app's own pages")
             continue
         q = p["qml"]
         if q.startswith("builtin:"):

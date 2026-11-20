@@ -81,6 +81,10 @@ mk "$T/old" old 1.0.0 ", \"requires\": [{\"id\": \"wall\", \"version\": \">=99\"
 mk "$T/a" ca 1.0.0 ", \"requires\": [{\"id\": \"cb\", \"source\": \"$T/b\"}]"
 mk "$T/b" cb 1.0.0 ", \"requires\": [{\"id\": \"ca\", \"source\": \"$T/a\"}]"
 [[ $(says module install "$T/a" --yes) == *"circle"* ]] || fail "a dependency circle should be refused"
+mk "$T/upd" update 1.0.0 ""
+[[ $(says module install "$T/upd" --yes) == *"kinetic's own commands"* ]] || fail "a module named like a kinetic command should be refused"
+mk "$T/pg" pagey 1.0.0 ", \"pages\": [{\"id\": \"settings\", \"label\": \"S\", \"qml\": \"app/Page.qml\"}]"
+[[ $(says module install "$T/pg" --yes) == *"the app's own pages"* ]] || fail "a page named like the app's own should be refused"
 [[ -z $(find "$T/user" -mindepth 1 -maxdepth 1 ! -name '.*' 2>/dev/null) ]] || fail "refused installs left something: $(ls "$T/user")"
 
 # links: GitHub, with a branch and a subfolder
