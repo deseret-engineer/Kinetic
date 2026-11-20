@@ -216,17 +216,32 @@ def ask_active(mods, ids):
     fd, facts = tempfile.mkstemp(prefix="kinetic-facts.")
     os.close(fd)
     env["KINETIC_FACTS"] = facts
-    out = {}
+    out = {mid: None for mid in ids}
     try:
+        # Fill the snapshot once, then ask every module at the same time: they only read it.
+        subprocess.run(["bash", "-c", 'source "$KINETIC_HOME/lib/kinetic.sh" && facts >/dev/null'],
+                       env=env, capture_output=True, timeout=10)
+        running = {}
         for mid in ids:
             m = mods[mid]
             try:
-                r = subprocess.run([os.path.join(m["dir"], "module.sh"), "active"], capture_output=True, text=True,
-                                   timeout=8, env=dict(env, KINETIC_MODULE=mid, KINETIC_MODULE_DIR=m["dir"]))
-                a = r.stdout.strip().splitlines()[-1] if r.stdout.strip() else ""
-                out[mid] = True if a == "true" else False if a == "false" else None
-            except (OSError, subprocess.TimeoutExpired):
-                out[mid] = None
+                running[mid] = subprocess.Popen([os.path.join(m["dir"], "module.sh"), "active"], stdout=subprocess.PIPE,
+                                                stderr=subprocess.DEVNULL, text=True,
+                                                env=dict(env, KINETIC_MODULE=mid, KINETIC_MODULE_DIR=m["dir"]))
+            except OSError:
+                pass
+        deadline = time.monotonic() + 8
+        for mid, p in running.items():
+            try:
+                said = p.communicate(timeout=max(0.1, deadline - time.monotonic()))[0].strip()
+            except subprocess.TimeoutExpired:
+                p.kill()
+                p.communicate()
+                continue
+            a = said.splitlines()[-1] if said else ""
+            out[mid] = True if a == "true" else False if a == "false" else None
+    except subprocess.TimeoutExpired:
+        pass
     finally:
         os.unlink(facts)
     return out

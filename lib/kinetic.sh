@@ -104,7 +104,8 @@ _facts_compute() {
 
 facts() {
   if [[ -n ${KINETIC_FACTS:-} ]]; then
-    [[ -s $KINETIC_FACTS ]] || _facts_compute > "$KINETIC_FACTS"
+    # written whole and moved into place, so a module running alongside never reads half of it
+    [[ -s $KINETIC_FACTS ]] || { _facts_compute > "$KINETIC_FACTS.$$" && mv -f "$KINETIC_FACTS.$$" "$KINETIC_FACTS"; }
     cat "$KINETIC_FACTS"
   else
     _facts_compute

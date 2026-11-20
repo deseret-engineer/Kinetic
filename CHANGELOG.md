@@ -34,6 +34,9 @@ The first release.
 
 ### Changed
 
+- `kinetic modules` (which the app runs after changes) asks every module at
+  once and answers in about 100 ms instead of 170. A slider drag sends only
+  the latest value of a setting and refreshes the module list once it stops.
 - Installing needs nothing beyond a stock Omarchy: the engine builds with
   `make` instead of Meson and Ninja, and `install.sh` names only the packages
   that are missing (if you removed any) instead of listing them all.
