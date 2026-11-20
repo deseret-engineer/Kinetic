@@ -1,253 +1,276 @@
+<div align="center">
+
 # Kinetic
 
-A look-and-feel suite for [Omarchy](https://omarchy.org). Kinetic puts live
-wallpapers, a floating glass bar, liquid glass behind windows and window
-animations under one command and one app. Because the parts know about each
-other, the glass bends the real wallpaper behind it, and on a workspace switch
-the wallpaper slides in step with the windows at its own depth (parallax).
+**Live wallpapers, liquid glass and fluid motion for [Omarchy](https://omarchy.org).**
+
+![Version D0.1](https://img.shields.io/badge/version-D0.1-5b8def)
+![License MIT](https://img.shields.io/badge/license-MIT-3fb68b)
+![Hyprland 0.56](https://img.shields.io/badge/Hyprland-0.56-58e1ff)
+![Omarchy](https://img.shields.io/badge/Omarchy-Arch%20Linux-1793d1)
+
+![Four of Kinetic's live wallpapers: Aurora, Swarm, Wormhole and Reaction](docs/wallpapers.gif)
+
+</div>
+
+Kinetic is a look-and-feel suite for Omarchy (Arch Linux, Hyprland and the
+Omarchy shell). It brings live wallpapers, a floating glass bar, liquid glass
+behind windows, a selection glow and workspace animations together under one
+command and one app. Because the parts know about each other, the glass bends
+the real wallpaper behind it, and every workspace switch moves the wallpaper in
+step with the windows, at its own depth.
+
+> **Development release D0.1.** Kinetic is usable day to day, but options and
+> interfaces may still change between releases.
+
+## Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Live wallpapers](#live-wallpapers)
+- [Liquid glass](#liquid-glass)
+- [The pill bar](#the-pill-bar)
+- [Motion and parallax](#motion-and-parallax)
+- [Looks](#looks)
+- [Modules](#modules)
+- [Troubleshooting](#troubleshooting)
+- [Files](#files)
+- [Uninstalling](#uninstalling)
+- [Development](#development)
+- [License](#license)
+
+## Features
+
+- **33 live wallpapers** drawn by `kinetic-wall`, a native C engine (EGL and
+  OpenGL ES 3 on the Wayland layer shell). They follow your Omarchy theme, can
+  react to sound, pause when covered, and scale their own resolution to stay
+  within a GPU budget.
+- **Liquid glass** under the bar and behind see-through windows. It bends,
+  frosts and splits the real pixels behind it, with an adjustable edge profile,
+  dispersion, tint and rim light.
+- **Window glass drawn by Hyprland itself.** A small Hyprland plugin draws the
+  glass in the same frame as each window, so it stays locked to the window as
+  it opens, closes, moves, tiles or switches workspaces.
+- **A floating pill bar** built from Omarchy's own bar: one capsule or separate
+  islands, in liquid, glass, frosted, solid or outline styles.
+- **A selection glow** around the focused window, with breathe, flow and
+  shimmer animations and an attention pulse.
+- **Motion with parallax.** Kinetic sets Hyprland's animations and moves the
+  wallpaper on exactly the same curve, a fraction of a screen per workspace.
+- **Pass-through switching.** Jumping several workspaces slides through each one
+  on a single curve, instead of cutting straight to the last.
+- **Looks** save a wallpaper, bar and motion setup together and apply it in
+  one step.
+- **Modules.** Every part is a module you can switch off, and you can install
+  more from a link, a folder or an archive.
+- **One app** for all of it, in the launcher and the Omarchy menu, with a
+  matching CLI for scripts.
+
+## Requirements
+
+- Omarchy with Hyprland 0.56 or newer (Lua configuration).
+- Build tools: `meson`, `ninja`, `gcc`, `pkg-config`, `jq` and `python3`.
+- Libraries: Wayland, wayland-protocols, EGL and OpenGL ES (libglvnd), libpng,
+  libjpeg-turbo, libwebp, and optionally PipeWire (for sound-reactive
+  wallpapers).
+- Hyprland's headers, which the `hyprland` package ships, to build the window
+  glass plugin.
+
+On Omarchy:
 
 ```bash
-./install.sh                    # build and install for your user
-kinetic app                     # the app: Wallpaper (Library, Engine) · Bar · Glass · Light · Motion · Looks
-kinetic panel                   # the bar widget: the wallpaper and its library
-kinetic look apply contours     # a wallpaper and a bar together
-kinetic bar preset lens         # a strongly bending glass bar
-kinetic motion preset parallax  # workspaces slide; the wallpaper follows at a quarter of the distance
-kinetic wall set fluid          # just the wallpaper
+omarchy pkg add meson ninja jq python wayland wayland-protocols libglvnd libpng libjpeg-turbo libwebp pipewire
 ```
 
-The app's sidebar lists the modules that are on, each with its pages: a module
-with several pages is a group (Library and Engine sit under Wallpaper), which the
-arrow beside it folds. Ctrl + 1–9 and Ctrl + Tab go through the rows showing.
-
-The app is also in the launcher (Kinetic) and under **Omarchy menu → Appearance →
-Kinetic**, which opens each page of the app and has a **Wallpaper** submenu
-(choose, next, random, pause, live wallpaper on or off, and its pages). The 󰸉
-widget on the bar is for the wallpaper alone: what shows, its presets and
-parameters, the library. Its gear opens the app (so does `o`).
-
-## Modules
-
-Every module is its own folder: a `module.sh` (its commands) and a
-`module.json` (what it is, what it needs, its pages in the app). Kinetic's own
-are in `modules/`; you can add more:
+## Installation
 
 ```bash
-kinetic module install https://github.com/someone/kinetic-thing   # or a folder, or an archive
-kinetic modules                                                    # every module, on or off, its version
+git clone https://github.com/deseret-engineer/Kinetic.git
+cd Kinetic
+./install.sh
 ```
 
-Kinetic fetches the module and whatever it needs, shows you all of it, and
-installs nothing until you say yes (in the app: the Modules page, or drop a
-folder, archive or link on its window). Switching a module on switches on what
-it needs first; switching one off asks before stopping what needs it.
-[MODULES.md](MODULES.md) is the guide to writing one.
+The installer runs as your user and needs no root access. It builds the
+engine and the Hyprland plugin, installs Kinetic under `~/.local`, builds the
+pill bar from your Omarchy's bar, adds Kinetic to the launcher and to
+**Omarchy menu → Appearance**, and starts the wallpaper engine. Anything it
+replaces is set aside in `~/.local/share/kinetic/replaced/`, never deleted.
 
-| Module | What | Commands |
-|---|---|---|
-| `wall` | Living wallpapers: GLSL scenes on a native C engine (EGL/GLES 3, Wayland layer shell). 33 bundled | `kinetic wall help` (also `kinetic-wall`) |
-| `bar` | The pill: Omarchy's bar floating as a capsule, or as islands, in liquid, glass, frosted, solid or outline | `kinetic bar help` |
-| `glass` | Liquid glass: the wallpaper bent behind the bar and windows (one look for both) | `kinetic glass help` |
-| `light` | Selection light: a soft glow around windows, drawn under the glass (by Kinetic's Hyprland plugin) | `kinetic light help` |
-| `motion` | Hyprland's window, workspace and menu animations, and wallpaper parallax | `kinetic motion help` |
-| `look` | Looks: a wallpaper (with preset and parameters), a bar and motion, saved and applied together | `kinetic look help` |
+If the bar doesn't change right away, restart the shell with
+`omarchy restart shell`.
 
-`kinetic status` prints all of it as one JSON object. `kinetic modules` lists the
-modules and whether each is on; `kinetic <module> enable|disable` switches one
-(the app's Modules page does the same). A module switched off stops and leaves
-the app's list: the wallpaper engine's service, Kinetic's bar (back to
-Omarchy's), the glass, the light, the animations. Looks run nothing, so theirs
-only hides them.
+## Quick start
+
+```bash
+kinetic app                       # open the app
+kinetic wall set fluid            # change the wallpaper
+kinetic look apply contours       # a wallpaper and a bar together
+kinetic bar preset lens           # a strongly bending glass bar
+kinetic glass enable              # glass under the bar and behind see-through windows
+kinetic light enable              # a glow around the focused window
+kinetic motion preset parallax    # sliding workspaces with wallpaper parallax
+kinetic status                    # everything, as one JSON object
+```
+
+The app is also in the launcher (**Kinetic**) and under **Omarchy menu →
+Appearance → Kinetic**. The 󰸉 widget on the bar covers the wallpaper alone:
+what's showing, its presets and parameters, and the library. Its gear (or `o`)
+opens the app.
+
+In the app, the sidebar lists the modules that are on, each with its pages.
+<kbd>Ctrl</kbd> + <kbd>1</kbd>–<kbd>9</kbd> and <kbd>Ctrl</kbd> + <kbd>Tab</kbd>
+move between pages.
+
+## Live wallpapers
+
+![A dozen of Kinetic's wallpapers](docs/wallpapers.png)
+
+Each wallpaper is a small folder of GLSL shaders and a `wallpaper.toml`. They
+take their colors from the current Omarchy theme and change with it. Some
+simulate a world (particles, ants, fluid, a garden) that's saved and picks up
+where it left off; others react to sound, the time of day, the battery or a
+workspace switch.
+
+```bash
+kinetic wall list                 # every wallpaper
+kinetic wall set aurora           # show one
+kinetic wall next                 # the next one in the library
+kinetic wall pause                # hold the current frame
+kinetic wall new mine             # scaffold your own in ~/.config/kinetic/wallpapers/
+```
+
+Saving a wallpaper's files reloads it live. The format, uniforms and helpers are
+documented in [modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md).
 
 ## Liquid glass
 
-The wallpaper engine has the real pixels behind the bar and the windows, so it
-can bend them. After each frame it copies what lies behind each glass shape and
-draws it back through a rounded-rectangle lens: bent most at the rim on an edge
-profile you choose, frosted (mip blur), split into color fringes, with
-saturation, brightness, a tint and a rim light. It costs one small copy and one
-draw per frame the wallpaper draws anyway, and adds no frames.
+![The glass in three looks: clear, frosted and prismatic](docs/glass.png)
 
-**Under the bar.** The bar tells the engine where its capsules are; the bar
-draws its own tint and highlight on top, crisp. Options (`kinetic bar set`, or
-the app's Glass page):
+Kinetic's glass bends what's actually behind it. Each glass shape is a lens with
+a rounded edge: the image bends most at the rim, along an edge profile you
+choose. On top of the bend it can frost, split into color fringes (dispersion),
+shift saturation and brightness, tint toward the theme for legible text, and
+catch a rim light from any angle. One look applies to the bar and the windows:
 
-| Option | Meaning |
+```bash
+kinetic glass set refraction 24
+kinetic glass set frost 2
+kinetic glass set dispersion 0.3
+```
+
+| Option | Effect |
 |---|---|
-| `glass` | `auto` (the wallpaper when the engine shows one, else Hyprland's blur), `wallpaper`, `blur`, `none` |
-| `refraction` | How far the rim bends the wallpaper, px |
-| `frost` | Blur of the bent wallpaper, 0 = clear |
-| `dispersion` | Color fringes where it bends most |
-| `bevel` | How far in from the rim the glass curves, px (0 follows the capsule) |
-| `curvature` | Edge profile: under 1 a soft slope, 1 rounded, over 1 a sharp rim and flat middle |
-| `saturation`, `brightness` | What shows through |
+| `refraction` | How far the rim bends the image, in pixels |
+| `frost` | Blur of what shows through; 0 is clear glass |
+| `dispersion` | Color fringes where the glass bends most |
+| `curvature` | Edge profile: below 1 a soft slope, 1 rounded, above 1 a sharp rim with a flat middle |
+| `saturation`, `brightness` | The color of what shows through |
 | `specular`, `lightAngle` | Light catching the rim, and where it comes from |
 
-**Behind windows.** `kinetic glass windows see-through` (what `kinetic glass
-enable` and the app's switch choose; `floating` and `all` are there too) puts
-the same glass behind the windows you can see through, and nowhere else: an
-opaque window would hide it, and drawing it there would only cost GPU time. A
-window counts as see-through when
+**Under the bar.** The bar tells the wallpaper engine where its capsules are,
+and the engine bends the wallpaper behind them. With the live wallpaper off,
+the engine keeps showing your Omarchy background as a still image, so the
+glass still has something to bend.
 
-- Hyprland draws it at 95% opacity or less right now (its opacity rules times
-  `decoration:active_opacity`/`inactive_opacity`, as focus has it). Omarchy's
-  glassy windows make Nautilus 75%; Omarchy's usual 98.5%/96% does not count; or
-- it is on `window_glass_apps`: apps whose own config makes them see-through,
-  which Hyprland cannot see. Words separated by spaces: a class, a class prefix
-  ending in `*`, or a Hyprland tag. The default, `terminal`, is the tag Omarchy
-  gives every terminal (Alacritty, Ghostty, Kitty, foot, its TUIs), which
-  Omarchy's glassy windows (`omarchy-theme-set-glass`) give a see-through
-  background. `kinetic glass apps terminal org.gnome.Nautilus`, or `none`. If
-  your terminals are opaque (glassy windows off), `none` saves the GPU.
+**Behind windows.** Glass goes only behind windows you can see through, since an
+opaque window would hide it:
 
-The glass is drawn inside Hyprland, by Kinetic's Hyprland plugin
-(`modules/glass/plugin`), in the same frame as the window and from where
-Hyprland draws it on that frame: it opens, closes, moves, re-tiles, drags and
-switches workspaces with the window, at the display's rate, with nothing to
-catch up. It sits just under the window, as Hyprland's blur would, and bends
-what is behind it on that frame: the wallpaper, the selection light, and any
-window below (a see-through floating window over another shows that window
-through the glass). Its corners follow Hyprland's own rounding, curve included
-(`decoration:rounding_power`), so the glass ends exactly where the window does.
-Only the area behind covered windows is drawn, and only when something there
-changed; the wallpaper engine does nothing for it.
+- windows Hyprland draws at 95% opacity or less, and
+- apps that are see-through by their own settings, which Hyprland can't detect.
+  By default this is every terminal (Omarchy tags them all `terminal`). Change
+  the list with `kinetic glass apps <class|class*|tag> ...`, or turn it off
+  with `kinetic glass apps none`.
 
-The engine keeps the options and sends them to the plugin whenever they or the
-theme change (`hyprctl kinetic-glass status` says what the plugin is doing).
-Its optics are the engine's Glass options: `window_refract`, `window_bevel`,
-`window_curve`, `window_frost`, `window_dispersion`, `window_saturation`,
-`window_brightness`, `window_tint` (toward the theme's background, for
-legible text), `window_specular`, `window_light`. The glass brings its own
-frost, so while window glass is on Hyprland's blur is switched off altogether
-(`zz-kinetic-windows.lua`, written by `kinetic-window-blur`); the bar has
-Kinetic's glass too. Set `window_hypr_blur 1` to keep Hyprland's blur as well.
+`kinetic glass windows floating` and `kinetic glass windows all` widen it.
+The window glass is drawn by Kinetic's Hyprland plugin, inside Hyprland's own
+frame. It sits under the window the way Hyprland's blur does, and bends whatever
+is behind it on that frame, including other windows. Its corners follow your
+Hyprland rounding exactly. While window glass is on, Hyprland's own blur is
+turned off, since the glass brings its own frost.
 
-**The plugin.** `install.sh` builds it against the installed Hyprland's headers
-(`gcc` and the `hyprland` package's headers) into `~/.local/lib/kinetic/` and
-adds a Hyprland toggle (`kinetic-plugin.lua`) that loads it at every login.
-Hyprland refuses a plugin built for another version, so Kinetic's post-update
-hook rebuilds it whenever an update brings a new Hyprland; it loads at the next
-login. `kinetic glass plugin` says where it stands, `kinetic glass plugin build`
-builds and loads it by hand, `kinetic glass plugin remove` takes it out. Without
-it, window glass and the selection light are off; the bar's glass is the
-engine's and does not need it.
-
-**On Omarchy's own background.** Glass needs pixels to bend. With the live
-wallpaper off, `glass_still` (on by default) keeps the engine showing your
-Omarchy background itself, exactly as Omarchy would, with the new **Still**
-wallpaper: it never animates and draws only when something changes. A video
-background goes back to Omarchy's own player. `still` is also in the library.
-
-Try the bar's glass without touching the desktop:
+The installer builds the plugin and loads it at every login. Hyprland only
+accepts a plugin built for its exact version, so Kinetic rebuilds it
+automatically after an Omarchy update brings a new Hyprland.
 
 ```bash
-kinetic-wall thumbnail topo /tmp/t.png 1920x1200 10 --glass 12 0.6 0.4 "8,6,500,36,18;700,6,520,36,18" "bevel=10,spec=0.6"
+kinetic glass plugin              # where it stands
+kinetic glass plugin build        # build and load it by hand
 ```
 
-## The bar
+## The pill bar
 
-`kinetic.bar` is not a copy of Omarchy's bar. `kinetic bar build` takes the bar
-that ships with your Omarchy and applies 16 small, named hooks to it. The pill
-itself lives in separate files. An Omarchy update hook rebuilds it, so the
-bar keeps every upstream change. If Omarchy ever rewrites a part the pill
-hooks into, the rebuild stops, notifies you, and keeps the previous build.
-
-Every option, its default (some follow the style), its range, its group and
-its label live in one file, `modules/bar/schema.json`. The bar, the CLI and
-the panel all read it. `kinetic bar options` lists them all.
+`kinetic.bar` isn't a copy of Omarchy's bar. Kinetic applies 16 small, named
+hooks to the bar that ships with your Omarchy, so the pill keeps every upstream
+change. An update hook rebuilds it after each Omarchy update. If an update ever
+changes a part the hooks rely on, the rebuild stops, keeps the previous build
+and notifies you.
 
 ```bash
-kinetic bar on liquid           # pill background, liquid style
-kinetic bar shape islands
+kinetic bar on liquid             # the pill, in the liquid style
+kinetic bar shape islands         # separate capsules instead of one
 kinetic bar set radius full
 kinetic bar set tint accent
-kinetic bar off glassy          # back to one of Omarchy's backgrounds
+kinetic bar options               # every option, with its range and default
+kinetic bar off glassy            # back to one of Omarchy's backgrounds
 ```
 
-Options are stored under `bar.pill` in `~/.config/omarchy/shell.json` and apply live.
+Options apply live and are stored under `bar.pill` in
+`~/.config/omarchy/shell.json`. Every option is defined once, in
+`modules/bar/schema.json`, which the bar, the app and the CLI all read.
 
-## Motion
+## Motion and parallax
+
+![A workspace switch: the windows move a whole screen, the wallpaper a quarter of one](docs/parallax.gif)
 
 `kinetic motion` sets Hyprland's animations: how workspaces switch (slide,
-slide vertically, slide with a fade, fade, or instantly), how windows open,
-close and move, and how menus and notifications appear. Each has a duration and
-a curve (glide, smooth, snappy, linear, overshoot, spring).
+vertical slide, slide and fade, fade, or instant), how windows open, close and
+move, and how menus and notifications appear. Each has a duration and a curve
+(glide, smooth, snappy, linear, overshoot or spring).
 
-Turning motion on also syncs the wallpaper with workspace switches. Omarchy
-switches workspaces instantly by default. With motion on, the wallpaper engine
-gets the same duration and curve as Hyprland, so on every switch the
-wallpaper's position eases on exactly the windows' curve and lands with them.
-**Parallax** pans the wallpaper by a fraction of a screen per workspace while
-the windows move a whole screen.
+With motion on, the wallpaper engine uses the same duration and curve as
+Hyprland, so the wallpaper eases exactly with the windows. **Parallax** pans
+the wallpaper a fraction of a screen per workspace while the windows move a
+whole screen. Layered wallpapers move each layer at its own depth, and some
+react to the switch itself with a gust, a flyby or a volley.
 
 ```bash
-kinetic motion preset parallax       # slide, 500 ms glide, wallpaper at 0.25 screens per workspace
-kinetic motion set parallax 0.4      # deeper
+kinetic motion preset parallax    # slide, 500 ms glide, wallpaper at 0.25 screens per workspace
+kinetic motion set parallax 0.4   # deeper
 kinetic motion set workspaces slidevert
 kinetic motion set workspaceCurve spring
-kinetic motion set passThrough true  # Super + 5 from 1 slides past 2, 3 and 4
-kinetic motion show                  # the Hyprland config and engine setting it makes
-kinetic motion off                   # Omarchy's own animations again
+kinetic motion show               # the Hyprland config and engine setting it produces
+kinetic motion off                # Omarchy's own animations again
 ```
 
-Presets: `parallax`, `vertical`, `deep`, `springy`, `snappy`, `calm`, `omarchy`.
+Presets: `parallax`, `vertical`, `deep`, `springy`, `snappy`, `calm` and `omarchy`.
 
-**Pass through** (`passThrough`): Hyprland slides straight from workspace 1 to
-5. With pass-through on, Super + 1–0 steps through every workspace between
-instead, and the whole trip is one run of the switch curve: Glide eases in and
-out once over the trip, Overshoot passes the target by as much as one switch
-would and comes back. Hyprland plays a workspace at a time, each step on its own
-slice of the curve, so the slices join seamlessly. A trip takes the switch
-duration plus `passMs` (110 by default) for each workspace beyond the first, or
-just the switch duration with `passSameTime`. The wallpaper traces the same
-curve. It replaces Omarchy's Super + number binds while it is on; turning it
-off, or motion off, gives them back.
+![Pass-through: Super + 4 from workspace 1 slides past 2 and 3 on a single curve](docs/pass-through.gif)
 
-A trip always ends on the workspace you chose. Its last step is Omarchy's own
-focus of that workspace, on the monitor you pressed it on. Pressing another
-number mid-trip carries on from wherever the slide has got to; pressing the same
-one again lets it finish. If something else switches workspaces meanwhile
-(Super + Tab, the bar, an app asking for focus), that switch wins and the trip
-stops. If the pointer moves to another monitor, the trip lands at once and the
-focus stays where the pointer went. When a workspace on the way is on another
-monitor, the switch goes straight there instead of stepping.
+**Pass-through** (`kinetic motion set passThrough true`) makes a jump across
+several workspaces slide through each one on a single run of the switch curve,
+instead of cutting straight to the last. Each extra workspace adds 110 ms
+(`passMs`), or the whole trip takes the time of one switch with `passSameTime`.
+A trip always ends on the workspace you chose. If something else switches
+workspaces mid-trip (the bar, <kbd>Super</kbd> + <kbd>Tab</kbd>, an app asking
+for focus), that switch wins.
 
-The pan counts from each monitor's first workspace (Omarchy gives every monitor
-its own block of ten), so workspace 1 always shows the wallpaper where it
-starts. A paused wallpaper still follows a slide, with its scene held still.
-
-Every wallpaper that moves with workspaces follows these settings and nothing
-else: the parallax amount, the curve, pass-through and the slide's direction.
-- Endless planes (Topography, Truchet, Glyphs) pan as a whole.
-- Layered scenes (Aurora, Skyline, Starfield, Snow) move each layer by its own
-  share: stars and haze barely move, the near hills and rows the most. A
-  vertical slide keeps their horizon in place.
-- Plexus, Flow and Mesh move or stir by the same amount.
-- Orbit, Living, Smoke, Garden and Fireworks react to a switch itself (a
-  flyby, a gust, a volley) on the same eased curve.
-
-Centered scenes (Synthwave's sun, Orbit's planet) stay put. Parallax 0 holds
-every wallpaper still. A wallpaper opts in with `parallax = 1` in its
-`wallpaper.toml`, or reads `uParallax` / `lw_pan(depth)` for layers of its
-own (see WALLPAPERS.md).
-
-The animations go in one Hyprland toggle file, `kinetic-motion.lua`. Kinetic
-checks it with Hyprland's own `--verify-config` before installing it, and takes
-it out again if Hyprland reports an error. It loads before Omarchy's
-`no-animations.lua`, so `omarchy toggle animations` still turns everything off.
-
-![A workspace switch: windows slide a whole screen, the topography a quarter of one](docs/parallax.gif)
-
-Try a switch without touching the desktop:
-
-```bash
-kinetic-wall thumbnail topo /tmp/a.png 1920x1200 8 --parallax 0.25,0   # one workspace along
-```
+Kinetic writes its animations to a single Hyprland toggle file and checks it
+with Hyprland's own `--verify-config` first. `omarchy toggle animations` still
+turns everything off.
 
 ## Looks
 
-A look is a small JSON file. Bundled ones live in `modules/look/looks/` and
-yours in `~/.config/kinetic/looks/`; yours win when ids clash.
+A look saves a wallpaper (with its preset and parameters), a bar and motion
+together. Bundled looks live in `modules/look/looks/`, and your own in
+`~/.config/kinetic/looks/`.
+
+```bash
+kinetic look list
+kinetic look apply ink
+kinetic look save mine            # snapshot what's showing now
+```
 
 ```json
 {
@@ -260,65 +283,93 @@ yours in `~/.config/kinetic/looks/`; yours win when ids clash.
 }
 ```
 
-Every part is optional, and a look changes only what it names. `"wall":
-{"enabled": false}` hands the desktop back to Omarchy's own background.
-`kinetic look save <id>` snapshots what is showing now.
+Every part is optional, and a look changes only what it names.
 
-## Wallpapers
+## Modules
 
-The wallpaper format, the shader uniforms and helpers, geometry passes, the
-fill monitor and persistence are documented in
-[modules/wall/WALLPAPERS.md](modules/wall/WALLPAPERS.md). `kinetic wall new
-mine` scaffolds one in `~/.config/kinetic/wallpapers/`. Saving it reloads it
-live.
+| Module | What it does | Help |
+|---|---|---|
+| `wall` | Live wallpapers on the native engine, and the glass under the bar | `kinetic wall help` |
+| `bar` | The pill bar: a capsule or islands, in five styles | `kinetic bar help` |
+| `glass` | Liquid glass under the bar and behind windows, one look for both | `kinetic glass help` |
+| `light` | The selection glow around windows | `kinetic light help` |
+| `motion` | Hyprland's animations, wallpaper parallax and pass-through | `kinetic motion help` |
+| `look` | Saved looks across all of the above | `kinetic look help` |
 
-## At login
+`kinetic <module> enable` and `disable` switch a module (so does the app's
+Modules page). Switching a module on also switches on the modules it needs, and
+switching one off asks first if others depend on it.
 
-The engine runs as `kinetic-wall.service`, started with the graphical session.
-At login it isn't the only thing drawing a background: Omarchy's shell draws
-its still (and briefly shows a startup cover), and owe plays the login intro
-when your background has one. These come up within a second or two of each
-other, in no fixed order. So the engine checks what Hyprland actually has
-stacked whenever one of those layers comes or goes, and acts on it. It waits
-for the shell's cover to fade and lets the intro play out. Then it suspends
-the shell's background and moves its own layer back above owe's if needed.
-After each step it looks again, a few times, backing off. If the compositor
-or Hyprland isn't reachable yet when the service starts, it waits for them
-(about 20 s for Wayland, a minute for Hyprland's socket). If the engine
-crashes, systemd restarts it, backing off up to 30 s. To skip the intro,
-turn Omarchy's background intros off (`~/.local/state/omarchy/toggles/background-intros-off`).
+You can add modules from a GitHub link, a folder or an archive:
 
-If the wallpaper didn't come up, the log says why:
+```bash
+kinetic module install https://github.com/someone/kinetic-thing
+kinetic modules                   # every module, on or off, and its version
+```
+
+Kinetic fetches the module and its dependencies, shows you everything it would
+install, and installs nothing until you confirm. In the app, you can also drop
+a folder, archive or link onto the window. [MODULES.md](MODULES.md) is the
+guide to writing a module.
+
+## Troubleshooting
+
+**The wallpaper didn't come up at login.** The engine runs as
+`kinetic-wall.service`. At login it waits for Omarchy's own background, startup
+cover and login intro, then makes sure its wallpaper ends up on top. Every step
+is logged:
 
 ```bash
 journalctl --user -b -u kinetic-wall      # this login; -b -1 for the one before
 ```
 
-It logs each output's first frame, everything it found over its layer and what
-it did about it, and any retries. `kinetic-wall daemon -v` (or
-`KINETIC_DEBUG=1`) adds more detail.
+For more detail, run `kinetic-wall daemon -v` or set `KINETIC_DEBUG=1`.
+
+**There's no glass behind windows.** Check the plugin with
+`kinetic glass plugin` and `hyprctl kinetic-glass status`. After a Hyprland
+update, the new build loads at the next login.
+
+**The bar didn't change.** Restart the shell with `omarchy restart shell`.
 
 ## Files
 
-| Path | What |
+| Path | Contents |
 |---|---|
-| `~/.config/kinetic/wall.toml` | Engine options and per-wallpaper defaults (`kinetic wall reload`) |
+| `~/.config/kinetic/wall.toml` | Engine options and per-wallpaper defaults |
 | `~/.config/kinetic/wallpapers/` | Your own wallpapers |
 | `~/.config/kinetic/looks/` | Your own looks |
-| `~/.config/kinetic/motion.json` | Motion: on or off, and the options you set |
-| `~/.config/omarchy/shell.json` | `bar.id: "kinetic.bar"`, `bar.background: "pill"`, options under `bar.pill` |
-| `~/.local/state/kinetic/` | Live changes, saved wallpaper worlds, the last look, signals between parts (`signals/wall`, `signals/motion`) |
-| `~/.local/state/omarchy/toggles/hypr/` | `zz-kinetic-bar.lua` (bar blur), `kinetic-motion.lua` (animations) |
+| `~/.config/kinetic/motion.json` | Motion settings |
+| `~/.config/omarchy/shell.json` | The bar's options, under `bar.pill` |
+| `~/.local/state/kinetic/` | Live state, saved wallpaper worlds and signals between parts |
+| `~/.local/state/omarchy/toggles/hypr/` | Kinetic's Hyprland toggles: `zz-kinetic-bar.lua`, `zz-kinetic-windows.lua`, `kinetic-motion.lua`, `kinetic-app.lua`, `kinetic-plugin.lua` |
 | `~/.local/share/kinetic/` | The installed suite and bundled wallpapers |
+| `~/.local/share/kinetic-modules/` | Modules you added |
+| `~/.local/lib/kinetic/` | The Hyprland plugin |
 | `~/.cache/kinetic/wall/thumbs/` | Wallpaper previews |
 
-## Uninstall
+## Uninstalling
 
-`./uninstall.sh` (add `--purge` to also remove your settings and the modules you added). It disables
-`kinetic-wall.service` and puts the bar back to Omarchy's own (a pill
-background becomes glassy). It removes the `kinetic` and `kinetic.bar`
-plugins, the Kinetic menu rows, the post-update hook
-(`~/.config/omarchy/hooks/post-update.d/kinetic-bar`), the Hyprland toggle
-`zz-kinetic-bar.lua`, `zz-kinetic-windows.lua`, `kinetic-motion.lua`, `kinetic-app.lua` and
-`kinetic-plugin.lua`, the Hyprland plugin (unloaded, and `~/.local/lib/kinetic` removed), the
-`kinetic.app` plugin and its launcher entry, and the `kinetic*` commands in `~/.local/bin`.
+```bash
+./uninstall.sh            # add --purge to also remove your settings and added modules
+```
+
+This stops and disables `kinetic-wall.service` and returns the bar to Omarchy's
+own (a pill background becomes glassy). It removes Kinetic's shell plugins,
+menu rows, launcher entry, post-update hook, Hyprland toggles and plugin, and
+the `kinetic*` commands in `~/.local/bin`.
+
+## Development
+
+```bash
+ninja -C modules/wall/build       # build the engine (first: meson setup modules/wall/build modules/wall --prefix ~/.local)
+tests/run.sh                      # every offline test
+docs/media.py                     # re-render the images in this README, offscreen
+```
+
+Everything in the test suite and in `docs/media.py` runs offscreen, without
+touching the running desktop. [AGENTS.md](AGENTS.md) describes the layout,
+build and internal contracts in detail.
+
+## License
+
+[MIT](LICENSE)
