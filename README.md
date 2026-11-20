@@ -69,14 +69,9 @@ a link, or write your own.
 
 ## Installation
 
-You need Omarchy with Hyprland 0.56 or newer, plus a few build tools and
-libraries:
-
-```bash
-omarchy pkg add meson ninja jq python wayland wayland-protocols libglvnd libpng libjpeg-turbo libwebp pipewire
-```
-
-Then:
+You need Omarchy with Hyprland 0.56 or newer. Kinetic is built on your
+machine, and Omarchy already has everything it needs, so there's nothing else
+to install first:
 
 ```bash
 git clone https://github.com/deseret-engineer/Kinetic.git
@@ -84,7 +79,8 @@ cd Kinetic
 ./install.sh
 ```
 
-The installer runs as your user, without root. It installs Kinetic under
+The installer runs as your user, without root. If you've removed something it
+builds with, it tells you which packages to add back. It installs Kinetic under
 `~/.local`, adds it to the launcher and to **Omarchy menu → Appearance**, and
 starts the wallpaper engine. It writes only Kinetic's own files and never
 deletes yours. If the bar doesn't change right away, run
@@ -324,7 +320,7 @@ Without `--purge`, your settings, wallpapers and added modules are kept.
 ## Development
 
 ```bash
-ninja -C modules/wall/build       # build the engine (first: meson setup modules/wall/build modules/wall --prefix ~/.local)
+make -C modules/wall -j          # build the engine into modules/wall/build
 tests/run.sh                      # every offline test
 docs/media.py                     # re-render this README's images
 ```

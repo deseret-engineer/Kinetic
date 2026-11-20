@@ -32,6 +32,9 @@ The first release.
 
 ### Changed
 
+- Installing needs nothing beyond a stock Omarchy: the engine builds with
+  `make` instead of Meson and Ninja, and `install.sh` names only the packages
+  that are missing (if you removed any) instead of listing them all.
 - Looks are now called presets: `kinetic preset`, the Presets page, and
   `~/.config/kinetic/presets/`. Reinstalling moves saved looks over, and
   `kinetic look` and `kinetic app looks` still work for now.

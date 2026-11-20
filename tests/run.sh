@@ -2,6 +2,7 @@
 # Every test Kinetic has that runs without touching the desktop.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+make -s -C modules/wall -j"$(nproc)" # the engine the tests below run
 node tests/pill.test.js
 node tests/schema.test.js
 node shell/kinetic/tests/model.test.js

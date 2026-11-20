@@ -32,7 +32,11 @@ die() {
 
 need() {
   local c
-  for c in "$@"; do command -v "$c" >/dev/null || die "needs '$c' (install it with: omarchy pkg add $c)"; done
+  local c pkg
+  for c in "$@"; do
+    [[ $c == python3 ]] && pkg=python || pkg=$c # the Arch package, where its name differs
+    command -v "$c" >/dev/null || die "needs '$c' (install it with: omarchy pkg add $pkg)"
+  done
 }
 
 # ---------- the wallpaper engine ----------

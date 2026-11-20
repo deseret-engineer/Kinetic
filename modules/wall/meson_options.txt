@@ -1,1 +1,0 @@
-option('audio', type: 'feature', value: 'auto', description: 'PipeWire audio-reactive module')

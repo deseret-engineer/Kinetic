@@ -3,6 +3,7 @@
 checks, and Kinetic's own version being one. Run by tests/run.sh."""
 import os
 import re
+import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,8 +30,8 @@ for bad in ["D0.1", "01.2.3", "1.2.3.4", "1.2.3-", "v1.2.3", "1.2.3-beta..1", ""
 
 own = re.search(r"^KINETIC_VERSION=(\S+)$", open(os.path.join(ROOT, "lib/kinetic.sh")).read(), re.M).group(1)
 assert re.match(r"^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$", own), f"Kinetic's own version {own} is MAJOR.MINOR.PATCH"
-meson = re.search(r"version: '([^']+)'", open(os.path.join(ROOT, "modules/wall/meson.build")).read()).group(1)
-assert meson == own, f"the engine says {meson}, Kinetic {own}"
+engine = subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "modules/wall"), "version"], capture_output=True, text=True).stdout.strip()
+assert engine == own, f"the engine's Makefile says {engine!r}, Kinetic {own}"
 for f in ["shell/app-manifest.json", "shell/kinetic/manifest.json"]:
     v = re.search(r'"version":\s*"([^"]+)"', open(os.path.join(ROOT, f)).read()).group(1)
     assert v == own, f"{f} says {v}, Kinetic {own}"

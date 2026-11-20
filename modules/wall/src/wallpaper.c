@@ -212,7 +212,7 @@ void lw_wallpaper_each(lw_wallpaper_cb cb, void *data) {
       /* a name that would not fit in seen[] could not be told from a longer one: skipped */
       if (name[0] != '.' && !dup && strlen(name) < sizeof seen[0] && strlen(dir) < LW_PATH && is_wallpaper_dir(dir) &&
           nseen < 128) {
-        snprintf(seen[nseen++], 64, "%s", name);
+        memcpy(seen[nseen++], name, strlen(name) + 1); /* fits: checked above */
         cb(name, dir, data);
       }
       free(list[j]);

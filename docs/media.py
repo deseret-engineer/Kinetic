@@ -3,7 +3,7 @@
 
     docs/media.py [name ...]     all of them, or: gallery wallpapers glass parallax passthrough
 
-Needs a built engine (ninja -C modules/wall/build) and ImageMagick. Nothing
+Needs a built engine (make -C modules/wall) and ImageMagick. Nothing
 touches the desktop: every frame is `kinetic-wall thumbnail`. Colors follow the
 current Omarchy theme, so render with the theme you want shown.
 """
@@ -167,7 +167,7 @@ JOBS = {"gallery": gallery, "wallpapers": wallpapers_gif, "glass": glass, "paral
 
 if __name__ == "__main__":
     if not os.access(ENGINE, os.X_OK):
-        sys.exit("build the engine first: ninja -C modules/wall/build")
+        sys.exit("build the engine first: make -C modules/wall")
     if not shutil.which("magick"):
         sys.exit("needs ImageMagick (magick)")
     names = sys.argv[1:] or list(JOBS)

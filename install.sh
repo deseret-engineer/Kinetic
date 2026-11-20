@@ -26,24 +26,34 @@ MENU="$HOME/.config/omarchy/extensions/omarchy-menu.jsonc"
 step() { printf '\033[1m==>\033[0m %s\n' "$*"; }
 
 # ---------- dependencies ----------
+# Omarchy ships everything Kinetic builds with, so on a stock install this finds
+# nothing. If something was removed, it names the Arch packages to add back and
+# installs nothing itself.
+declare -A pkg_of=(
+  [make]=make [jq]=jq [python3]=python [cc]=gcc [c++]=gcc [pkg-config]=pkgconf
+  [wayland-scanner]=wayland [wayland-client]=wayland [wayland-egl]=wayland [wayland-protocols]=wayland-protocols
+  [egl]=libglvnd [glesv2]=libglvnd [libpng]=libpng [libjpeg]=libjpeg-turbo [libwebp]=libwebp
+)
 missing=()
-for p in wayland-client wayland-egl egl glesv2 wayland-protocols libpng libjpeg libwebp; do
-  pkg-config --exists "$p" || missing+=("$p")
+for c in make jq python3 cc c++ pkg-config wayland-scanner; do
+  command -v "$c" >/dev/null || missing+=("${pkg_of[$c]}")
 done
-for c in meson ninja jq python3; do command -v "$c" >/dev/null || missing+=("$c"); done
+if command -v pkg-config >/dev/null; then
+  for m in wayland-client wayland-egl wayland-protocols egl glesv2 libpng libjpeg libwebp; do
+    pkg-config --exists "$m" || missing+=("${pkg_of[$m]}")
+  done
+fi
 if (( ${#missing[@]} )); then
-  echo "Missing build dependencies: ${missing[*]}" >&2
-  echo "On Omarchy: omarchy pkg add meson ninja jq python wayland wayland-protocols libglvnd libpng libjpeg-turbo libwebp pipewire" >&2
+  mapfile -t missing < <(printf '%s\n' "${missing[@]}" | sort -u)
+  echo "Kinetic needs ${missing[*]} to build. Install with:" >&2
+  echo "  omarchy pkg add ${missing[*]}" >&2
+  echo "then run ./install.sh again." >&2
   exit 1
 fi
 
 # ---------- build ----------
 step "Building the wallpaper engine"
-(
-  cd modules/wall
-  meson setup build --prefix "$HOME/.local" --reconfigure >/dev/null 2>&1 || meson setup build --prefix "$HOME/.local" >/dev/null
-  ninja -C build >/dev/null
-)
+make -s -C modules/wall -j"$(nproc)" >/dev/null
 step "Checking the bar hooks against this Omarchy's bar"
 python3 modules/bar/build.py --check
 
@@ -58,7 +68,7 @@ rm -rf "${HOME_DIR:?}/lib" "${HOME_DIR:?}/modules" "${HOME_DIR:?}/shell" "${HOME
 cp kinetic "$HOME_DIR/"
 cp -r lib shell "$HOME_DIR/"
 mkdir -p "$HOME_DIR/modules"
-# every module but the wall, whose engine is built and installed by meson (its scripts follow)
+# every module but the wall, whose engine make installs (its scripts follow)
 for m in modules/*/; do
   m=${m%/}
   [[ $m == modules/wall ]] || cp -r "$m" "$HOME_DIR/modules/"
@@ -68,7 +78,7 @@ cp modules/wall/module.sh modules/wall/module.json "$HOME_DIR/modules/wall/"
 cp -r modules/wall/integration "$HOME_DIR/modules/wall/"
 cp -r integration "$HOME_DIR/"
 find "$HOME_DIR" -name '__pycache__' -prune -exec rm -rf {} +
-meson install -C modules/wall/build >/dev/null       # kinetic-wall + wallpapers in ~/.local/share/kinetic/wallpapers
+make -s -C modules/wall install PREFIX="$HOME/.local" >/dev/null   # kinetic-wall + wallpapers in ~/.local/share/kinetic/wallpapers
 ln -sfn "$HOME_DIR/kinetic" "$BIN/kinetic"
 ln -sfn "$HOME_DIR/modules/bar/blur" "$BIN/kinetic-bar-blur"
 install -m755 modules/wall/integration/kinetic-wall-pick "$BIN/kinetic-wall-pick"

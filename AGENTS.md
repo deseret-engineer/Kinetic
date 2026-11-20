@@ -28,7 +28,7 @@ modules/<name>/module.json its manifest: name, version, icon, order, requires (+
 modules/glass/            the glass switch and one look for bar + windows (bar options and engine window_* options); `kinetic glass plugin`
 modules/glass/plugin/     kinetic-glass.cpp: the Hyprland plugin drawing window glass and the selection light in Hyprland's frame; build.sh
 modules/light/            the selection light's CLI over the engine's light_* options (the plugin draws it)
-modules/wall/             C engine (src/, meson.build), wallpapers/, integration/ (unit, picker, example config)
+modules/wall/             C engine (src/, Makefile: make, gcc and pkg-config only), wallpapers/, integration/ (unit, picker, example config)
 modules/bar/schema.json   EVERY pill option: type, range, default (may depend on an earlier option), group, label
 modules/bar/qml/          PillSurface, PillRing, PillIslands, PillContent, PillGlass (copied into kinetic.bar)
 modules/bar/build.py      makes ~/.config/omarchy/plugins/kinetic.bar from the stock bar + 16 named hooks
@@ -51,7 +51,7 @@ tests/                    run.sh runs everything offline: schema, model, motion,
 ## Build, test
 
 ```bash
-ninja -C modules/wall/build                                    # after one: meson setup modules/wall/build modules/wall --prefix ~/.local
+make -C modules/wall -j                                        # the engine, into modules/wall/build (tests/run.sh builds it too)
 KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall validate
 KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall thumbnail topo /tmp/t.png 1920x1200 10 \
     --glass 10 0.6 0.35 "8,6,600,36,18"                        # the bar glass, offscreen
@@ -67,7 +67,7 @@ KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall thumbn
 ## Versioning
 
 [Semantic Versioning](https://semver.org). Kinetic's version is `KINETIC_VERSION`
-in `lib/kinetic.sh`; the engine (`modules/wall/meson.build`), both shell
+in `lib/kinetic.sh`; the engine's Makefile reads it from there, both shell
 manifests and the Hyprland plugin (`kinetic-glass.cpp`, twice) carry the same
 one, and `tests/versions_test.py` fails when they drift. Breaking change:
 MAJOR; feature: MINOR; fix: PATCH (while MAJOR is 0, anything may change).
@@ -143,6 +143,9 @@ and a tab entry in `Panel.qml`.
   `journalctl --user --since -1min | grep -iE "kinetic|pill"`.
 - Don't change the user's live wallpaper or bar to test something; use the
   offscreen `thumbnail`/`bench`/`validate` and `build.py --check`.
+- Kinetic builds with what Omarchy ships (`omarchy-base.packages` and what those
+  pull in): make, gcc, pkg-config, jq, python, Wayland, GLES, image libraries,
+  PipeWire, Hyprland's headers. A new build dependency needs a very good reason.
 - `install.sh` stays rootless and never deletes the user's own files. Keep
   README's Uninstall in step with it.
 - Text from config or the daemon shown in QML uses `textFormat: Text.PlainText`.
