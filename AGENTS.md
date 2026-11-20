@@ -16,11 +16,13 @@ Quickshell app.
 ## Layout
 
 ```
-kinetic                   dispatcher: kinetic <module> ... | panel | status
+kinetic                   dispatcher: kinetic <module> ... | app | panel | status | reload | update | settings
 lib/kinetic.sh            the module toolkit: facts snapshot (shared per command), engine/bar/module helpers,
                           Hyprland toggles, confirm, notify. Modules use these instead of each re-checking
 lib/modman.py             module manager: manifests, dependency order, install/remove from links, folders, archives
 lib/wallman.py            wallpapers: kinetic wall add <link|folder|archive> (one or a collection, compiled first) / remove / added
+lib/update.py             kinetic update: status / check / branches / apply from a branch of the install's origin (own clone in ~/.cache)
+lib/settings.py           kinetic settings: the app's own settings (update branch, daily check), shaped like module options
 lib/schema.js             normalize()/items() over any module's schema.json; used by the bar and the panel; pure
 lib/schema.py             the same for the command line; tests/schema.test.js keeps the two identical
 modules/<name>/module.sh  one per module; answers active|enable|disable
@@ -39,11 +41,14 @@ modules/preset/           module.sh + presets/*.json (bundled presets: wallpaper
 shell/kinetic/            the bar widget (Panel.qml, wallpaper and library) and the app (App.qml, every module),
                           both on KineticCtx.qml (state + commands); pages/, components/, Model.js.
                           Installed twice: plugins/kinetic (bar-widget) and plugins/kinetic.app (service,
-                          manifest shell/app-manifest.json, enabled through shell.json plugins[])
+                          manifest shell/app-manifest.json, enabled through shell.json plugins[]).
+                          pages/SettingsPage.qml: the app's own settings, opened by the gear beside Reload
 modules/wall/src/lens.c   rendered glass under the bar: capsules (socket), optics, placement. plugin.c: sends the plugin its settings
 modules/wall/src/mod_shell.c the guard: keeps Kinetic's layer the one on screen over the shell's background and covers and owe's layer
 modules/wall/src/layers.c reads Hyprland's j/layers (what is stacked over Kinetic's layer); json.c: the mini JSON walker it and mod_hyprland share
 integration/              Omarchy menu rows (menu.jsonc + menu.py), post-update hook
+THIRD-PARTY.md            notices for what Kinetic includes or follows (installed; Settings → Attributions lists them)
+docs/media.py             renders the README's images offscreen, in one theme (Hackerman)
 tests/                    run.sh runs everything offline: schema, model, motion, layers and lw_run (C), hook check, Hyprland verify of presets,
                           pass_through_test.lua: the generated pass-through Lua against a simulated Hyprland + Omarchy + engine
 ```

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build Kinetic and install it for the current user. Nothing here needs root,
-# and everything it changes outside ~/.local/share/kinetic is listed in the
-# README's Uninstall section (uninstall.sh reverses it).
+# and uninstall.sh reverses everything it changes outside ~/.local/share/kinetic:
+# keep the two in step.
 #
 #   ./install.sh               build and install
 #   ./install.sh --no-service  don't (re)start the wallpaper engine

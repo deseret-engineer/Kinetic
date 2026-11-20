@@ -328,6 +328,7 @@ Hyprland update, the rebuilt plugin loads at your next login.
 | `~/.local/state/kinetic/` | Live state and saved wallpaper worlds |
 | `~/.local/share/kinetic/` | The installed suite and bundled wallpapers |
 | `~/.local/share/kinetic-modules/` | Modules you added |
+| `~/.cache/kinetic/` | Wallpaper previews, and the copy updates are fetched into |
 
 ## Uninstalling
 
