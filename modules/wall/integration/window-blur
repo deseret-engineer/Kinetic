@@ -1,0 +1,22 @@
+#!/bin/bash
+# Hyprland's blur off while Kinetic's window glass is on.
+# The glass (drawn inside Hyprland by Kinetic's plugin) brings its own frost and
+# bends what is behind the window at its rim; Hyprland's blur on top would blur
+# that again and cost a second pass. So while the glass is on, Hyprland does not
+# blur at all; the bar has Kinetic's glass too. window_hypr_blur keeps it.
+# Run by the wallpaper engine (kinetic-wall) when window glass comes or goes.
+#   kinetic-window-blur on    Hyprland's blur off
+#   kinetic-window-blur off   Hyprland's blur as Omarchy sets it
+set -euo pipefail
+: "${KINETIC_HOME:=$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)}"
+source "$KINETIC_HOME/lib/kinetic.sh"
+
+case "${1:-}" in
+  on|all|floating|see-through) ;; # the window_glass modes, from an older engine
+  # zz- so it loads after window-glassy.lua, which turns the blur on
+  off) hypr_toggle_remove zz-kinetic-windows || true; exit 0 ;;
+  *) echo "usage: kinetic-window-blur on|off" >&2; exit 2 ;;
+esac
+hypr_toggle_write zz-kinetic-windows "-- Kinetic window glass is on: its frost replaces Hyprland's blur.
+-- Written by kinetic-window-blur; do not edit.
+hl.config({ decoration = { blur = { enabled = false } } })" || true

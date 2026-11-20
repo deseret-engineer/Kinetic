@@ -1,0 +1,13 @@
+name = "Spectrum"
+author = "Kinetic"
+description = "Audio visualizer: mirrored bars that follow whatever is playing"
+fps = 60
+scale = 1.0
+
+[params]
+bars = [48.0, 12.0, 128.0]
+height = [0.42, 0.1, 0.7]
+
+[image]
+shader = "main.frag"
+channels = ["@audio"]

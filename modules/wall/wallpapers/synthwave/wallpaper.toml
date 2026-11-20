@@ -1,0 +1,9 @@
+name = "Synthwave"
+author = "Kinetic"
+description = "Neon sun and an endless grid that pulses with the bass"
+fps = 60
+scale = 1.0
+audio = true
+
+[params]
+speed = [1.0, 0.0, 4.0]

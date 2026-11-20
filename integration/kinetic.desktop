@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Kinetic
+GenericName=Look and feel
+Comment=Live wallpapers, the pill bar, liquid glass, motion and looks for Omarchy
+Exec=@KINETIC@ app
+Icon=preferences-desktop-wallpaper
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=wallpaper;live;bar;pill;glass;motion;animation;parallax;look;theme;

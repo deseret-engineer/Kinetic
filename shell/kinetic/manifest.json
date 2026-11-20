@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "kinetic",
+  "name": "Kinetic",
+  "version": "D0.1",
+  "author": "Kinetic",
+  "license": "MIT",
+  "description": "The live wallpaper at hand: what shows, its presets and parameters, and the library. The gear opens the Kinetic app for everything else.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Kinetic",
+    "description": "The live wallpaper and its library; the gear opens the Kinetic app.",
+    "category": "Appearance",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {},
+    "schema": []
+  }
+}

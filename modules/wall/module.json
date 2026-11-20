@@ -1,0 +1,38 @@
+{
+  "id": "wall",
+  "name": "Wallpaper",
+  "summary": "Living wallpapers: GLSL scenes drawn by a native engine",
+  "author": "Kinetic",
+  "icon": "󰸉",
+  "order": 10,
+  "requires": [],
+  "pages": [
+    {
+      "id": "wallpaper",
+      "label": "Wallpaper",
+      "about": "What shows, its presets and parameters",
+      "icon": "󰸉",
+      "qml": "builtin:WallPage",
+      "order": 10,
+      "hero": true
+    },
+    {
+      "id": "library",
+      "label": "Library",
+      "about": "Every live wallpaper, to pick from",
+      "icon": "󰋩",
+      "qml": "builtin:LibraryPage",
+      "order": 11,
+      "hero": true,
+      "search": true
+    },
+    {
+      "id": "engine",
+      "label": "Engine",
+      "about": "Performance, sound, battery, behavior",
+      "icon": "󰒓",
+      "qml": "builtin:EnginePage",
+      "order": 12
+    }
+  ]
+}

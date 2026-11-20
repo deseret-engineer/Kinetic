@@ -1,0 +1,27 @@
+#!/bin/bash
+# Keeps Hyprland's blur behind the Kinetic bar in step with its options, the
+# way `omarchy-bar sync-glass` does for the Glassy bar. Run by the bar itself.
+#   kinetic-bar-blur on <ignore_alpha>   blur behind the bar; fainter pixels are skipped
+#   kinetic-bar-blur off                 no blur from Kinetic
+set -euo pipefail
+: "${KINETIC_HOME:=$(cd "$(dirname "$(readlink -f "$0")")/../.." && pwd)}"
+source "$KINETIC_HOME/lib/kinetic.sh"
+
+case "${1:-}" in
+  on)
+    threshold="${2:-0.08}"
+    [[ $threshold =~ ^[0-9]*\.?[0-9]+$ ]] || die "bad threshold"
+    # zz- so it loads after window-glassy.lua, whose ignore_alpha would otherwise win
+    hypr_toggle_write zz-kinetic-bar "-- Kinetic bar: Hyprland blurs what is behind the pill.
+-- Written by kinetic-bar-blur (Kinetic); do not edit.
+require(\"default.hypr.glass\")()
+
+hl.layer_rule({
+  match = { namespace = \"^omarchy-bar\$\" },
+  blur = true,
+  ignore_alpha = $threshold,
+})" || true
+    ;;
+  off) hypr_toggle_remove zz-kinetic-bar || true ;;
+  *) echo "usage: kinetic-bar-blur on <ignore_alpha> | off" >&2; exit 1 ;;
+esac

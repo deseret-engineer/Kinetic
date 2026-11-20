@@ -1,0 +1,15 @@
+{
+  "name": "Contours",
+  "description": "A fresh relief map of islands under liquid-glass islands; workspaces slide over it with parallax",
+  "wall": {
+    "wallpaper": "topo",
+    "preset": "Archipelago"
+  },
+  "bar": {
+    "background": "pill",
+    "preset": "islands"
+  },
+  "motion": {
+    "preset": "parallax"
+  }
+}

@@ -1,0 +1,126 @@
+name = "Swarm"
+author = "Kinetic"
+description = "Up to 262,144 particles riding an invisible current, simulated entirely on the GPU. The pointer attracts or scatters them"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 20
+
+[param.particles]
+type = "int"
+label = "Particles"
+min = 4096
+max = 262144
+step = 4096
+default = 131072
+
+[param.speed]
+label = "Current speed"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.turbulence]
+label = "Turbulence"
+description = "Size of the eddies: higher is smaller and busier"
+min = 0.5
+max = 6
+step = 0.1
+default = 2.2
+
+[param.inertia]
+label = "Inertia"
+description = "How slowly particles respond to the current"
+min = 0
+max = 1
+step = 0.05
+default = 0.4
+
+[param.trails]
+label = "Trails"
+min = 0
+max = 0.98
+step = 0.01
+default = 0.86
+
+[param.size]
+label = "Particle size"
+min = 1
+max = 4
+step = 0.25
+default = 1
+
+[param.brightness]
+label = "Brightness"
+min = 0.1
+max = 3
+step = 0.05
+default = 1
+
+[param.pointer]
+type = "choice"
+label = "Pointer"
+options = ["attract", "repel", "vortex", "ignore"]
+default = "attract"
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["palette", "speed", "accent", "foreground"]
+default = "palette"
+
+
+[preset.Dust]
+particles = 262144
+size = 1
+trails = 0.6
+brightness = 0.6
+speed = 0.6
+
+[preset.Comets]
+particles = 16384
+size = 2
+trails = 0.96
+speed = 1.4
+brightness = 1.5
+
+[preset.Galeforce]
+speed = 2.6
+turbulence = 4
+inertia = 0.1
+trails = 0.9
+colors = "speed"
+
+# The flow: curl of an evolving noise potential, so it is divergence-free and
+# particles never bunch up. It changes slowly, so it is updated every other frame.
+[[buffer]]
+name = "field"
+shader = "field.frag"
+scale = 0.08
+format = "rgba16f"
+every = 2
+
+# One texel per particle: position (xy, uv) and velocity (zw)
+[[buffer]]
+name = "state"
+shader = "state.frag"
+size = [512, 512]
+format = "rgba32f"
+channels = ["state", "field"]
+
+[[buffer]]
+name = "dots"
+draw = "points"
+source = "state"
+count = "particles"
+vertex = "dots.vert"
+shader = "dots.frag"
+blend = "add"
+fade = "trails"
+format = "rgba16f"
+
+[image]
+shader = "main.frag"
+channels = ["dots"]

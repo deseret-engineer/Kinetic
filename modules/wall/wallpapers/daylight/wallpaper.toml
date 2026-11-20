@@ -1,0 +1,8 @@
+name = "Daylight"
+author = "Kinetic"
+description = "A sky that follows your local time of day. Redraws once every two seconds"
+fps = 0.5
+scale = 0.5
+
+[params]
+hour = [-1.0, -1.0, 24.0]   # -1 = live clock; 0..24 pins the time of day

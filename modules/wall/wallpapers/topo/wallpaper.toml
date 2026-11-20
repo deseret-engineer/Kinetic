@@ -1,0 +1,186 @@
+name = "Topography"
+author = "Kinetic"
+description = "A shaded relief map of randomly generated land. Pick the kind of terrain: rolling hills, ridged mountains, mesas, islands, craters, dunes, canyons or glaciers. A new map every start, or pin a seed"
+fps = 15
+scale = 1.0
+preview_time = 10
+parallax = 1      # an endless plane: pans with workspace parallax (Kinetic motion)
+
+[param.terrain]
+type = "choice"
+label = "Terrain"
+description = "The algorithm that shapes the land"
+options = ["rolling", "ridged", "billowy", "mesas", "islands", "craters", "dunes", "canyons", "glacial"]
+default = "rolling"
+
+[param.seed]
+type = "int"
+label = "Seed"
+description = "0 = a new random map every start (and on kinetic wall restart); any other number always draws the same map"
+min = 0
+max = 9999
+default = 0
+
+[param.detail]
+type = "int"
+label = "Detail"
+description = "Octaves of noise: more is finer, and costs more GPU"
+min = 2
+max = 8
+default = 5
+
+[param.roughness]
+label = "Roughness"
+description = "How strong each finer octave is"
+min = 0.3
+max = 0.75
+step = 0.01
+default = 0.5
+
+[param.warp]
+label = "Warp"
+description = "Folds the land into swirls and long ridges"
+min = 0
+max = 2
+step = 0.05
+default = 0.5
+
+[param.sea]
+label = "Sea level"
+min = 0
+max = 1
+step = 0.01
+default = 0.4
+
+[param.lines]
+type = "int"
+label = "Contour lines"
+min = 6
+max = 40
+default = 18
+
+[param.zoom]
+label = "Zoom"
+min = 0.4
+max = 3
+step = 0.05
+default = 1
+
+[param.speed]
+label = "Drift"
+description = "How fast the map slides past, without changing shape"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.heading]
+label = "Drift direction"
+description = "Degrees: 0 moves the view east, 90 north"
+min = 0
+max = 360
+step = 5
+default = 325
+
+[param.morph]
+label = "Morph"
+description = "How fast the land reshapes itself, without moving"
+min = 0
+max = 3
+step = 0.05
+default = 0.5
+
+[param.fill]
+type = "bool"
+label = "Shade elevation"
+default = true
+
+[param.grid]
+type = "bool"
+label = "Map grid"
+description = "The square grid drawn over the map"
+default = true
+
+[param.coastline]
+type = "bool"
+label = "Coastline"
+description = "The bright line where land meets water"
+default = true
+
+[param.major]
+type = "int"
+label = "Bold every Nth line"
+description = "The bright index contours; 0 turns them off"
+min = 0
+max = 10
+default = 5
+
+# Every preset sets the whole landscape (terrain, its shape, sea, contours and
+# zoom), so switching between them never carries a setting over. Seed, drift,
+# morph and the display switches stay as you set them.
+
+[preset.Default]
+terrain = "rolling"
+detail = 5
+roughness = 0.5
+warp = 0.5
+sea = 0.4
+lines = 18
+zoom = 1
+coastline = true
+major = 5
+
+[preset.Alps]
+terrain = "ridged"
+detail = 6
+roughness = 0.47
+warp = 0.3
+sea = 0.15
+lines = 24
+zoom = 1
+coastline = true
+major = 5
+
+[preset.Archipelago]
+terrain = "islands"
+detail = 5
+roughness = 0.5
+warp = 0.5
+sea = 0.5
+lines = 14
+zoom = 0.8
+coastline = true
+major = 5
+
+[preset.Moon]
+terrain = "craters"
+detail = 4
+roughness = 0.5
+warp = 0.1
+sea = 0
+lines = 12
+zoom = 1
+coastline = false
+major = 4
+
+[preset.Desert]
+terrain = "dunes"
+detail = 5
+roughness = 0.5
+warp = 0.8
+sea = 0
+lines = 14
+zoom = 1
+coastline = false
+major = 5
+
+[preset."Grand Canyon"]
+terrain = "canyons"
+detail = 6
+roughness = 0.5
+warp = 0.3
+sea = 0.15
+lines = 20
+zoom = 1
+coastline = true
+major = 5

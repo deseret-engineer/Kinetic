@@ -1,0 +1,17 @@
+#!/bin/bash
+# Pick a live wallpaper with Omarchy's own image picker, using rendered previews.
+set -u
+thumbs="${XDG_CACHE_HOME:-$HOME/.cache}/kinetic/wall/thumbs"
+
+kinetic-wall thumbnails >/dev/null
+# drop previews of wallpapers that no longer exist
+ids=$(kinetic-wall list --ids)
+for f in "$thumbs"/*.png; do
+  [[ -e $f ]] || continue
+  name=${f##*/}
+  grep -qx "${name%.png}" <<<"$ids" || rm -f "$f"
+done
+
+current=$(kinetic-wall current 2>/dev/null)
+choice=$(omarchy-menu-images --print-name --show-labels --filterable --selected "$thumbs/$current.png" "$thumbs")
+[[ -n $choice ]] && kinetic-wall set "$choice"

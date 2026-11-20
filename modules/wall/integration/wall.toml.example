@@ -1,0 +1,70 @@
+# Kinetic wallpaper engine config. Copy to ~/.config/kinetic/wall.toml; changes apply on `kinetic wall reload`.
+#
+# Every option here can also be changed live from the settings panel
+# (`kinetic panel engine`) or with `kinetic wall config <key> <value>`. Live changes
+# are remembered and win over this file until reset (`kinetic wall config <key> default`).
+
+wallpaper = "aurora"      # used until you pick one with `kinetic wall set`
+
+# Performance
+fps = 60                  # cap for every wallpaper; each one also declares its own
+fps_occupied = 30         # cap while the visible workspace has windows (0 = off)
+render_scale = 1.0        # multiplies every wallpaper's own render scale
+adaptive = true           # lower resolution when a frame goes over gpu_budget_ms
+gpu_budget_ms = 4.0
+fps_monitor = "off"        # off | top-left | top-right | bottom-left | bottom-right (also: kinetic wall fps)
+
+# Appearance
+time_scale = 1.0          # global animation speed
+dim = 0.0                 # darken the wallpaper, 0..0.9
+transition_ms = 700       # crossfade between wallpapers (0 = cut)
+theme_fade_ms = 800       # how long colors take to follow a theme switch
+# how far wallpapers move on a workspace switch: kinetic motion set parallax <screens>
+
+# Sound
+sound_react = false       # wallpapers react to what the system plays (each can override)
+sound_strength = 1.0      # how strongly, 0.1..3
+audio_gain = 1.0          # sensitivity: gain applied to the captured sound
+
+# Behavior
+pause_fullscreen = true
+pause_occupied = false    # freeze whenever the visible workspace has a window
+pointer = true            # let wallpapers that ask for it see the pointer
+suspend_shell = true      # hide Omarchy's own background layer while a live wallpaper shows
+hot_reload = true         # recompile a wallpaper when its files are saved
+layer = "background"      # or "bottom"
+
+# Rotation
+shuffle_minutes = 0       # change wallpaper every N minutes (0 = never)
+shuffle_order = "random"  # or "next"
+
+[battery]
+mode = "throttle"         # play | throttle | pause
+fps = 30                  # throttle: frame cap on battery
+scale = 0.75              # throttle: extra resolution scale on battery
+pause_below = 10          # pause entirely under this percentage
+
+# Switch live wallpaper automatically with the Omarchy theme.
+[themes]
+# tokyo-night = "aurora"
+# planets = "orbit"
+# retro-82 = "synthwave"
+
+# Pin a wallpaper to a monitor.
+[monitors]
+# DP-1 = "starfield"
+
+# Default parameter values per wallpaper. The panel and `kinetic wall param` override these.
+# [params.life]
+# birth = 72        # HighLife: B36
+# colors = "accent"
+
+# Per-wallpaper defaults also accept the engine's own settings, e.g.
+# [params.reaction]
+# lw_on_full = "restart"  # continue | restart | reverse, when the screen fills
+# lw_sound = "on"         # global | off | on
+
+# Garden keeps growing across restarts; slow it right down for a garden that changes
+# over days instead of minutes (1 = a wildflower blooms in about two minutes).
+# [params.garden]
+# pace = 0.05

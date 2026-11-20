@@ -1,0 +1,6 @@
+{
+  "name": "Night Garden",
+  "description": "The growing garden after dark, under one frosted capsule",
+  "wall": { "wallpaper": "garden", "preset": "Night garden" },
+  "bar": { "background": "pill", "pill": { "style": "frosted", "shape": "bar", "radius": "full", "margin": 6, "sideMargin": 10 } }
+}

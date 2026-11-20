@@ -1,0 +1,9 @@
+name = "Still"
+author = "Kinetic"
+description = "Your current Omarchy background, exactly as Omarchy shows it. It never animates and draws only when something changes, but the glass under the bar and windows can bend it"
+fps = 0           # redraw only when an input changes: costs nothing at rest
+scale = 1.0
+
+[image]
+shader = "main.frag"
+channels = ["@background"]

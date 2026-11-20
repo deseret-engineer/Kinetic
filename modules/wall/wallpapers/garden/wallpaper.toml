@@ -1,0 +1,96 @@
+name = "Garden"
+author = "Kinetic"
+description = "A garden that keeps growing. Wildflowers, grasses, shrubs and trees sprout, bloom, seed their neighbors and wilt, and each generation inherits its parents' shape and color. It is saved, so it carries on after a restart. Click to plant a seed"
+fps = 30
+scale = 1.0
+pointer = true
+adaptive = true
+preview_time = 20
+common = "common.glsl"
+
+[param.pace]
+label = "Growth speed"
+description = "1 = a wildflower blooms in about two minutes and an oak lives about half an hour"
+min = 0.05
+max = 10
+step = 0.05
+default = 0.5
+
+[param.wind]
+label = "Wind"
+min = 0
+max = 2
+step = 0.05
+default = 0.6
+
+[param.wild]
+label = "Wild seeds"
+description = "How often seeds blow in from outside, so new kinds can appear"
+min = 0
+max = 1
+step = 0.05
+default = 0.3
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["natural", "theme"]
+default = "natural"
+
+[param.sky]
+type = "choice"
+label = "Time of day"
+description = "Clock follows your local time, and plants grow more slowly at night"
+options = ["clock", "morning", "noon", "dusk", "night"]
+default = "clock"
+
+[param.fireflies]
+type = "bool"
+label = "Fireflies at night"
+default = true
+
+[preset.Meadow]
+wild = 0.5
+wind = 0.8
+
+[preset."Night garden"]
+sky = "night"
+colors = "theme"
+
+[preset.Timelapse]
+pace = 6
+wind = 0.4
+
+# Each plant slot: row 0 = position, age, alive, wait; rows 1-2 = its genes.
+# Persistent: saved every few minutes and on exit, so the garden survives restarts.
+[[buffer]]
+name = "plants"
+shader = "plants.frag"
+size = [48, 3]
+format = "rgba32f"
+persist = true
+channels = ["plants"]
+
+# Every branch of every plant, walked from the root: two texels per branch.
+[[buffer]]
+name = "skel"
+shader = "skeleton.frag"
+size = [254, 48]
+format = "rgba32f"
+channels = ["plants"]
+
+# Real geometry: three layers of ground, and for each plant 127 branches drawn as
+# tapered curved ribbons, two leaves per branch and a flower on every tip.
+[[buffer]]
+name = "garden"
+draw = "triangles"
+count = 229374
+blend = "alpha"
+vertex = "garden.vert"
+shader = "garden.frag"
+format = "rgba8"
+channels = ["skel", "plants"]
+
+[image]
+shader = "main.frag"
+channels = ["garden"]

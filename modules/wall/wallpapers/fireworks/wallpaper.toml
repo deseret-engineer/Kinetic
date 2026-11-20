@@ -1,0 +1,96 @@
+name = "Fireworks"
+author = "Kinetic"
+description = "A night of fireworks over water. Switching workspace launches a volley; click for a burst where you point"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 20
+preview_warmup = 3
+common = "common.glsl"
+
+[param.rate]
+label = "Launches per second"
+min = 0.1
+max = 4
+step = 0.05
+default = 1.2
+
+[param.sparks]
+type = "int"
+label = "Sparks per shell"
+min = 64
+max = 1023
+step = 32
+default = 400
+
+[param.size]
+label = "Spark size"
+min = 1
+max = 4
+step = 0.25
+default = 1.5
+
+[param.trails]
+label = "Trails"
+min = 0
+max = 0.97
+step = 0.01
+default = 0.88
+
+[param.gravity]
+label = "Gravity"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.glow]
+label = "Glow"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.water]
+type = "bool"
+label = "Reflections"
+default = true
+
+[param.volley]
+type = "bool"
+label = "Volley on workspace switch"
+default = true
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["palette", "classic", "accent"]
+default = "palette"
+
+[preset.Finale]
+rate = 3.5
+sparks = 600
+trails = 0.9
+
+[preset.Quiet]
+rate = 0.25
+sparks = 300
+trails = 0.93
+
+# No simulation state: every spark's position is a closed-form function of time,
+# computed in the vertex shader. 1024 vertices per shell slot, 48 timed slots,
+# 8 volley slots, 1 for clicks and 1 for sound onsets.
+[[buffer]]
+name = "sky"
+draw = "points"
+count = 59392
+vertex = "sparks.vert"
+shader = "sparks.frag"
+fade = "trails"
+format = "rgba16f"
+mipmap = true
+
+[image]
+shader = "main.frag"
+channels = ["sky"]

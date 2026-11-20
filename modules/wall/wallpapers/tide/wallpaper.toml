@@ -1,0 +1,9 @@
+name = "Tide"
+author = "Kinetic"
+description = "An ocean whose level is your battery charge. Bubbles rise while charging"
+fps = 30
+scale = 0.5
+
+[params]
+speed = [1.0, 0.0, 4.0]
+level = [-1.0, -1.0, 1.0]   # -1 follows the battery; 0..1 pins the water level

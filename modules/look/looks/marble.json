@@ -1,0 +1,6 @@
+{
+  "name": "Marble",
+  "description": "Slow marbled color with a short floating dock",
+  "wall": { "wallpaper": "fluid", "preset": "Marbling" },
+  "bar": { "background": "pill", "preset": "dock" }
+}

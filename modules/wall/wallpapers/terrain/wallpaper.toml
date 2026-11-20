@@ -1,0 +1,74 @@
+name = "Low Poly"
+author = "Kinetic"
+description = "An endless flat-shaded landscape drifting past in 3D, lit by a sun that follows your clock. Real triangles with a depth buffer, not a ray-marched trick"
+fps = 30
+scale = 1.0
+pointer = true
+adaptive = true
+preview_time = 30
+common = "common.glsl"
+
+[param.speed]
+label = "Flight speed"
+min = 0
+max = 3
+step = 0.05
+default = 0.6
+
+[param.height]
+label = "Mountains"
+min = 0
+max = 3
+step = 0.05
+default = 1.2
+
+[param.style]
+type = "choice"
+label = "Style"
+options = ["low-poly", "wireframe", "both"]
+default = "low-poly"
+
+[param.fog]
+label = "Haze"
+min = 0
+max = 1
+step = 0.05
+default = 0.5
+
+[param.sun]
+type = "choice"
+label = "Sun"
+options = ["clock", "morning", "noon", "dusk", "night"]
+default = "clock"
+
+[param.water]
+type = "bool"
+label = "Lakes"
+default = true
+
+[preset.Synthwave]
+style = "wireframe"
+sun = "dusk"
+height = 0.8
+speed = 1.2
+
+[preset.Alpine]
+height = 2.4
+fog = 0.7
+speed = 0.4
+
+# 200 x 80 grid cells, two triangles each, three vertices per triangle (no index
+# buffer, so every triangle can be flat-shaded from its own three corners).
+[[buffer]]
+name = "scene"
+draw = "triangles"
+count = 96000
+depth = true
+blend = "none"
+vertex = "terrain.vert"
+shader = "terrain.frag"
+format = "rgba8"
+
+[image]
+shader = "main.frag"
+channels = ["scene"]

@@ -1,0 +1,54 @@
+name = "Lava Lamp"
+author = "Kinetic"
+description = "Metaballs rising and merging in a column of warm theme colors"
+fps = 30
+scale = 0.5
+preview_time = 14
+
+[param.blobs]
+type = "int"
+label = "Blobs"
+min = 3
+max = 16
+default = 9
+
+[param.speed]
+label = "Speed"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.goo]
+label = "Gooeyness"
+description = "How readily blobs merge"
+min = 0.5
+max = 2
+step = 0.05
+default = 1
+
+[param.palette]
+type = "choice"
+label = "Wax color"
+options = ["warm", "cool", "accent", "custom"]
+default = "warm"
+
+[param.wax]
+type = "color"
+label = "Custom wax"
+default = "#ff7a59"
+
+[param.lamp]
+type = "bool"
+label = "Show lamp glass"
+default = false
+
+[preset.Classic]
+palette = "warm"
+goo = 1.0
+blobs = 9
+
+[preset.Busy]
+blobs = 16
+speed = 1.8
+goo = 0.7

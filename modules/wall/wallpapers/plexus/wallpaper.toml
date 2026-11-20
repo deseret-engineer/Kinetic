@@ -1,0 +1,53 @@
+name = "Plexus"
+author = "Kinetic"
+description = "Drifting points joined by lines when they come close. The pointer pulls them in"
+fps = 30
+scale = 0.75
+pointer = true
+
+[param.density]
+label = "Points"
+min = 3
+max = 14
+step = 0.5
+default = 8.5
+
+[param.reach]
+label = "Link distance"
+min = 0.5
+max = 1.6
+step = 0.05
+default = 1.1
+
+[param.speed]
+label = "Drift"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.lines]
+label = "Line strength"
+min = 0
+max = 1.5
+step = 0.05
+default = 0.7
+
+[param.color]
+type = "choice"
+label = "Color"
+options = ["accent", "palette", "foreground"]
+default = "palette"
+
+# One texel per grid cell holds that cell's point, so the image pass does
+# texture fetches instead of hashing and trigonometry for every pixel.
+[[buffer]]
+name = "points"
+shader = "points.frag"
+scale = 0.05
+format = "rgba16f"
+filter = "nearest"
+
+[image]
+shader = "main.frag"
+channels = ["points"]

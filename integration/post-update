@@ -1,0 +1,22 @@
+#!/bin/bash
+# Kinetic: rebuild kinetic.bar from the Omarchy bar this update installed, so
+# the pill keeps every upstream change. If Omarchy rewrote a part the pill hooks
+# into, the old build stays in place and you get a notification.
+# Then rebuild Kinetic's Hyprland plugin (window glass and the light) for the
+# Hyprland this update installed: Hyprland refuses a plugin built for another
+# version, so without this the glass would be gone after the next login.
+command -v kinetic >/dev/null || exit 0
+if ! out=$(kinetic bar build 2>&1); then
+  notify-send -u critical "Kinetic bar" "Could not rebuild the pill bar for this Omarchy update; the previous build is still in use.
+$out" 2>/dev/null || echo "$out" >&2
+fi
+lib="${KINETIC_LIB:-$HOME/.local/lib/kinetic}"
+inc=$(pkg-config --variable=includedir hyprland 2>/dev/null || true)
+want=$(sed -n 's/.*GIT_COMMIT_HASH *"\(.*\)".*/\1/p' "${inc:-/usr/include}/hyprland/src/version.h" 2>/dev/null)
+if [[ -f $lib/kinetic-glass.so && $want != "$(cat "$lib/kinetic-glass.so.hyprland" 2>/dev/null)" ]]; then
+  if ! out=$(kinetic glass plugin build 2>&1); then
+    notify-send -u critical "Kinetic glass" "Could not rebuild Kinetic's Hyprland plugin for this update: window glass and the light are off after the next login.
+$out" 2>/dev/null || echo "$out" >&2
+  fi
+fi
+exit 0

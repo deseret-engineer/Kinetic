@@ -1,0 +1,111 @@
+{
+  "//": "Every motion option. kinetic motion (motion.py) turns them into a Hyprland toggle file and tells the wallpaper engine the workspace timing; the panel lists them. Defaults for windows and layers are Omarchy's own, so only what you change differs from stock.",
+  "version": 1,
+  "groups": ["Workspaces", "Wallpaper", "Windows", "Layers"],
+  "curves": {
+    "smooth":    { "label": "Smooth: fast start, long settle", "type": "bezier", "points": [0.23, 1, 0.32, 1] },
+    "glide":     { "label": "Glide: eases in and out", "type": "bezier", "points": [0.65, 0.05, 0.36, 1] },
+    "snappy":    { "label": "Snappy", "type": "bezier", "points": [0.15, 0, 0.1, 1] },
+    "linear":    { "label": "Linear", "type": "bezier", "points": [0, 0, 1, 1] },
+    "overshoot": { "label": "Overshoot: passes the mark and comes back", "type": "bezier", "points": [0.34, 1.56, 0.64, 1] },
+    "spring":    { "label": "Spring: settles with a little bounce", "type": "spring", "mass": 1, "stiffness": 120, "dampening": 14,
+                   "trip": [0.33, 0.846, 0, 1.2], "//": "trip: the bezier closest to this spring, for pass-through trips (tests/trip_test.py checks it)" }
+  },
+  "options": [
+    {
+      "key": "workspaces", "group": "Workspaces", "type": "choice", "default": "slide",
+      "options": ["slide", "slidevert", "slidefade", "slidefadevert", "fade", "off"],
+      "label": "Switching workspaces",
+      "description": "Slide sideways or vertically, slide while fading, just fade, or switch instantly"
+    },
+    {
+      "key": "workspaceMs", "group": "Workspaces", "type": "int", "default": 450, "min": 100, "max": 2000, "step": 10,
+      "label": "Switch duration (ms)", "description": "Springs set their own pace"
+    },
+    {
+      "key": "workspaceCurve", "group": "Workspaces", "type": "choice", "default": "glide",
+      "options": ["glide", "smooth", "snappy", "linear", "overshoot", "spring"],
+      "label": "Switch curve"
+    },
+    {
+      "key": "slideFade", "group": "Workspaces", "type": "int", "default": 20, "min": 0, "max": 100, "step": 5,
+      "label": "Slide distance with fade (%)", "description": "For the fading slides: how far the workspaces travel"
+    },
+    {
+      "key": "wraparound", "group": "Workspaces", "type": "bool", "default": false,
+      "label": "Wrap around", "description": "Going past the last workspace slides on to the first"
+    },
+    {
+      "key": "passThrough", "group": "Workspaces", "type": "bool", "default": false,
+      "label": "Pass through",
+      "description": "Super + 5 from workspace 1 slides past 2, 3 and 4 on the way, on the switch curve, and the wallpaper travels with them. Slides only"
+    },
+    {
+      "key": "passSameTime", "group": "Workspaces", "type": "bool", "default": false,
+      "label": "Same time for every switch",
+      "description": "Pass through: 1 to 5 takes as long as 1 to 2 (the switch duration), and the time per workspace passed adjusts itself"
+    },
+    {
+      "key": "passMs", "group": "Workspaces", "type": "int", "default": 110, "min": 40, "max": 400, "step": 10,
+      "label": "Time per workspace passed (ms)", "description": "Pass through: added to the switch duration for each workspace beyond the first. Unused with the same time for every switch"
+    },
+    {
+      "key": "parallax", "group": "Wallpaper", "type": "float", "default": 0.25, "min": 0, "max": 0.5, "step": 0.001,
+      "label": "Parallax",
+      "description": "How far a live wallpaper moves per workspace, in screens, while the windows move a whole one (0.01 is about 19 px on a 1920 px screen; type a value for the finest steps). Every wallpaper that moves follows it: endless ones pan whole, layered ones (Aurora, Skyline, Starfield, Snow) move each layer by its depth. 0 holds them all still"
+    },
+    {
+      "key": "windowsIn", "group": "Windows", "type": "choice", "default": "popin",
+      "options": ["popin", "slide", "gnomed", "off"],
+      "label": "Opening windows"
+    },
+    {
+      "key": "windowsOut", "group": "Windows", "type": "choice", "default": "popin",
+      "options": ["popin", "slide", "gnomed", "off"],
+      "label": "Closing windows"
+    },
+    {
+      "key": "popin", "group": "Windows", "type": "int", "default": 87, "min": 10, "max": 100, "step": 1,
+      "label": "Pop-in size (%)", "description": "Where a popping window starts, as a share of its size"
+    },
+    {
+      "key": "windowMs", "group": "Windows", "type": "int", "default": 410, "min": 50, "max": 2000, "step": 10,
+      "label": "Open duration (ms)"
+    },
+    {
+      "key": "windowCurve", "group": "Windows", "type": "choice", "default": "smooth",
+      "options": ["smooth", "glide", "snappy", "linear", "overshoot", "spring"],
+      "label": "Open curve"
+    },
+    {
+      "key": "closeMs", "group": "Windows", "type": "int", "default": 150, "min": 50, "max": 2000, "step": 10,
+      "label": "Close duration (ms)"
+    },
+    {
+      "key": "moveMs", "group": "Windows", "type": "int", "default": 380, "min": 50, "max": 2000, "step": 10,
+      "label": "Move and resize duration (ms)"
+    },
+    {
+      "key": "fade", "group": "Windows", "type": "bool", "default": true,
+      "label": "Fade windows in and out"
+    },
+    {
+      "key": "layers", "group": "Layers", "type": "choice", "default": "fade",
+      "options": ["fade", "slide", "popin", "off"],
+      "label": "Menus and notifications", "description": "How layer surfaces (launcher, notifications, panels) appear"
+    },
+    {
+      "key": "layerMs", "group": "Layers", "type": "int", "default": 400, "min": 50, "max": 2000, "step": 10,
+      "label": "Layer duration (ms)"
+    }
+  ],
+  "presets": {
+    "parallax": { "workspaces": "slide", "workspaceMs": 500, "workspaceCurve": "glide", "parallax": 0.25 },
+    "vertical": { "workspaces": "slidevert", "workspaceMs": 450, "workspaceCurve": "glide", "parallax": 0.2 },
+    "deep":     { "workspaces": "slidefade", "slideFade": 35, "workspaceMs": 650, "workspaceCurve": "smooth", "parallax": 0.45 },
+    "springy":  { "workspaces": "slide", "workspaceCurve": "spring", "parallax": 0.3, "windowCurve": "overshoot", "popin": 80 },
+    "snappy":   { "workspaces": "slide", "workspaceMs": 220, "workspaceCurve": "snappy", "parallax": 0.12, "windowMs": 220, "windowCurve": "snappy", "moveMs": 200 },
+    "calm":     { "workspaces": "fade", "workspaceMs": 350, "workspaceCurve": "smooth", "parallax": 0 },
+    "omarchy":  { "workspaces": "off", "parallax": 0 }
+  }
+}

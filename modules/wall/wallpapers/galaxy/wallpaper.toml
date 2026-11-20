@@ -1,0 +1,94 @@
+name = "Galaxy Collision"
+author = "Kinetic"
+description = "Two spiral galaxies, 131,072 stars, colliding under gravity: tidal tails, bridges and a slow merger. A new encounter begins every few minutes"
+fps = 60
+scale = 1.0
+pointer = false
+adaptive = false
+preview_time = 41
+preview_warmup = 40
+common = "common.glsl"
+
+[param.speed]
+label = "Speed"
+min = 0.1
+max = 4
+step = 0.1
+default = 1
+
+[param.cycle]
+type = "int"
+label = "New encounter every (minutes)"
+min = 1
+max = 30
+default = 2
+
+[param.seed]
+type = "int"
+label = "Encounter"
+description = "Which pair of galaxies and which orbit"
+min = 0
+max = 999
+default = 0
+
+[param.stars]
+type = "int"
+label = "Stars"
+min = 8192
+max = 131072
+step = 8192
+default = 131072
+
+[param.tilt]
+label = "Viewing angle"
+min = 0
+max = 1.3
+step = 0.05
+default = 0.5
+
+[param.glow]
+label = "Glow"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.brightness]
+label = "Brightness"
+min = 0.2
+max = 3
+step = 0.05
+default = 1
+
+[param.trails]
+label = "Trails"
+min = 0
+max = 0.9
+step = 0.01
+default = 0.3
+
+# Texels 0 and 1 are the galaxy cores (heavy), texel 2 remembers which encounter
+# is running, and every other texel is a star: position (xy) and velocity (zw).
+# Two half-steps a frame keep close passes stable.
+[[buffer]]
+name = "state"
+shader = "state.frag"
+size = [512, 256]
+format = "rgba32f"
+iterations = 2
+channels = ["state"]
+
+[[buffer]]
+name = "stars"
+draw = "points"
+source = "state"
+count = "stars"
+vertex = "stars.vert"
+shader = "stars.frag"
+fade = "trails"
+format = "rgba16f"
+mipmap = true
+
+[image]
+shader = "main.frag"
+channels = ["stars"]

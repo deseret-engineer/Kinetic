@@ -1,0 +1,33 @@
+{
+  "id": "look",
+  "name": "Looks",
+  "summary": "Looks: a wallpaper and a bar saved and applied together",
+  "author": "Kinetic",
+  "icon": "󰏘",
+  "order": 60,
+  "requires": [
+    {
+      "id": "wall",
+      "optional": true,
+      "why": "a look's wallpaper"
+    },
+    {
+      "id": "bar",
+      "optional": true,
+      "why": "a look's bar"
+    },
+    {
+      "id": "motion",
+      "optional": true,
+      "why": "a look's motion"
+    }
+  ],
+  "pages": [
+    {
+      "id": "looks",
+      "label": "Looks",
+      "about": "Wallpaper, bar and motion, saved together",
+      "qml": "builtin:LooksPage"
+    }
+  ]
+}

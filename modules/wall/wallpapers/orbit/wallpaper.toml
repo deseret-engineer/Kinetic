@@ -1,0 +1,10 @@
+name = "Orbit"
+author = "Kinetic"
+description = "A ringed gas giant in your accent color, with real ring shadows"
+fps = 30
+scale = 1.0
+pointer = true
+
+[params]
+speed = [1.0, 0.0, 8.0]
+size = [0.23, 0.1, 0.4]

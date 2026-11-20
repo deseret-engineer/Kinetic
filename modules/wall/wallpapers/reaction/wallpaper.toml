@@ -1,0 +1,130 @@
+name = "Reaction-Diffusion"
+author = "Kinetic"
+description = "Two chemicals that feed, react and spread (Gray-Scott), growing coral, mazes, spots and dividing cells. Hold a mouse button to add more"
+fps = 30
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 60
+preview_warmup = 50
+
+[param.feed]
+label = "Feed rate"
+min = 0.01
+max = 0.1
+step = 0.0005
+default = 0.0545
+
+[param.kill]
+label = "Kill rate"
+min = 0.04
+max = 0.075
+step = 0.0005
+default = 0.062
+
+[param.steps]
+type = "int"
+label = "Steps per frame"
+description = "Growth speed; each step is one full simulation pass"
+min = 1
+max = 32
+default = 10
+
+[param.variation]
+label = "Variation across the screen"
+description = "Let feed and kill drift across space, so several patterns live side by side"
+min = 0
+max = 1
+step = 0.05
+default = 0.3
+
+[param.seed]
+type = "int"
+label = "Seed"
+description = "Change to start over"
+restart = true
+min = 0
+max = 999
+default = 0
+
+[param.drops]
+type = "bool"
+label = "Random drops"
+description = "Keep the pattern from ever settling"
+default = true
+
+[param.relief]
+label = "Relief lighting"
+min = 0
+max = 1
+step = 0.05
+default = 0.6
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["palette", "accent", "two-tone"]
+default = "palette"
+
+[preset.Coral]
+feed = 0.0545
+kill = 0.062
+
+[preset.Mitosis]
+feed = 0.0367
+kill = 0.0649
+
+[preset.Worms]
+feed = 0.078
+kill = 0.061
+
+[preset.Maze]
+feed = 0.029
+kill = 0.057
+
+[preset.Spots]
+feed = 0.035
+kill = 0.065
+
+[preset.Waves]
+feed = 0.014
+kill = 0.045
+variation = 0
+
+[fill]
+buffer = "rd"
+channel = 1
+above = 0.2
+full = 0.6
+settle = 15          # stopped spreading for 15 s...
+settle_min = 0.08    # ...while covering at least 8%: that is a full screen
+low = 0.4            # run back to 40% of that
+empty = 0.001
+reverse = true
+ramp = 8             # the run-back builds over 8 s: stripes thin, break up, then fade
+default = "reverse"
+
+# Concentrations A (r) and B (g): two 32-bit floats per cell, since the
+# reaction's small increments vanish in half precision. `repeat` lets the
+# hardware wrap the edges (the pattern tiles) instead of integer modulo.
+[[buffer]]
+name = "rd"
+shader = "step.frag"
+scale = 0.4
+format = "rg32f"
+wrap = "repeat"
+iterations = "steps"
+channels = ["rd"]
+
+# Concentration of B and its gradient, once per cell, in a filterable format:
+# the full-screen pass is then a single hardware-interpolated fetch.
+[[buffer]]
+name = "shade"
+shader = "shade.frag"
+scale = 0.4
+format = "rgba16f"
+channels = ["rd"]
+
+[image]
+shader = "main.frag"
+channels = ["shade"]

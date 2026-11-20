@@ -1,0 +1,108 @@
+name = "Ant Colony"
+author = "Kinetic"
+description = "Thousands of ants forage for rival colonies. Ants find their way home by dead reckoning and lay scent as they carry food back, so roads emerge from nothing but that scent. Food appears in clumps and gets carried away; click to drop some"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 60
+preview_warmup = 60
+common = "common.glsl"
+
+[param.ants]
+type = "int"
+label = "Ants"
+min = 256
+max = 16384
+default = 6000
+
+[param.speed]
+label = "Speed"
+min = 0.2
+max = 3
+step = 0.05
+default = 1
+
+[param.evaporate]
+label = "Trail life"
+description = "How long a scent trail lasts"
+min = 0
+max = 1
+step = 0.02
+default = 0.6
+
+[param.food]
+label = "Food supply"
+description = "How often a new clump of food appears"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.trails]
+label = "Show trails"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.colonies]
+type = "int"
+label = "Colonies"
+description = "Each has its own nest, scent and color; changing it starts over"
+min = 1
+max = 3
+default = 2
+restart = true
+
+[preset.Highways]
+evaporate = 0.9
+trails = 1.6
+ants = 12000
+
+[preset.Sparse]
+ants = 1200
+trails = 0.6
+
+# Ant i: position (uv), heading, then mode*1000 + seconds since it found food
+# (the scent it lays fades with that time, so trails point the right way).
+[[buffer]]
+name = "ants"
+shader = "ants.frag"
+size = [128, 128]
+format = "rgba32f"
+channels = ["ants", "field"]
+
+# Every ant drops scent where it stands: additive points into a coarse grid.
+[[buffer]]
+name = "deposit"
+draw = "points"
+source = "ants"
+count = "ants"
+blend = "add"
+vertex = "deposit.vert"
+shader = "deposit.frag"
+scale = 0.25
+format = "rgba16f"
+
+# The food-trail scent of colonies 1, 2 and 3 in r, g and a; food lying about in b.
+[[buffer]]
+name = "field"
+shader = "field.frag"
+scale = 0.25
+format = "rgba16f"
+channels = ["field", "deposit"]
+
+[[buffer]]
+name = "bodies"
+draw = "points"
+source = "ants"
+count = "ants"
+blend = "alpha"
+vertex = "body.vert"
+shader = "body.frag"
+format = "rgba8"
+
+[image]
+shader = "main.frag"
+channels = ["field", "bodies"]

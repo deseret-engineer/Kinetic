@@ -1,0 +1,45 @@
+name = "Petri"
+author = "Kinetic"
+description = "Reaction-diffusion growth simulated on the GPU. Move the pointer to seed it"
+fps = 30
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 40
+
+[params]
+feed = [0.037, 0.02, 0.06]
+kill = [0.06, 0.05, 0.066]
+
+[fill]
+buffer = "B"
+channel = 1
+above = 0.2
+full = 0.6
+settle = 15
+settle_min = 0.08
+low = 0.4
+reverse = true
+ramp = 8             # the run-back builds over 8 s: stripes thin, break up, then fade
+default = "reverse"
+
+# Two simulation buffers ping-pong, giving two Gray-Scott steps per frame.
+[[buffer]]
+name = "A"
+shader = "step.frag"
+scale = 0.2
+format = "rgba16f"
+wrap = "repeat"
+channels = ["B"]
+
+[[buffer]]
+name = "B"
+shader = "step.frag"
+scale = 0.2
+format = "rgba16f"
+wrap = "repeat"
+channels = ["A"]
+
+[image]
+shader = "main.frag"
+channels = ["B"]

@@ -1,0 +1,162 @@
+#!/bin/bash
+# Build Kinetic and install it for the current user. Nothing here needs root,
+# and everything it changes outside ~/.local/share/kinetic is listed in the
+# README's Uninstall section (uninstall.sh reverses it).
+#
+#   ./install.sh               build and install
+#   ./install.sh --no-service  don't (re)start the wallpaper engine
+set -euo pipefail
+cd "$(dirname "$0")"
+REPO=$PWD
+
+START_SERVICE=1
+for a in "$@"; do
+  case "$a" in
+    --no-service) START_SERVICE=0 ;;
+    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
+    *) echo "unknown option: $a" >&2; exit 2 ;;
+  esac
+done
+
+HOME_DIR="$HOME/.local/share/kinetic"
+BIN="$HOME/.local/bin"
+PLUGINS="$HOME/.config/omarchy/plugins"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}"
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
+MENU="$HOME/.config/omarchy/extensions/omarchy-menu.jsonc"
+step() { printf '\033[1m==>\033[0m %s\n' "$*"; }
+
+# ---------- dependencies ----------
+missing=()
+for p in wayland-client wayland-egl egl glesv2 wayland-protocols libpng libjpeg libwebp; do
+  pkg-config --exists "$p" || missing+=("$p")
+done
+for c in meson ninja jq python3; do command -v "$c" >/dev/null || missing+=("$c"); done
+if (( ${#missing[@]} )); then
+  echo "Missing build dependencies: ${missing[*]}" >&2
+  echo "On Omarchy: omarchy pkg add meson ninja jq python wayland wayland-protocols libglvnd libpng libjpeg-turbo libwebp pipewire" >&2
+  exit 1
+fi
+
+# ---------- build ----------
+step "Building the wallpaper engine"
+(
+  cd modules/wall
+  meson setup build --prefix "$HOME/.local" --reconfigure >/dev/null 2>&1 || meson setup build --prefix "$HOME/.local" >/dev/null
+  ninja -C build >/dev/null
+)
+step "Checking the bar hooks against this Omarchy's bar"
+python3 modules/bar/build.py --check
+
+# ---------- stop the running engine ----------
+systemctl --user stop kinetic-wall.service 2>/dev/null || true
+"$BIN/kinetic-wall" quit >/dev/null 2>&1 || true
+
+# ---------- install files ----------
+step "Installing to $HOME_DIR"
+mkdir -p "$HOME_DIR" "$BIN"
+rm -rf "$HOME_DIR/lib" "$HOME_DIR/modules" "$HOME_DIR/shell" "$HOME_DIR/wallpapers"
+cp kinetic "$HOME_DIR/"
+cp -r lib shell "$HOME_DIR/"
+mkdir -p "$HOME_DIR/modules"
+# every module but the wall, whose engine is built and installed by meson (its scripts follow)
+for m in modules/*/; do
+  m=${m%/}
+  [[ $m == modules/wall ]] || cp -r "$m" "$HOME_DIR/modules/"
+done
+mkdir -p "$HOME_DIR/modules/wall"
+cp modules/wall/module.sh modules/wall/module.json "$HOME_DIR/modules/wall/"
+cp -r modules/wall/integration "$HOME_DIR/modules/wall/"
+cp -r integration "$HOME_DIR/"
+find "$HOME_DIR" -name '__pycache__' -prune -exec rm -rf {} +
+meson install -C modules/wall/build >/dev/null       # kinetic-wall + wallpapers in ~/.local/share/kinetic/wallpapers
+ln -sfn "$HOME_DIR/kinetic" "$BIN/kinetic"
+ln -sfn "$HOME_DIR/modules/bar/blur" "$BIN/kinetic-bar-blur"
+install -m755 modules/wall/integration/kinetic-wall-pick "$BIN/kinetic-wall-pick"
+# beside kinetic-wall, which runs it; a link into the install, so it finds lib/kinetic.sh
+rm -f "$BIN/kinetic-window-blur"
+ln -s "$HOME_DIR/modules/wall/integration/window-blur" "$BIN/kinetic-window-blur"
+install -Dm644 modules/wall/integration/kinetic-wall.service "$HOME/.config/systemd/user/kinetic-wall.service"
+
+# ---------- config and state ----------
+mkdir -p "$CONFIG/kinetic/wallpapers" "$CONFIG/kinetic/looks" "$STATE/kinetic/wall" "$STATE/kinetic/signals"
+[[ -f $CONFIG/kinetic/wall.toml ]] || install -m644 modules/wall/integration/wall.toml.example "$CONFIG/kinetic/wall.toml"
+[[ -f $STATE/kinetic/signals/wall ]] || echo off >"$STATE/kinetic/signals/wall"
+
+# ---------- shell plugins ----------
+step "Building the Kinetic bar from Omarchy's bar"
+KINETIC_BIN="$BIN" python3 "$HOME_DIR/modules/bar/build.py"
+step "Installing the Kinetic panel"
+rm -rf "$PLUGINS/kinetic"
+cp -r shell/kinetic "$PLUGINS/kinetic"
+rm -rf "$PLUGINS/kinetic/tests"
+KINETIC_BIN="$BIN" python3 "$HOME_DIR/modules/bar/build.py" --env "$PLUGINS/kinetic"
+
+# The app: the same pages, in a window of their own (a shell service, kinetic.app).
+step "Installing the Kinetic app"
+rm -rf "$PLUGINS/kinetic.app"
+cp -r shell/kinetic "$PLUGINS/kinetic.app"
+rm -rf "$PLUGINS/kinetic.app/tests"
+cp shell/app-manifest.json "$PLUGINS/kinetic.app/manifest.json"
+KINETIC_BIN="$BIN" python3 "$HOME_DIR/modules/bar/build.py" --env "$PLUGINS/kinetic.app"
+mkdir -p "$HOME/.local/share/applications"
+sed "s|@KINETIC@|$BIN/kinetic|" integration/kinetic.desktop > "$HOME/.local/share/applications/kinetic.desktop"
+# Hyprland: the app's window floats
+TOGGLES="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/toggles/hypr"
+mkdir -p "$TOGGLES"
+if ! cmp -s integration/kinetic-app.lua "$TOGGLES/kinetic-app.lua"; then
+  cp integration/kinetic-app.lua "$TOGGLES/kinetic-app.lua"
+  command -v omarchy-restart-hyprctl >/dev/null && omarchy-restart-hyprctl >/dev/null 2>&1 || true
+fi
+
+shell_running=0
+if command -v omarchy-shell >/dev/null && omarchy-shell -q shell rescanPlugins >/dev/null 2>&1; then
+  shell_running=1
+  sleep 1
+fi
+
+# shell.json: the bar and the panel icon switch to Kinetic's
+if [[ -f $HOME/.config/omarchy/shell.json ]]; then
+  step "Switching the bar to kinetic.bar and the panel icon to Kinetic"
+  # shellcheck disable=SC1091
+  source omarchy-shell-config
+  commit "$NORMALIZE
+    | if .bar.background == \"pill\" and (.bar.id // \"omarchy.bar\") == \"omarchy.bar\"
+      then .bar.id = \"kinetic.bar\" else . end
+    | if any(.plugins[]; .id == \"kinetic.app\") then . else .plugins += [{id: \"kinetic.app\"}] end"
+  if ! jq -e '[.bar.layout[]? | arrays | .[] | select(.id == "kinetic")] | length > 0' "$HOME/.config/omarchy/shell.json" >/dev/null; then
+    omarchy-bar put kinetic --before omarchy.tray >/dev/null 2>&1 || omarchy-bar put kinetic >/dev/null 2>&1 || true
+  fi
+fi
+"$BIN/kinetic-bar-blur" off >/dev/null 2>&1 || true   # the bar re-asks if it wants blur
+
+# ---------- menu and update hook ----------
+if [[ -f $MENU ]]; then
+  step "Adding Appearance > Kinetic to the Omarchy menu"
+  python3 integration/menu.py add "$MENU" integration/menu.jsonc
+fi
+install -Dm755 integration/post-update "$HOME/.config/omarchy/hooks/post-update.d/kinetic-bar"
+
+# ---------- the Hyprland plugin: glass behind windows and the selection light ----------
+step "Building Kinetic's Hyprland plugin (window glass and the light)"
+"$HOME_DIR/kinetic" glass plugin build \
+  || echo "    it did not build: window glass and the light stay off until it does (kinetic glass plugin build)"
+
+# ---------- start ----------
+"$BIN/kinetic-wall" thumbnails >/dev/null || true
+systemctl --user daemon-reload
+if (( START_SERVICE )); then
+  step "Starting the wallpaper engine"
+  systemctl --user enable --now kinetic-wall.service
+fi
+(( shell_running )) && omarchy-shell -q shell rescanPlugins >/dev/null 2>&1 || true
+
+echo
+# Motion stays as it was: off until you turn it on (kinetic motion preset parallax).
+# An earlier install's choice is re-applied, so its Hyprland file matches this version.
+if [[ -f $CONFIG/kinetic/motion.json ]]; then
+  KINETIC_HOME="$HOME_DIR" python3 "$HOME_DIR/modules/motion/motion.py" apply || true
+fi
+
+echo "Kinetic is installed. Try:  kinetic app  |  kinetic panel  |  kinetic look apply contours  |  kinetic motion preset parallax"
+echo "If the bar does not change, run: omarchy restart shell"

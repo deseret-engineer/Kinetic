@@ -1,0 +1,21 @@
+name = "Starfield"
+author = "Kinetic"
+description = "Parallax stars and nebula that pan as you switch workspaces"
+fps = 30
+scale = 1.0
+pointer = true
+
+[params]
+speed = [1.0, 0.0, 6.0]
+nebula = [1.0, 0.0, 2.0]
+
+# The nebula is smooth, so it is drawn at a quarter resolution in its own
+# buffer; only the pin-sharp stars pay for native resolution.
+[[buffer]]
+name = "nebula"
+shader = "nebula.frag"
+scale = 0.25
+
+[image]
+shader = "main.frag"
+channels = ["nebula"]

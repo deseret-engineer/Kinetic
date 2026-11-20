@@ -1,0 +1,159 @@
+name = "Game of Life"
+author = "Kinetic"
+description = "Cellular automaton with editable birth/survival rules. Draw cells with the pointer"
+fps = 30
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 25
+
+[param.birth]
+type = "bits"
+bits = 9
+label = "Born with N neighbors"
+description = "A dead cell comes alive when its live neighbor count is ticked here"
+default = 8            # bit 3: the B3 of B3/S23
+
+[param.survive]
+type = "bits"
+bits = 9
+label = "Survives with N neighbors"
+default = 12           # bits 2 and 3: S23
+
+[param.speed]
+type = "float"
+label = "Generations per second"
+min = 1
+max = 30
+step = 1
+default = 10
+
+[param.cell]
+type = "int"
+label = "Cell size (px)"
+min = 2
+max = 32
+default = 8
+
+[param.density]
+label = "Starting density"
+min = 0.02
+max = 0.8
+step = 0.01
+default = 0.28
+
+[param.seed]
+type = "int"
+label = "Seed"
+description = "Change it to start over with a fresh random field"
+min = 0
+max = 20
+default = 0
+
+[param.sparks]
+label = "Random sparks"
+description = "Keeps the field from dying out by dropping in small live patches"
+min = 0
+max = 1
+step = 0.05
+default = 0.3
+
+[param.wrap]
+type = "bool"
+label = "Wrap around edges"
+default = true
+
+[param.trails]
+label = "Trail length"
+min = 0
+max = 0.98
+step = 0.02
+default = 0.8
+
+[param.colors]
+type = "choice"
+label = "Color cells by"
+options = ["accent", "age", "neighbors", "custom"]
+default = "age"
+
+[param.tint]
+type = "color"
+label = "Custom color"
+default = "#7aa2f7"
+
+[param.grid]
+type = "bool"
+label = "Grid lines"
+default = false
+
+[param.glow]
+label = "Glow"
+min = 0
+max = 2
+step = 0.05
+default = 0.7
+
+[param.shape]
+type = "choice"
+label = "Cell shape"
+options = ["square", "rounded", "dot"]
+default = "rounded"
+
+# Classic rules. Bit n set = n neighbors.
+[preset.Conway]
+birth = 8
+survive = 12
+
+[preset.HighLife]
+birth = 72
+survive = 12
+
+[preset."Day & Night"]
+birth = 456
+survive = 472
+
+[preset.Seeds]
+birth = 4
+survive = 0
+
+[preset.Maze]
+birth = 8
+survive = 62
+
+[preset.Coral]
+birth = 8
+survive = 496
+
+[preset."Life w/o Death"]
+birth = 8
+survive = 511
+
+[preset.Anneal]
+birth = 488
+survive = 492
+
+# The fill monitor: r is "alive"; a (the seed signature) is only set inside the
+# grid, so it marks which texels belong to the picture.
+[fill]
+buffer = "state"
+channel = 0
+valid = 3
+above = 0.5
+full = 0.45
+low = 0.15
+empty = 0.002
+reverse = true
+default = "reverse"
+grace = 20           # a random soup thins out by itself first
+
+[[buffer]]
+name = "state"
+shader = "step.frag"
+scale = 0.5
+format = "rgba16f"
+filter = "nearest"
+channels = ["state"]
+
+[image]
+shader = "main.frag"
+channels = ["state"]

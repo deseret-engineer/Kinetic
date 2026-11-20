@@ -1,0 +1,99 @@
+name = "Sandbox"
+author = "Kinetic"
+description = "A falling-sand world: colored sand pours from drifting spouts and piles into strata, rain pools into lakes, seeds sprout on wet sand and grow into flowering plants, and lightning starts fires. Saved between restarts. Click to pour sand"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 40
+preview_warmup = 40
+common = "common.glsl"
+
+[param.speed]
+type = "int"
+label = "Simulation speed"
+description = "Steps per frame"
+min = 1
+max = 8
+default = 2
+
+[param.sand]
+label = "Sand"
+description = "How fast the spouts pour"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.rain]
+label = "Rain"
+min = 0
+max = 2
+step = 0.05
+default = 0.7
+
+[param.seeds]
+label = "Seeds"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.lightning]
+label = "Lightning"
+description = "How often lightning strikes (sound onsets also strike)"
+min = 0
+max = 2
+step = 0.05
+default = 0.5
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["desert", "theme", "candy"]
+default = "desert"
+
+[preset.Hourglass]
+rain = 0
+seeds = 0
+lightning = 0
+sand = 1.6
+
+[preset.Oasis]
+rain = 1.6
+seeds = 2
+sand = 0.4
+
+[preset.Wildfire]
+seeds = 2
+lightning = 2
+rain = 0.3
+
+[fill]
+buffer = "world"
+channel = 3
+above = 0.5
+full = 0.55
+low = 0.35
+empty = 0.0005
+reverse = true
+ramp = 2
+grace = 30
+default = "reverse"
+
+# One cell per texel. Margolus blocks: every step the grid is cut into 2x2 blocks
+# (shifted by one cell on alternate steps) and each block moves its contents as a
+# unit, so sand and water are never duplicated or lost. Persistent.
+[[buffer]]
+name = "world"
+shader = "step.frag"
+scale = 0.2
+format = "rgba8"
+filter = "nearest"
+iterations = "speed"
+persist = true
+channels = ["world"]
+
+[image]
+shader = "main.frag"
+channels = ["world"]

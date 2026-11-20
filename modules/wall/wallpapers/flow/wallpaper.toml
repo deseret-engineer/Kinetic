@@ -1,0 +1,60 @@
+name = "Flow Field"
+author = "Kinetic"
+description = "Comets of light streaming along a slowly changing curl-noise field. The pointer stirs it"
+fps = 24
+scale = 0.5
+pointer = true
+preview_time = 14
+
+[param.particles]
+label = "Comet density"
+min = 0.1
+max = 1
+step = 0.05
+default = 0.5
+
+[param.tail]
+label = "Tail length"
+min = 0.2
+max = 1
+step = 0.05
+default = 0.7
+
+[param.scale]
+label = "Field scale"
+min = 0.5
+max = 4
+step = 0.1
+default = 1.6
+
+[param.speed]
+label = "Speed"
+min = 0.1
+max = 3
+step = 0.05
+default = 1
+
+[param.lines]
+label = "Brush strokes"
+min = 0
+max = 1
+step = 0.05
+default = 0.6
+
+[param.colors]
+type = "choice"
+label = "Color by"
+options = ["direction", "accent", "speed"]
+default = "direction"
+
+# The field is smooth, so it is evaluated at an eighth of the resolution once per
+# frame; the image pass only follows it.
+[[buffer]]
+name = "field"
+shader = "field.frag"
+scale = 0.125
+format = "rgba16f"
+
+[image]
+shader = "main.frag"
+channels = ["field"]

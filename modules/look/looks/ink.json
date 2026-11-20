@@ -1,0 +1,6 @@
+{
+  "name": "Ink",
+  "description": "Ink folding through water, seen through strongly bending lens islands",
+  "wall": { "wallpaper": "fluid", "preset": "Ink" },
+  "bar": { "background": "pill", "preset": "lens" }
+}

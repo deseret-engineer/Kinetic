@@ -1,0 +1,50 @@
+name = "Pond"
+author = "Kinetic"
+description = "Rain on still water, refracting your Omarchy background. Click to make ripples"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+
+[param.rain]
+label = "Rain"
+min = 0
+max = 1
+step = 0.05
+default = 0.35
+
+[param.damping]
+label = "Ripple length"
+min = 0.95
+max = 0.999
+step = 0.001
+default = 0.985
+
+[param.refraction]
+label = "Refraction"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.surface]
+type = "choice"
+label = "Beneath the water"
+options = ["background", "theme"]
+default = "background"
+
+[param.trail]
+type = "bool"
+label = "Pointer leaves a wake"
+default = true
+
+[[buffer]]
+name = "water"
+shader = "water.frag"
+scale = 0.5
+format = "rgba16f"
+channels = ["water"]
+
+[image]
+shader = "main.frag"
+channels = ["water", "@background"]

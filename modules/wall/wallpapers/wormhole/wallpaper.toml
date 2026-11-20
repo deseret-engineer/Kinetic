@@ -1,0 +1,41 @@
+name = "Wormhole"
+author = "Kinetic"
+description = "Flying through a tunnel of light that pulses with music"
+fps = 60
+scale = 0.75
+audio = true
+pointer = true
+
+[param.speed]
+label = "Speed"
+min = 0
+max = 4
+step = 0.05
+default = 1
+
+[param.twist]
+label = "Twist"
+min = -2
+max = 2
+step = 0.05
+default = 0.4
+
+[param.rings]
+type = "int"
+label = "Segments"
+min = 3
+max = 24
+default = 8
+
+[param.react]
+label = "Audio reaction"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.walls]
+type = "choice"
+label = "Walls"
+options = ["grid", "bands", "smooth"]
+default = "grid"

@@ -1,0 +1,155 @@
+{
+  "//": "Every pill option, in one place. The bar (PillSchema.js, generated at build), the CLI (kinetic bar) and the settings panel all read this file. Order matters: an option's default may depend on options listed before it.",
+  "version": 1,
+  "groups": ["Look", "Glass", "Shape", "Spacing", "Shadow"],
+  "options": [
+    {
+      "key": "style", "group": "Look", "type": "choice", "default": "liquid",
+      "options": ["liquid", "glass", "frosted", "solid", "outline"],
+      "label": "Style",
+      "description": "Liquid: clear glass with a lit rim. Glass: tinted. Frosted: milky. Solid and outline are flat."
+    },
+    {
+      "key": "shape", "group": "Shape", "type": "choice", "default": "bar",
+      "options": ["bar", "islands"],
+      "label": "Shape", "description": "One capsule, or one behind each group of widgets"
+    },
+    {
+      "key": "radius", "group": "Shape", "type": "float", "default": "full", "special": "full",
+      "min": 0, "max": 40, "step": 1,
+      "label": "Corner radius", "description": "Full makes a capsule"
+    },
+    {
+      "key": "length", "group": "Shape", "type": "float", "default": 1, "min": 0.1, "max": 1, "step": 0.01,
+      "label": "Length", "description": "How much of the screen one capsule spans"
+    },
+    {
+      "key": "align", "group": "Shape", "type": "choice", "default": "center",
+      "options": ["start", "center", "end"],
+      "label": "Alignment", "description": "Where a shorter capsule sits"
+    },
+    {
+      "key": "margin", "group": "Spacing", "type": "int", "default": 6, "min": 0, "max": 80, "step": 1,
+      "label": "Edge gap", "description": "Space between the screen edge and the pill"
+    },
+    {
+      "key": "sideMargin", "group": "Spacing", "type": "int", "default": 10, "min": 0, "max": 400, "step": 1,
+      "label": "End gap", "description": "Space at the pill's two ends"
+    },
+    {
+      "key": "gap", "group": "Spacing", "type": "int", "default": 0, "min": 0, "max": 80, "step": 1,
+      "label": "Window gap", "description": "Extra room between the pill and your windows"
+    },
+    {
+      "key": "padding", "group": "Spacing", "type": "int", "default": 2, "min": 0, "max": 40, "step": 1,
+      "label": "Thickness", "description": "How much thicker the pill is than the widgets"
+    },
+    {
+      "key": "islandPadding", "group": "Spacing", "type": "int", "default": 6, "min": 0, "max": 60, "step": 1,
+      "label": "Island padding", "description": "Room around each island's widgets"
+    },
+    {
+      "key": "opacity", "group": "Look", "type": "float", "min": 0, "max": 1, "step": 0.01,
+      "default": { "by": "style", "values": { "liquid": 0.16, "glass": 0.38, "frosted": 0.55, "solid": 1, "outline": 0 } },
+      "label": "Tint strength", "description": "How much color fills the pill"
+    },
+    {
+      "key": "tint", "group": "Look", "type": "color", "default": "theme", "options": ["theme", "accent"],
+      "label": "Tint", "description": "The bar's theme color, the accent, or any color"
+    },
+    {
+      "key": "highlight", "group": "Look", "type": "float", "min": 0, "max": 2, "step": 0.05,
+      "default": { "by": "style", "values": { "liquid": 1, "glass": 0, "frosted": 0.35, "solid": 0, "outline": 0 } },
+      "label": "Light", "description": "Sheen, rim light and glint on liquid and frosted glass"
+    },
+    {
+      "key": "border", "group": "Look", "type": "float", "min": 0, "max": 8, "step": 0.5,
+      "default": { "by": "style", "values": { "liquid": 1, "glass": 1, "frosted": 1, "solid": 0, "outline": 1.5 } },
+      "label": "Rim width"
+    },
+    {
+      "key": "borderColor", "group": "Look", "type": "color", "default": "auto", "options": ["auto", "accent"],
+      "label": "Border color", "description": "Flat styles only. Auto follows the bar's text"
+    },
+    {
+      "key": "borderOpacity", "group": "Look", "type": "float", "min": 0, "max": 1, "step": 0.01,
+      "default": { "by": "style", "values": { "outline": 0.45 }, "else": 0.14 },
+      "label": "Border strength"
+    },
+    {
+      "key": "glass", "group": "Glass", "type": "choice",
+      "options": ["auto", "wallpaper", "blur", "none"],
+      "default": { "by": "style", "values": { "solid": "none", "outline": "none" }, "else": "auto" },
+      "label": "Glass",
+      "description": "Wallpaper: the live wallpaper bends behind the pill. Blur: Hyprland blurs. Auto uses the wallpaper while it runs"
+    },
+    {
+      "key": "refraction", "group": "Glass", "type": "float", "min": 0, "max": 60, "step": 0.5,
+      "default": { "by": "style", "values": { "liquid": 10, "glass": 4, "frosted": 6 }, "else": 0 },
+      "label": "Refraction", "description": "How far the glass bends the wallpaper at its rim"
+    },
+    {
+      "key": "frost", "group": "Glass", "type": "float", "min": 0, "max": 6, "step": 0.1,
+      "default": { "by": "style", "values": { "liquid": 0.6, "glass": 2.5, "frosted": 3.5 }, "else": 0 },
+      "label": "Frost", "description": "How much the wallpaper glass blurs"
+    },
+    {
+      "key": "dispersion", "group": "Glass", "type": "float", "min": 0, "max": 1, "step": 0.05,
+      "default": { "by": "style", "values": { "liquid": 0.35, "frosted": 0.1 }, "else": 0 },
+      "label": "Dispersion", "description": "Color fringes at the rim, like real glass"
+    },
+    {
+      "key": "bevel", "group": "Glass", "type": "float", "min": 0, "max": 40, "step": 0.5, "default": 0,
+      "label": "Bevel (px)", "description": "Wallpaper glass: how far in from the rim the glass curves. 0 follows the capsule's thickness"
+    },
+    {
+      "key": "curvature", "group": "Glass", "type": "float", "min": 0.3, "max": 4, "step": 0.05, "default": 1,
+      "label": "Edge profile", "description": "Wallpaper glass: under 1 a soft slope, 1 a rounded edge, over 1 a sharp rim with a flat middle"
+    },
+    {
+      "key": "saturation", "group": "Glass", "type": "float", "min": 0, "max": 2, "step": 0.05,
+      "default": { "by": "style", "values": { "liquid": 1.15 }, "else": 1 },
+      "label": "Saturation", "description": "Wallpaper glass: the color of what shows through"
+    },
+    {
+      "key": "brightness", "group": "Glass", "type": "float", "min": -0.5, "max": 0.5, "step": 0.01, "default": 0,
+      "label": "Brightness", "description": "Wallpaper glass: lighten or darken what shows through"
+    },
+    {
+      "key": "specular", "group": "Glass", "type": "float", "min": 0, "max": 1, "step": 0.05, "default": 0,
+      "label": "Rim light", "description": "Wallpaper glass: light catching the curved rim (the bar's own highlight is drawn on top as well)"
+    },
+    {
+      "key": "lightAngle", "group": "Glass", "type": "float", "min": 0, "max": 360, "step": 5, "default": 120,
+      "label": "Light angle (°)", "description": "Wallpaper glass: where the rim light comes from: 0 the right, 90 the top"
+    },
+    {
+      "key": "blurThreshold", "group": "Glass", "type": "float", "min": 0, "max": 1, "step": 0.01,
+      "default": { "from": "opacity", "factor": 0.5, "min": 0.02, "max": 0.3 },
+      "label": "Blur threshold",
+      "description": "Hyprland blur only: fainter pixels are not blurred. Keep it below the tint strength"
+    },
+    {
+      "key": "shadow", "group": "Shadow", "type": "bool",
+      "default": { "by": "style", "values": { "liquid": true, "frosted": true, "solid": true }, "else": false },
+      "label": "Drop shadow"
+    },
+    {
+      "key": "shadowOpacity", "group": "Shadow", "type": "float", "default": 0.28, "min": 0, "max": 1, "step": 0.01,
+      "label": "Shadow strength"
+    },
+    {
+      "key": "shadowSize", "group": "Shadow", "type": "float", "default": 12, "min": 0, "max": 60, "step": 1,
+      "label": "Shadow size"
+    }
+  ],
+  "presets": {
+    "liquid":  { "style": "liquid", "shape": "bar", "radius": "full", "margin": 6, "sideMargin": 10, "length": 1 },
+    "glass":   { "style": "glass", "shape": "bar", "radius": 12, "margin": 6, "sideMargin": 10, "length": 1 },
+    "islands": { "style": "liquid", "shape": "islands", "radius": "full", "margin": 6, "sideMargin": 8 },
+    "dock":    { "style": "liquid", "shape": "bar", "radius": "full", "margin": 8, "length": 0.7, "align": "center" },
+    "lens":    { "style": "liquid", "shape": "islands", "radius": "full", "margin": 6, "sideMargin": 8, "refraction": 16, "frost": 0.3, "dispersion": 0.6, "opacity": 0.08 },
+    "minimal": { "style": "outline", "shape": "islands", "radius": "full", "margin": 5, "sideMargin": 8 },
+    "solid":   { "style": "solid", "shape": "bar", "radius": 10, "margin": 6, "sideMargin": 10, "length": 1 }
+  }
+}

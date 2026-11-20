@@ -1,0 +1,23 @@
+[Unit]
+Description=Kinetic living wallpaper engine
+# Started with the graphical session (uwsm reaches it once Hyprland is up and
+# WAYLAND_DISPLAY / HYPRLAND_INSTANCE_SIGNATURE are exported) and stopped with it.
+PartOf=graphical-session.target
+After=graphical-session.target
+# A crash is restarted, backing off (2 s up to 30 s), without systemd giving up
+# after five quick failures in a row as it would by default.
+StartLimitIntervalSec=120
+StartLimitBurst=10
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/kinetic-wall daemon
+Restart=on-failure
+RestartSec=2
+RestartSteps=5
+RestartMaxDelaySec=30
+# A wallpaper should never get in the way of real work.
+Nice=5
+
+[Install]
+WantedBy=graphical-session.target

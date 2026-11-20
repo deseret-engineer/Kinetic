@@ -1,0 +1,23 @@
+{
+  "id": "motion",
+  "name": "Motion",
+  "summary": "Window and workspace animations, with wallpaper parallax",
+  "author": "Kinetic",
+  "icon": "󰁔",
+  "order": 50,
+  "requires": [
+    {
+      "id": "wall",
+      "optional": true,
+      "why": "the wallpaper moves with the windows (parallax)"
+    }
+  ],
+  "pages": [
+    {
+      "id": "motion",
+      "label": "Motion",
+      "about": "Animations, parallax and pass-through",
+      "qml": "builtin:MotionPage"
+    }
+  ]
+}

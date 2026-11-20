@@ -1,0 +1,25 @@
+{
+  "id": "glass",
+  "name": "Glass",
+  "summary": "Liquid glass: the wallpaper bent behind the bar and windows",
+  "author": "Kinetic",
+  "icon": "󰂵",
+  "order": 30,
+  "requires": [
+    {
+      "id": "wall",
+      "why": "the wallpaper engine draws the bar's glass, and sends the window glass's options to Kinetic's Hyprland plugin"
+    }
+  ],
+  "engineGroups": [
+    "Glass"
+  ],
+  "pages": [
+    {
+      "id": "glass",
+      "label": "Glass",
+      "about": "Liquid glass under the bar and behind windows",
+      "qml": "builtin:GlassPage"
+    }
+  ]
+}

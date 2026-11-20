@@ -1,0 +1,111 @@
+#!/bin/bash
+# kinetic: one command for every Kinetic module.
+#   kinetic <module> <command> [args]     e.g. kinetic wall set topo, kinetic bar preset islands
+#   kinetic module install <link|folder>  add a module (with what it needs)
+set -euo pipefail
+KINETIC_HOME=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+export KINETIC_HOME
+# shellcheck source=lib/kinetic.sh
+source "$KINETIC_HOME/lib/kinetic.sh"
+export KINETIC_MODULES_USER
+
+# One facts snapshot for everything this command runs, nested `kinetic` calls included.
+if [[ -z ${KINETIC_FACTS:-} ]]; then
+  KINETIC_FACTS=$(mktemp "${TMPDIR:-/tmp}/kinetic-facts.XXXXXX")
+  export KINETIC_FACTS
+  trap 'rm -f "$KINETIC_FACTS"' EXIT
+fi
+
+modman() { python3 "$KINETIC_HOME/lib/modman.py" "$@"; }
+
+usage() {
+  echo "kinetic $KINETIC_VERSION - a look and feel suite for Omarchy"
+  echo
+  echo "Usage: kinetic <module> <command> [args]"
+  echo
+  echo "Modules:"
+  modman list --quick --json 2>/dev/null | jq -r '.[] | "  \(.id)\t\(.summary)\(if .builtin then "" else "  (added)" end)"' | column -t -s $'\t'
+  cat <<USAGE
+
+Suite:
+  app [module]      Open the Kinetic app on one of its pages
+  panel [tab]       The bar widget: wallpaper or library (other tabs open the app)
+  status            Everything at a glance, as JSON
+  modules [--json]  Every module, whether it is on, its version, what it needs
+  module ...        Add and remove modules: kinetic module help
+  version
+
+Every module answers: kinetic <module> enable | disable | active | help
+USAGE
+}
+
+app() {
+  local page="${1:-wallpaper}"
+  [[ $page =~ ^[a-z][a-z0-9-]*$ ]] || die "app: no page named '$page'"
+  omarchy-shell kinetic.app open "$page" >/dev/null 2>&1 \
+    || die "the Kinetic app needs the Omarchy shell running with kinetic.app enabled (./install.sh adds it)"
+}
+
+panel() {
+  local tab="${1:-}"
+  if [[ -n $tab ]]; then
+    omarchy-shell -q shell summon kinetic >/dev/null 2>&1 || true
+    sleep 0.15
+    omarchy-shell -q kinetic.data showTab "$tab" >/dev/null 2>&1 || true
+  else
+    omarchy-shell -q shell toggle kinetic >/dev/null 2>&1 || true
+  fi
+}
+
+status() {
+  facts | jq -c --arg look "$(cat "$KINETIC_STATE/look" 2>/dev/null || true)" '. + {look: (if $look == "" then null else $look end)}'
+}
+
+run_module() {
+  local id=$1 d
+  shift
+  d=$(module_dir "$id") || die "no module named '$id' (kinetic modules)"
+  KINETIC_MODULE=$id KINETIC_MODULE_DIR=$d "$d/module.sh" "$@"
+}
+
+# `--yes` anywhere answers this command's questions
+args=()
+for a in "$@"; do
+  if [[ $a == --yes || $a == -y ]]; then export KINETIC_YES=1; else args+=("$a"); fi
+done
+set -- "${args[@]+"${args[@]}"}"
+
+cmd="${1:-help}"
+shift || true
+case "$cmd" in
+  help|-h|--help) usage ;;
+  version|--version) echo "kinetic $KINETIC_VERSION" ;;
+  modules) modman list "$@" ;;
+  module) [[ ${KINETIC_YES:-} == 1 ]] && set -- "$@" --yes; modman "${@:-help}" ;;
+  app) app "$@" ;;
+  panel) panel "$@" ;;
+  status) status ;;
+  *)
+    module_dir "$cmd" >/dev/null || { usage >&2; exit 2; }
+    case "${1:-}" in
+      enable)  # what it needs comes on first
+        needs=$(modman plan-enable "$cmd") || exit 1
+        for d in $needs; do
+          echo "kinetic: switching on $d first ($cmd needs it)" >&2
+          run_module "$d" enable
+          facts_refresh
+        done
+        ;;
+      disable)  # what needs it stops too, if you say so
+        mapfile -t users < <(modman plan-disable "$cmd")
+        if (( ${#users[@]} )); then
+          if (( ${#users[@]} == 1 )); then q="${users[0]} needs $cmd and stops with it. Switch it off too?"
+          else q="$(printf '%s, ' "${users[@]}" | sed 's/, $//') need $cmd and stop with it. Switch them off too?"; fi
+          confirm "$q" || die "left on"
+          for d in "${users[@]}"; do run_module "$d" disable; facts_refresh; done
+        fi
+        ;;
+    esac
+    run_module "$cmd" "$@"
+    ;;
+esac

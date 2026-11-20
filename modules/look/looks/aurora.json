@@ -1,0 +1,14 @@
+{
+  "name": "Aurora",
+  "description": "Northern lights behind thin outlined islands",
+  "wall": {
+    "wallpaper": "aurora"
+  },
+  "bar": {
+    "background": "pill",
+    "preset": "minimal"
+  },
+  "motion": {
+    "preset": "deep"
+  }
+}

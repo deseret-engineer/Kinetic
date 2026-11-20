@@ -1,0 +1,13 @@
+name = "Rain on Glass"
+author = "Kinetic"
+description = "Your current Omarchy background seen through a rainy window"
+fps = 30
+scale = 0.75
+
+[params]
+speed = [1.0, 0.0, 3.0]
+fog = [4.5, 0.0, 7.0]
+
+[image]
+shader = "main.frag"
+channels = ["@background"]

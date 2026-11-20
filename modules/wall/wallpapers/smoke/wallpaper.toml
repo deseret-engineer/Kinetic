@@ -1,0 +1,155 @@
+name = "Smoke"
+author = "Kinetic"
+description = "A real incompressible fluid solver: buoyant smoke rising from drifting sources. Drag the pointer to push it; click for a puff"
+fps = 60
+scale = 0.75
+pointer = true
+adaptive = false
+preview_time = 14
+common = "common.glsl"
+
+[param.sources]
+type = "int"
+label = "Sources"
+min = 0
+max = 6
+default = 3
+
+[param.heat]
+label = "Buoyancy"
+description = "How hard the hot smoke rises"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.swirl]
+label = "Swirl"
+description = "Vorticity confinement: keeps small eddies alive"
+min = 0
+max = 3
+step = 0.05
+default = 1.2
+
+[param.jet]
+label = "Jet strength"
+description = "Speed the smoke leaves its source at"
+min = 0
+max = 3
+step = 0.05
+default = 0.6
+
+[param.fade]
+label = "Linger"
+description = "How long smoke stays before thinning out"
+min = 0
+max = 1
+step = 0.02
+default = 0.6
+
+[param.wind]
+label = "Wind"
+min = -1
+max = 1
+step = 0.05
+default = 0
+
+[param.quality]
+type = "int"
+label = "Solver iterations"
+description = "Pressure solver steps per frame: more is more exact, and costs more GPU"
+min = 4
+max = 40
+default = 12
+
+[param.colors]
+type = "choice"
+label = "Colors"
+options = ["theme", "accent", "fire", "mono"]
+default = "theme"
+
+[param.shading]
+label = "Lighting"
+min = 0
+max = 1
+step = 0.05
+default = 0.7
+
+[param.gusts]
+type = "bool"
+label = "Workspace gusts"
+description = "Switching workspace blows the smoke sideways"
+default = true
+
+
+[preset.Incense]
+sources = 1
+heat = 0.6
+swirl = 0.7
+jet = 0.3
+fade = 0.85
+
+[preset.Bonfire]
+sources = 4
+heat = 2.2
+swirl = 1.6
+jet = 1
+colors = "fire"
+fade = 0.4
+
+[preset.Ink]
+sources = 3
+heat = 0
+swirl = 2
+jet = 1.4
+fade = 0.8
+
+[preset.Storm]
+sources = 6
+heat = 1.2
+swirl = 3
+wind = 0.4
+fade = 0.5
+
+# Stable fluids on a grid of square cells. Velocity is in cells per frame-at-60fps.
+# vel (advect + forces) -> div -> pressure (Jacobi, N iterations) -> proj -> dye
+[[buffer]]
+name = "vel"
+shader = "velocity.frag"
+scale = 0.22
+format = "rgba16f"
+channels = ["proj", "dye", "vel"]
+
+[[buffer]]
+name = "div"
+shader = "divergence.frag"
+scale = 0.22
+format = "rgba16f"
+filter = "nearest"
+channels = ["vel"]
+
+[[buffer]]
+name = "pressure"
+shader = "pressure.frag"
+scale = 0.22
+format = "rgba32f"
+iterations = "quality"
+channels = ["pressure", "div"]
+
+[[buffer]]
+name = "proj"
+shader = "project.frag"
+scale = 0.22
+format = "rgba16f"
+channels = ["vel", "pressure"]
+
+[[buffer]]
+name = "dye"
+shader = "dye.frag"
+scale = 0.5
+format = "rgba16f"
+channels = ["dye", "proj"]
+
+[image]
+shader = "main.frag"
+channels = ["dye"]

@@ -1,0 +1,151 @@
+name = "Fluid"
+author = "Kinetic"
+description = "A real incompressible fluid on an endless sheet of water: bursts of colored ink swirl, fold and mix. Drag the pointer to stir; click to splash"
+fps = 60
+scale = 1.0
+pointer = true
+adaptive = false
+preview_time = 14
+preview_warmup = 14
+common = "common.glsl"
+
+[param.swirl]
+label = "Swirl"
+description = "Vorticity confinement: keeps small eddies spinning"
+min = 0
+max = 4
+step = 0.05
+default = 1.0
+
+[param.bursts]
+label = "Bursts"
+description = "How often a new jet of ink shoots in"
+min = 0
+max = 3
+step = 0.05
+default = 1
+
+[param.force]
+label = "Burst force"
+min = 0.2
+max = 3
+step = 0.05
+default = 1
+
+[param.ink]
+label = "Ink amount"
+min = 0
+max = 2
+step = 0.05
+default = 1
+
+[param.linger]
+label = "Linger"
+description = "How long ink stays before it dissolves"
+min = 0
+max = 1
+step = 0.02
+default = 0.7
+
+[param.stir]
+label = "Currents"
+description = "A slow background current that keeps everything drifting"
+min = 0
+max = 2
+step = 0.05
+default = 0.6
+
+[param.gloss]
+label = "Gloss"
+description = "Light catching the folds of the ink"
+min = 0
+max = 1
+step = 0.05
+default = 0.6
+
+[param.quality]
+type = "int"
+label = "Solver iterations"
+description = "Pressure solver steps per frame: more is more exact, and costs more GPU"
+min = 4
+max = 40
+default = 16
+
+[param.inks]
+type = "choice"
+label = "Ink colors"
+options = ["theme", "accent", "rainbow", "mono"]
+default = "theme"
+
+[preset.Calm]
+bursts = 0.4
+force = 0.6
+swirl = 1
+linger = 0.9
+stir = 0.4
+
+[preset.Marbling]
+bursts = 0.7
+force = 0.8
+swirl = 0.3
+linger = 1
+gloss = 0.9
+
+[preset.Psychedelic]
+bursts = 2.2
+force = 1.6
+swirl = 3
+inks = "rainbow"
+linger = 0.5
+
+[preset.Ink]
+inks = "mono"
+bursts = 0.8
+swirl = 2
+gloss = 0.3
+
+# Stable fluids on a periodic grid (the sheet wraps at the edges, so there are no walls).
+# vel (advect + forces) -> div -> pressure (Jacobi, N iterations) -> proj -> dye
+[[buffer]]
+name = "vel"
+shader = "velocity.frag"
+scale = 0.25
+format = "rgba16f"
+wrap = "repeat"
+channels = ["proj", "vel"]
+
+[[buffer]]
+name = "div"
+shader = "divergence.frag"
+scale = 0.25
+format = "r16f"
+filter = "nearest"
+channels = ["vel"]
+
+[[buffer]]
+name = "pressure"
+shader = "pressure.frag"
+scale = 0.25
+format = "r32f"
+iterations = "quality"
+channels = ["pressure", "div"]
+
+[[buffer]]
+name = "proj"
+shader = "project.frag"
+scale = 0.25
+format = "rgba16f"
+wrap = "repeat"
+channels = ["vel", "pressure"]
+
+[[buffer]]
+name = "dye"
+shader = "dye.frag"
+scale = 0.5
+format = "rgba16f"
+wrap = "repeat"
+channels = ["dye", "proj"]
+
+[image]
+shader = "main.frag"
+channels = ["dye"]

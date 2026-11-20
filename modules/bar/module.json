@@ -1,0 +1,26 @@
+{
+  "id": "bar",
+  "name": "Bar",
+  "summary": "The pill bar: a floating glass capsule over Omarchy's own bar",
+  "author": "Kinetic",
+  "icon": "󰍜",
+  "order": 20,
+  "requires": [
+    {
+      "id": "wall",
+      "optional": true,
+      "why": "the glass under the pill bends the live wallpaper; without it, Hyprland's blur"
+    }
+  ],
+  "pages": [
+    {
+      "id": "bar",
+      "label": "Bar",
+      "about": "The pill: style, shape, spacing, shadow",
+      "qml": "builtin:BarPage",
+      "props": {
+        "withGlass": false
+      }
+    }
+  ]
+}

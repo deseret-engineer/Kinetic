@@ -1,0 +1,13 @@
+{
+  "name": "Still",
+  "description": "Omarchy's own background and its glassy bar: Kinetic steps aside",
+  "wall": {
+    "enabled": false
+  },
+  "bar": {
+    "background": "glassy"
+  },
+  "motion": {
+    "enabled": false
+  }
+}

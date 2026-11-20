@@ -1,0 +1,11 @@
+name = "Aurora"
+author = "Kinetic"
+description = "Aurora curtains in your theme's colors over a starlit horizon"
+fps = 30
+scale = 0.5
+pointer = true
+preview_time = 20
+
+[params]
+speed = [1.0, 0.0, 4.0]
+intensity = [1.0, 0.2, 2.5]

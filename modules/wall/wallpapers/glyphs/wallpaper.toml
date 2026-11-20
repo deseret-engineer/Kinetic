@@ -1,0 +1,10 @@
+name = "Glyphs"
+author = "Kinetic"
+description = "Falling columns of procedural glyphs in your accent color"
+fps = 24
+scale = 1.0
+parallax = 1      # an endless plane: pans with workspace parallax (Kinetic motion)
+
+[params]
+speed = [1.0, 0.1, 4.0]
+rows = [44.0, 16.0, 90.0]

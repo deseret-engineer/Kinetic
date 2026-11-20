@@ -1,0 +1,25 @@
+{
+  "id": "light",
+  "name": "Light",
+  "summary": "Selection light: a soft glow around windows, under the glass",
+  "author": "Kinetic",
+  "icon": "󰛨",
+  "order": 40,
+  "requires": [
+    {
+      "id": "wall",
+      "why": "the wallpaper engine keeps the light's options and sends them to Kinetic's Hyprland plugin, which draws it"
+    }
+  ],
+  "engineGroups": [
+    "Light"
+  ],
+  "pages": [
+    {
+      "id": "light",
+      "label": "Light",
+      "about": "A glow around windows, under the glass",
+      "qml": "builtin:LightPage"
+    }
+  ]
+}

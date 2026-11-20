@@ -1,0 +1,15 @@
+name = "Living Still"
+author = "Kinetic"
+description = "Brings your current Omarchy background to life: drift, parallax and floating light"
+fps = 30
+scale = 1.0
+pointer = true
+
+[params]
+speed = [1.0, 0.0, 4.0]
+parallax = [1.0, 0.0, 3.0]
+motes = [1.0, 0.0, 2.0]
+
+[image]
+shader = "main.frag"
+channels = ["@background"]
