@@ -91,4 +91,17 @@ assert.deepStrictEqual(m.parseMotion('{"options":[1]}'), { enabled: true, option
 assert.deepStrictEqual(m.parseMotion(""), { enabled: false, options: {} })
 assert.deepStrictEqual(m.parseMotion("{bad"), { enabled: false, options: {} })
 
+// the command queue: a waiting value for the same setting is replaced, in place
+let q = m.enqueue([], "bar", ["k", "bar", "set", "radius", "8"], ["set", "radius", "8"])
+q = m.enqueue(q, "wall", ["w", "next"], ["next"])
+q = m.enqueue(q, "bar", ["k", "bar", "set", "radius", "12"], ["set", "radius", "12"])
+assert.deepStrictEqual(q.map(x => x.command.slice(-1)[0]), ["12", "next"])
+q = m.enqueue(q, "motion", ["k", "motion", "set", "radius", "3"], ["set", "radius", "3"]) // another module's
+q = m.enqueue(q, "bar", ["k", "bar", "set", "shadow", "true"], ["set", "shadow", "true"])
+q = m.enqueue(q, "wall", ["w", "next"], ["next"]) // not a setting: both run
+assert.strictEqual(q.length, 5)
+const before = q
+assert.notStrictEqual(m.enqueue(before, "bar", ["x"], ["set", "radius", "1"]), before) // a new array
+assert.strictEqual(before[0].command.slice(-1)[0], "12")
+
 console.log("model tests passed")

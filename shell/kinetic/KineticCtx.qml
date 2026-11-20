@@ -61,7 +61,10 @@ Item {
   // `kinetic modules --json`: every module (Kinetic's and the ones you added), its
   // manifest, whether it is on, what it needs. Until it has answered, everything counts as on.
   property var modules: []
-  function refreshModules() { if (!modulesProc.running) modulesProc.running = true }
+  // A refresh asked for while one runs is not dropped: it runs again when that one ends,
+  // so the last change always shows.
+  property bool modulesAgain: false
+  function refreshModules() { if (modulesProc.running) modulesAgain = true; else modulesProc.running = true }
   function moduleInfo(id) {
     for (var i = 0; i < modules.length; i++) if (modules[i].id === id) return modules[i]
     return null
@@ -196,8 +199,10 @@ Item {
   property var queue: []
   property var pending: ({})       // slider drags: latest value per key, sent on a short timer
 
-  function refresh() { if (!describeProc.running) describeProc.running = true }
-  function refreshPresets() { if (!presetsProc.running) presetsProc.running = true }
+  property bool describeAgain: false
+  property bool presetsAgain: false
+  function refresh() { if (describeProc.running) describeAgain = true; else describeProc.running = true }
+  function refreshPresets() { if (presetsProc.running) presetsAgain = true; else presetsProc.running = true }
   // Starts every part over (`kinetic reload`: the engine, the glass plugin, the shell with
   // the bar and this app). It outlives the shell, which it restarts, so it runs as a user unit.
   function reloadAll() {
@@ -224,9 +229,7 @@ Item {
   function send(module, args) {
     for (var i = 0; i < args.length; i++) if (!Model.safeArg(args[i])) return
     var cmd = module === "wall" ? [KineticEnv.WALL] : [KineticEnv.KINETIC, module]
-    var q = queue.slice()
-    q.push({ module: module, command: cmd.concat(args) })
-    queue = q
+    queue = Model.enqueue(queue, module, cmd.concat(args), args) // a newer value replaces a waiting one
     pump()
   }
 
@@ -290,6 +293,7 @@ Item {
       var d = exitCode === 0 ? Model.parseDescribe(describeOut.text) : null
       root.offline = d === null
       if (d) root.info = d
+      if (root.describeAgain) { root.describeAgain = false; running = true }
     }
   }
 
@@ -297,7 +301,10 @@ Item {
     id: presetsProc
     command: [KineticEnv.KINETIC, "preset", "list", "--json"]
     stdout: StdioCollector { id: presetsOut; waitForEnd: true }
-    onExited: function(exitCode) { if (exitCode === 0) root.presets = Model.parsePresets(presetsOut.text) }
+    onExited: function(exitCode) {
+      if (exitCode === 0) root.presets = Model.parsePresets(presetsOut.text)
+      if (root.presetsAgain) { root.presetsAgain = false; running = true }
+    }
   }
 
   Process {
@@ -352,8 +359,9 @@ Item {
     command: [KineticEnv.KINETIC, "modules", "--json"]
     stdout: StdioCollector { id: modulesOut; waitForEnd: true }
     onExited: function(exitCode) {
-      if (exitCode !== 0) return
-      try { var m = JSON.parse(modulesOut.text); if (Array.isArray(m)) root.modules = m } catch (e) {}
+      if (exitCode === 0)
+        try { var m = JSON.parse(modulesOut.text); if (Array.isArray(m)) root.modules = m } catch (e) {}
+      if (root.modulesAgain) { root.modulesAgain = false; running = true }
     }
   }
 
@@ -365,7 +373,7 @@ Item {
       if (root.queue.length > 0) root.pump()
       else {
         if (module !== "bar" && module !== "motion") root.refresh()
-        root.refreshModules() // any change may switch a module on or off (the glass, the light...)
+        modulesTimer.restart() // any change may switch a module on or off (the glass, the light...): once things settle
       }
     }
   }
@@ -406,6 +414,7 @@ Item {
   }
 
   Timer { id: flushTimer; interval: 60; onTriggered: root.flush() }
+  Timer { id: modulesTimer; interval: 300; onTriggered: root.refreshModules() }
   // fps and GPU time move on their own: read them every two seconds, only while shown
   Timer { interval: 2000; repeat: true; running: root.active && root.live; onTriggered: root.refresh() }
 

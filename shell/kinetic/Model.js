@@ -215,6 +215,20 @@ function parseMotion(text) {
   }
 }
 
+// The command queue with one more command. A newer value for a setting that is still
+// waiting (`set`, `param` or `config` with its key) takes the older one's place, so a
+// slider drag never piles up stale values. Returns a new array.
+function enqueue(queue, module, command, args) {
+  var q = (queue || []).slice()
+  var setting = args.length === 3 && ["set", "param", "config"].indexOf(args[0]) >= 0
+    ? module + "\u0000" + args[0] + "\u0000" + args[1] : ""
+  var item = { module: module, command: command, setting: setting }
+  for (var i = 0; setting !== "" && i < q.length; i++)
+    if (q[i].setting === setting) { q[i] = item; return q }
+  q.push(item)
+  return q
+}
+
 // A bar option row whose value is its special word ("full" radius).
 function isSpecial(item) { return !!item && item.special !== undefined && item.value === item.special }
 
@@ -224,5 +238,5 @@ if (typeof module !== "undefined") module.exports = {
   formatNumber: formatNumber, isOn: isOn, isChanged: isChanged, hasBit: hasBit, toggleBit: toggleBit,
   bitsLabel: bitsLabel, choiceIndex: choiceIndex, choiceOptions: choiceOptions, choiceValue: choiceValue,
   groupConfig: groupConfig, normalizeHex: normalizeHex, safeArg: safeArg, stateLabel: stateLabel,
-  filterLibrary: filterLibrary, parseNumberInput: parseNumberInput
+  filterLibrary: filterLibrary, parseNumberInput: parseNumberInput, enqueue: enqueue
 }

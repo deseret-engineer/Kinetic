@@ -60,6 +60,8 @@ The first release.
   unpacking, so an archive that expands to gigabytes is refused before it
   fills the disk, and a link's subfolder can no longer point at a sibling
   folder whose name starts the same (`../src2` beside `src`).
+- The app could miss the last change: a refresh asked for while another was
+  running was dropped. It now runs once more when that one ends.
 - The Size setting of Swarm, Particle Life and Fireworks did nothing: the
   shaders' point size had the same name and hid it. Their default look is
   unchanged (Fireworks' and Particle Life's defaults are now 1, the size they
