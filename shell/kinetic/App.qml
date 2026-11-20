@@ -106,7 +106,7 @@ Item {
       Qt.callLater(function() {
         scroll.ScrollBar.vertical.position = 0
         if (root.current.search && kinetic.searchField) kinetic.searchField.forceActiveFocus()
-        if (kinetic.tab === "looks") kinetic.refreshLooks()
+        if (kinetic.tab === "presets") kinetic.refreshPresets()
       })
     }
   }

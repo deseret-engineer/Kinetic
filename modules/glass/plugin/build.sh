@@ -11,12 +11,13 @@ mkdir -p "$(dirname "$out")"
 command -v g++ >/dev/null || { echo "kinetic-glass: g++ is missing (pacman -S gcc)" >&2; exit 1; }
 pkg-config --exists hyprland || { echo "kinetic-glass: Hyprland's headers are missing (the hyprland package ships them)" >&2; exit 1; }
 
-deps="pixman-1 libdrm hyprland pangocairo libinput libudev wayland-server xkbcommon"
+deps=(pixman-1 libdrm hyprland pangocairo libinput libudev wayland-server xkbcommon)
 tmp="$out.new.$$"
 trap 'rm -f "$tmp"' EXIT
+read -ra cflags <<<"$(pkg-config --cflags "${deps[@]}")"
 # --no-gnu-unique: Hyprland can unload and reload it
 g++ -O2 -shared -fPIC -std=c++2b --no-gnu-unique -Wall -Wno-unused-parameter \
-    "$here/kinetic-glass.cpp" -o "$tmp" $(pkg-config --cflags $deps) -lGLESv2
+    "$here/kinetic-glass.cpp" -o "$tmp" "${cflags[@]}" -lGLESv2
 mv -f "$tmp" "$out"
 trap - EXIT
 # the Hyprland commit it was built for, so Kinetic can tell when Hyprland has moved on

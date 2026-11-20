@@ -1,47 +1,47 @@
 #!/bin/bash
-# kinetic:summary=Looks: a wallpaper and a bar saved and applied together
+# kinetic:summary=Presets: a wallpaper, a bar and motion saved and applied together
 set -euo pipefail
 source "$KINETIC_HOME/lib/kinetic.sh"
 need jq
-BUNDLED="$KINETIC_HOME/modules/look/looks"
-USER_LOOKS="$KINETIC_CONFIG/looks"
+BUNDLED="$KINETIC_HOME/modules/preset/presets"
+USER_PRESETS="$KINETIC_CONFIG/presets"
 SCHEMA="$KINETIC_HOME/modules/bar/schema.json"
 
 usage() {
   cat <<USAGE
-Usage: kinetic look <command> [args]
+Usage: kinetic preset <command> [args]
 
-  list [--json]           Every look: yours ($USER_LOOKS) and the bundled ones
-  show <id>               A look's file
-  apply <id>              Switch the wallpaper and the bar to it
-  save <id> [description] Save what is showing now as a look of your own
-  remove <id>             Delete one of your own looks
-  current                 The look last applied
+  list [--json]           Every preset: yours ($USER_PRESETS) and the bundled ones
+  show <id>               A preset's file
+  apply <id>              Switch the wallpaper, the bar and motion to it
+  save <id> [description] Save what is showing now as a preset of your own
+  remove <id>             Delete one of your own presets
+  current                 The preset last applied
 
-A look file: {"name", "description", "wall": {"wallpaper", "preset", "params",
+A preset file: {"name", "description", "wall": {"wallpaper", "preset", "params",
 "enabled"}, "bar": {"background", "preset" | "pill"}, "motion": {"preset" |
-"options", "enabled"}, "theme"}. Every part is optional; only what a look names
-is changed.
+"options", "enabled"}, "theme"}. Every part is optional; only what a preset
+names is changed.
 USAGE
 }
 
-valid_id() { [[ $1 =~ ^[a-z0-9][a-z0-9-]{0,47}$ ]] || die "a look id is lowercase letters, digits and dashes"; }
+valid_id() { [[ $1 =~ ^[a-z0-9][a-z0-9-]{0,47}$ ]] || die "a preset id is lowercase letters, digits and dashes"; }
 
-look_file() {
+preset_file() {
   valid_id "$1"
-  if [[ -f $USER_LOOKS/$1.json ]]; then printf '%s\n' "$USER_LOOKS/$1.json"
+  if [[ -f $USER_PRESETS/$1.json ]]; then printf '%s\n' "$USER_PRESETS/$1.json"
   elif [[ -f $BUNDLED/$1.json ]]; then printf '%s\n' "$BUNDLED/$1.json"
-  else die "no look named '$1' (see: kinetic look list)"; fi
+  else die "no preset named '$1' (see: kinetic preset list)"; fi
 }
 
 list_json() {
   local f id seen=" " out=()
-  for f in "$USER_LOOKS"/*.json "$BUNDLED"/*.json; do
+  for f in "$USER_PRESETS"/*.json "$BUNDLED"/*.json; do
     [[ -f $f ]] || continue
     id=$(basename "$f" .json)
     [[ $seen == *" $id "* ]] && continue
     seen+="$id "
-    out+=("$(jq -c --arg id "$id" --argjson mine "$([[ $f == "$USER_LOOKS"/* ]] && echo true || echo false)" \
+    out+=("$(jq -c --arg id "$id" --argjson mine "$([[ $f == "$USER_PRESETS"/* ]] && echo true || echo false)" \
       '{id: $id, name: (.name // $id), description: (.description // ""), mine: $mine,
         wallpaper: (if .wall.enabled == false then null else .wall.wallpaper end), bar: (.bar.preset // .bar.pill.style // .bar.background)}' "$f" 2>/dev/null)") || true
   done
@@ -50,8 +50,8 @@ list_json() {
 
 apply() {
   local f wall
-  f=$(look_file "$1")
-  jq -e 'type == "object"' "$f" >/dev/null || die "$f is not a look"
+  f=$(preset_file "$1")
+  jq -e 'type == "object"' "$f" >/dev/null || die "$f is not a preset"
   wall=$(wall_bin)
 
   # wallpaper
@@ -62,7 +62,7 @@ apply() {
     "$wall" param-reset >/dev/null
     if jq -e '.wall.preset' "$f" >/dev/null; then "$wall" preset "$(jq -r '.wall.preset' "$f")" >/dev/null; fi
     jq -r '.wall.params // {} | to_entries[] | "\(.key)\u001f\(.value)"' "$f" | while IFS=$'\x1f' read -r k v; do
-      "$wall" param "$k" "$v" >/dev/null || echo "kinetic look: skipped parameter $k" >&2
+      "$wall" param "$k" "$v" >/dev/null || echo "kinetic preset: skipped parameter $k" >&2
     done
   fi
 
@@ -102,8 +102,8 @@ apply() {
   if jq -e '.theme' "$f" >/dev/null; then omarchy theme set "$(jq -r '.theme' "$f")"; fi
 
   mkdir -p "$KINETIC_STATE"
-  printf '%s\n' "$1" >"$KINETIC_STATE/look"
-  echo "Applied look: $(jq -r '.name // empty' "$f")"
+  printf '%s\n' "$1" >"$KINETIC_STATE/preset"
+  echo "Applied preset: $(jq -r '.name // empty' "$f")"
 }
 
 save() {
@@ -111,8 +111,8 @@ save() {
   valid_id "$id"
   wall=$(wall_bin)
   describe=$("$wall" describe 2>/dev/null) || describe='{"enabled":false}'
-  mkdir -p "$USER_LOOKS"
-  out="$USER_LOOKS/$id.json"
+  mkdir -p "$USER_PRESETS"
+  out="$USER_PRESETS/$id.json"
   local motion='{"enabled":false}'
   [[ -f $KINETIC_CONFIG/motion.json ]] && motion=$(jq -c '{enabled: (.enabled != false), options: (.options // {})}' "$KINETIC_CONFIG/motion.json")
   shell_json | jq --argjson d "$describe" --argjson motion "$motion" --arg id "$id" --arg desc "$desc" '
@@ -135,24 +135,24 @@ case "$cmd" in
     if [[ ${1:-} == --json ]]; then list_json
     else list_json | jq -r '.[] | [.id, .name, (if .mine then "yours" else "bundled" end), .description] | @tsv' | column -t -s $'\t'; fi
     ;;
-  show) cat "$(look_file "${1:?look id}")" ;;
-  apply) apply "${1:?look id}" ;;
-  save) save "${1:?look id}" "${2:-}" ;;
+  show) cat "$(preset_file "${1:?preset id}")" ;;
+  apply) apply "${1:?preset id}" ;;
+  save) save "${1:?preset id}" "${2:-}" ;;
   remove|rm)
-    valid_id "${1:?look id}"
-    [[ -f $USER_LOOKS/$1.json ]] || die "'$1' is not one of your looks (bundled looks can't be removed)"
-    rm -f "$USER_LOOKS/$1.json"
+    valid_id "${1:?preset id}"
+    [[ -f $USER_PRESETS/$1.json ]] || die "'$1' is not one of your presets (bundled presets can't be removed)"
+    rm -f "$USER_PRESETS/$1.json"
     echo "Removed $1"
     ;;
-  current) cat "$KINETIC_STATE/look" 2>/dev/null || echo "(none)" ;;
-  # Looks run nothing, so switching the module off only hides it in the app
-  active) jq -e '(.hidden // []) | index("look") | not' "$KINETIC_CONFIG/modules.json" >/dev/null 2>&1 \
+  current) cat "$KINETIC_STATE/preset" 2>/dev/null || echo "(none)" ;;
+  # Presets run nothing, so switching the module off only hides it in the app
+  active) jq -e '(.hidden // []) | index("preset") | not' "$KINETIC_CONFIG/modules.json" >/dev/null 2>&1 \
             || [[ ! -f $KINETIC_CONFIG/modules.json ]] && echo true || echo false ;;
   enable|disable)
     mkdir -p "$KINETIC_CONFIG"
     f="$KINETIC_CONFIG/modules.json"
     [[ -f $f ]] || echo '{}' > "$f"
-    jq --arg on "$cmd" '.hidden = (((.hidden // []) - ["look"]) + (if $on == "disable" then ["look"] else [] end))' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    jq --arg on "$cmd" '.hidden = (((.hidden // []) - ["preset"]) + (if $on == "disable" then ["preset"] else [] end))' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
     ;;
   help|-h|--help) usage ;;
   *) usage >&2; exit 2 ;;

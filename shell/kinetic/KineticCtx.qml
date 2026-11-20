@@ -54,8 +54,8 @@ Item {
   readonly property var motionGroups: Schema.groups(Schema.items(motionCfg.options, KineticEnv.MOTION_SCHEMA), KineticEnv.MOTION_SCHEMA)
   readonly property var motionPresets: Object.keys(KineticEnv.MOTION_SCHEMA.presets)
 
-  property var looks: []
-  property string currentLook: ""
+  property var presets: []
+  property string currentPreset: ""
 
   // ---------- modules ----------
   // `kinetic modules --json`: every module (Kinetic's and the ones you added), its
@@ -197,7 +197,7 @@ Item {
   property var pending: ({})       // slider drags: latest value per key, sent on a short timer
 
   function refresh() { if (!describeProc.running) describeProc.running = true }
-  function refreshLooks() { if (!looksProc.running) looksProc.running = true }
+  function refreshPresets() { if (!presetsProc.running) presetsProc.running = true }
   function refocus() { if (focusItem) focusItem.forceActiveFocus() }
 
   // Scrolls the host by a wheel event that a control under the pointer caught
@@ -289,10 +289,10 @@ Item {
   }
 
   Process {
-    id: looksProc
-    command: [KineticEnv.KINETIC, "look", "list", "--json"]
-    stdout: StdioCollector { id: looksOut; waitForEnd: true }
-    onExited: function(exitCode) { if (exitCode === 0) root.looks = Model.parseLooks(looksOut.text) }
+    id: presetsProc
+    command: [KineticEnv.KINETIC, "preset", "list", "--json"]
+    stdout: StdioCollector { id: presetsOut; waitForEnd: true }
+    onExited: function(exitCode) { if (exitCode === 0) root.presets = Model.parsePresets(presetsOut.text) }
   }
 
   Process {
@@ -356,7 +356,7 @@ Item {
     id: cmdProc
     property string module: ""
     onExited: function(exitCode) {
-      if (module === "look") root.refreshLooks()
+      if (module === "preset") root.refreshPresets()
       if (root.queue.length > 0) root.pump()
       else {
         if (module !== "bar" && module !== "motion") root.refresh()
@@ -384,12 +384,12 @@ Item {
   }
 
   FileView {
-    path: KineticEnv.LOOK_STATE
+    path: KineticEnv.PRESET_STATE
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
-    onLoaded: root.currentLook = text().trim()
-    onLoadFailed: root.currentLook = ""
+    onLoaded: root.currentPreset = text().trim()
+    onLoadFailed: root.currentPreset = ""
   }
 
   // The engine changed (on, off, restarted): its signal file says so.
@@ -406,7 +406,7 @@ Item {
 
   onActiveChanged: if (active) {
     refresh()
-    refreshLooks()
+    refreshPresets()
     refreshModules()
     Qt.callLater(root.refocus)
   }

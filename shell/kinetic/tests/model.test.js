@@ -76,12 +76,12 @@ assert.deepStrictEqual(m.parseShell('{"bar":{"id":"kinetic.bar","background":"pi
 assert.deepStrictEqual(m.parseShell('{"bar":{"transparent":true,"pill":[1]}}'), { id: "omarchy.bar", background: "none", pill: {} })
 assert.strictEqual(m.parseShell("{oops"), null)
 
-// looks
-assert.deepStrictEqual(m.parseLooks('[{"id":"ink"},{"id":"../x"},{"id":"A"},null]').map(x => x.id), ["ink"])
-assert.deepStrictEqual(m.parseLooks("nope"), [])
-assert.strictEqual(m.lookId("  My Look! 2 "), "my-look-2")
-assert.strictEqual(m.lookId("$(rm)"), "rm")
-assert.strictEqual(m.lookId("!!!"), "")
+// presets
+assert.deepStrictEqual(m.parsePresets('[{"id":"ink"},{"id":"../x"},{"id":"A"},null]').map(x => x.id), ["ink"])
+assert.deepStrictEqual(m.parsePresets("nope"), [])
+assert.strictEqual(m.presetId("  My Preset! 2 "), "my-preset-2")
+assert.strictEqual(m.presetId("$(rm)"), "rm")
+assert.strictEqual(m.presetId("!!!"), "")
 
 assert.ok(m.isSpecial({ special: "full", value: "full" }))
 assert.ok(!m.isSpecial({ special: "full", value: 12 }) && !m.isSpecial({ value: "full" }))

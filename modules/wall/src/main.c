@@ -221,7 +221,7 @@ static int usage(FILE *f) {
         "  preset <name>              Apply one of the wallpaper's presets\n"
         "  param-reset                Put the wallpaper's parameters back to their defaults\n"
         "  restart                    Start the wallpaper over (a garden is replanted)\n"
-        "  panel [tab]                Toggle the Kinetic panel; tab = wallpaper, library, bar, looks or engine\n\n"
+        "  panel [tab]                Toggle the Kinetic panel; tab = wallpaper or library (others open the app)\n\n"
         "Settings:\n"
         "  config                     List every global option\n"
         "  config <key> [value]       Read or set one (value 'default' resets it)\n"

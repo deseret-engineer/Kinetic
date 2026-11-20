@@ -7,7 +7,6 @@
 #   ./install.sh --no-service  don't (re)start the wallpaper engine
 set -euo pipefail
 cd "$(dirname "$0")"
-REPO=$PWD
 
 START_SERVICE=1
 for a in "$@"; do
@@ -55,7 +54,7 @@ systemctl --user stop kinetic-wall.service 2>/dev/null || true
 # ---------- install files ----------
 step "Installing to $HOME_DIR"
 mkdir -p "$HOME_DIR" "$BIN"
-rm -rf "$HOME_DIR/lib" "$HOME_DIR/modules" "$HOME_DIR/shell" "$HOME_DIR/wallpapers"
+rm -rf "${HOME_DIR:?}/lib" "${HOME_DIR:?}/modules" "${HOME_DIR:?}/shell" "${HOME_DIR:?}/wallpapers"
 cp kinetic "$HOME_DIR/"
 cp -r lib shell "$HOME_DIR/"
 mkdir -p "$HOME_DIR/modules"
@@ -79,7 +78,19 @@ ln -s "$HOME_DIR/modules/wall/integration/window-blur" "$BIN/kinetic-window-blur
 install -Dm644 modules/wall/integration/kinetic-wall.service "$HOME/.config/systemd/user/kinetic-wall.service"
 
 # ---------- config and state ----------
-mkdir -p "$CONFIG/kinetic/wallpapers" "$CONFIG/kinetic/looks" "$STATE/kinetic/wall" "$STATE/kinetic/signals"
+mkdir -p "$CONFIG/kinetic/wallpapers" "$CONFIG/kinetic/presets" "$STATE/kinetic/wall" "$STATE/kinetic/signals"
+# Presets were called looks before 0.1.0: yours move over (one already there stays put)
+if [[ -d $CONFIG/kinetic/looks ]]; then
+  for f in "$CONFIG/kinetic/looks"/*.json; do
+    [[ -f $f && ! -e $CONFIG/kinetic/presets/${f##*/} ]] && mv "$f" "$CONFIG/kinetic/presets/"
+  done
+  rmdir "$CONFIG/kinetic/looks" 2>/dev/null || true
+fi
+if [[ -f $STATE/kinetic/look && ! -e $STATE/kinetic/preset ]]; then mv "$STATE/kinetic/look" "$STATE/kinetic/preset"; fi
+if [[ -f $CONFIG/kinetic/modules.json ]] && jq -e '(.hidden // []) | index("look")' "$CONFIG/kinetic/modules.json" >/dev/null 2>&1; then
+  jq '.hidden = ((.hidden - ["look"]) + ["preset"] | unique)' "$CONFIG/kinetic/modules.json" > "$CONFIG/kinetic/modules.json.tmp" \
+    && mv "$CONFIG/kinetic/modules.json.tmp" "$CONFIG/kinetic/modules.json"
+fi
 [[ -f $CONFIG/kinetic/wall.toml ]] || install -m644 modules/wall/integration/wall.toml.example "$CONFIG/kinetic/wall.toml"
 [[ -f $STATE/kinetic/signals/wall ]] || echo off >"$STATE/kinetic/signals/wall"
 
@@ -158,5 +169,5 @@ if [[ -f $CONFIG/kinetic/motion.json ]]; then
   KINETIC_HOME="$HOME_DIR" python3 "$HOME_DIR/modules/motion/motion.py" apply || true
 fi
 
-echo "Kinetic is installed. Try:  kinetic app  |  kinetic panel  |  kinetic look apply contours  |  kinetic motion preset parallax"
+echo "Kinetic is installed. Try:  kinetic app  |  kinetic panel  |  kinetic preset apply contours  |  kinetic motion preset parallax"
 echo "If the bar does not change, run: omarchy restart shell"

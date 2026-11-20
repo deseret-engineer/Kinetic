@@ -5,7 +5,7 @@
   "version": "0.1.0-dev",
   "author": "Kinetic",
   "license": "MIT",
-  "description": "The Kinetic app: every module (wallpaper, library, bar, glass, motion, looks, engine) in one window. Opened by `kinetic app` or the launcher.",
+  "description": "The Kinetic app: every module (wallpaper, library, bar, glass, light, motion, presets, engine) in one window. Opened by `kinetic app` or the launcher.",
   "kinds": ["service"],
   "entryPoints": { "service": "App.qml" }
 }

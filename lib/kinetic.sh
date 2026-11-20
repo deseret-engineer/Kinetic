@@ -1,3 +1,4 @@
+# shellcheck shell=bash disable=SC2034 # the paths below are for the modules that source this
 # Kinetic's toolkit for shell modules. Source it; don't run it.
 #
 #   source "$KINETIC_HOME/lib/kinetic.sh"

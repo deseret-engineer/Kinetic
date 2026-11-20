@@ -41,6 +41,7 @@ USAGE
 
 app() {
   local page="${1:-wallpaper}"
+  [[ $page == looks ]] && page=presets # the page's name before 0.1.0
   [[ $page =~ ^[a-z][a-z0-9-]*$ ]] || die "app: no page named '$page'"
   omarchy-shell kinetic.app open "$page" >/dev/null 2>&1 \
     || die "the Kinetic app needs the Omarchy shell running with kinetic.app enabled (./install.sh adds it)"
@@ -58,7 +59,7 @@ panel() {
 }
 
 status() {
-  facts | jq -c --arg look "$(cat "$KINETIC_STATE/look" 2>/dev/null || true)" '. + {look: (if $look == "" then null else $look end)}'
+  facts | jq -c --arg preset "$(cat "$KINETIC_STATE/preset" 2>/dev/null || true)" '. + {preset: (if $preset == "" then null else $preset end)}'
 }
 
 run_module() {
@@ -77,6 +78,11 @@ set -- "${args[@]+"${args[@]}"}"
 
 cmd="${1:-help}"
 shift || true
+# Presets were called looks before 0.1.0; the old name still works for now.
+if [[ $cmd == look ]] && ! module_dir look >/dev/null; then
+  echo "kinetic: 'kinetic look' is now 'kinetic preset'" >&2
+  cmd=preset
+fi
 case "$cmd" in
   help|-h|--help) usage ;;
   version|--version) echo "kinetic $KINETIC_VERSION" ;;

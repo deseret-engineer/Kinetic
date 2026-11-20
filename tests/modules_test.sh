@@ -81,7 +81,7 @@ mk "$T/old" old 1.0.0 ", \"requires\": [{\"id\": \"wall\", \"version\": \">=99\"
 mk "$T/a" ca 1.0.0 ", \"requires\": [{\"id\": \"cb\", \"source\": \"$T/b\"}]"
 mk "$T/b" cb 1.0.0 ", \"requires\": [{\"id\": \"ca\", \"source\": \"$T/a\"}]"
 [[ $(says module install "$T/a" --yes) == *"circle"* ]] || fail "a dependency circle should be refused"
-[[ -z $(ls "$T/user" 2>/dev/null | grep -vE '^$') ]] || fail "refused installs left something: $(ls "$T/user")"
+[[ -z $(find "$T/user" -mindepth 1 -maxdepth 1 ! -name '.*' 2>/dev/null) ]] || fail "refused installs left something: $(ls "$T/user")"
 
 # links: GitHub, with a branch and a subfolder
 python3 -c "

@@ -98,7 +98,7 @@ case "$cmd" in
     ;;
   set)
     k="${1:?option}" v="${2:?value}"
-    [[ -n ${WIN[$k]:-} ]] || die "no look option named '$k' (${!WIN[*]})"
+    [[ -n ${WIN[$k]:-} ]] || die "no glass option named '$k' (${!WIN[*]})"
     engine_set "${WIN[$k]}" "$v"
     "$KINETIC_HOME/kinetic" bar set "$k" "$v"
     ;;

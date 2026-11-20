@@ -3,7 +3,7 @@ import qs.Commons
 import qs.Ui
 import "../Model.js" as Model
 
-// Looks: a wallpaper and a bar, applied in one click; save the current one.
+// Presets: a wallpaper, a bar and motion, applied in one click; save the current setup as one.
 Column {
   id: page
   property var ctx: null
@@ -19,7 +19,7 @@ Column {
 
   PlainText {
     width: parent.width
-    text: page.ctx.tr("looks.about")
+    text: page.ctx.tr("presets.about")
     wrapMode: Text.Wrap
     elide: Text.ElideNone
     opacity: 0.6
@@ -27,26 +27,26 @@ Column {
   }
 
   Repeater {
-    model: page.ctx.looks
+    model: page.ctx.presets
     delegate: Item {
-      id: look
+      id: preset
       required property var modelData
-      readonly property bool current: modelData.id === page.ctx.currentLook
+      readonly property bool current: modelData.id === page.ctx.currentPreset
       width: page.width
       implicitHeight: text.implicitHeight + Style.space(12)
 
       Rectangle {
         anchors.fill: parent
         radius: Style.cornerRadius
-        color: look.current ? Style.selectionFillFor(page.ctx.fg, page.ctx.accent)
-             : (lookMouse.containsMouse ? Qt.rgba(page.ctx.fg.r, page.ctx.fg.g, page.ctx.fg.b, 0.06) : "transparent")
+        color: preset.current ? Style.selectionFillFor(page.ctx.fg, page.ctx.accent)
+             : (presetMouse.containsMouse ? Qt.rgba(page.ctx.fg.r, page.ctx.fg.g, page.ctx.fg.b, 0.06) : "transparent")
       }
       MouseArea {
-        id: lookMouse
+        id: presetMouse
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: page.ctx.send("look", ["apply", look.modelData.id])
+        onClicked: page.ctx.send("preset", ["apply", preset.modelData.id])
       }
       Column {
         id: text
@@ -58,13 +58,13 @@ Column {
         spacing: Style.space(2)
         PlainText {
           width: parent.width
-          text: look.modelData.name + (look.modelData.mine ? "  ·  " + page.ctx.tr("looks.mine") : "")
-          font.bold: look.current
+          text: preset.modelData.name + (preset.modelData.mine ? "  ·  " + page.ctx.tr("presets.mine") : "")
+          font.bold: preset.current
         }
         PlainText {
           width: parent.width
-          visible: look.modelData.description !== ""
-          text: look.modelData.description
+          visible: preset.modelData.description !== ""
+          text: preset.modelData.description
           wrapMode: Text.Wrap
           elide: Text.ElideNone
           opacity: 0.6
@@ -72,7 +72,7 @@ Column {
         }
         PlainText {
           width: parent.width
-          text: (look.modelData.wallpaper || page.ctx.tr("looks.noWallpaper")) + "  ·  " + String(look.modelData.bar || "")
+          text: (preset.modelData.wallpaper || page.ctx.tr("presets.noWallpaper")) + "  ·  " + String(preset.modelData.bar || "")
           opacity: 0.45
           font.pixelSize: Style.font.caption
         }
@@ -82,25 +82,25 @@ Column {
         anchors.right: parent.right
         anchors.rightMargin: Style.space(4)
         anchors.verticalCenter: parent.verticalCenter
-        visible: !!look.modelData.mine
+        visible: !!preset.modelData.mine
         iconText: "󰆴"
         fontSize: Style.font.body
         foreground: page.ctx.fg
         fontFamily: page.ctx.fontFamily
-        tooltipText: page.ctx.tr("looks.remove")
-        onClicked: page.ctx.send("look", ["remove", look.modelData.id])
+        tooltipText: page.ctx.tr("presets.remove")
+        onClicked: page.ctx.send("preset", ["remove", preset.modelData.id])
       }
     }
   }
 
-  PanelSectionHeader { text: page.ctx.tr("looks.save"); foreground: page.ctx.fg; fontFamily: page.ctx.fontFamily }
+  PanelSectionHeader { text: page.ctx.tr("presets.save"); foreground: page.ctx.fg; fontFamily: page.ctx.fontFamily }
   Row {
     width: parent.width
     spacing: Style.space(6)
     TextField {
       id: name
       width: parent.width - saveButton.width - parent.spacing
-      placeholderText: page.ctx.tr("looks.namePlaceholder")
+      placeholderText: page.ctx.tr("presets.namePlaceholder")
       maximumLength: 40
       foreground: page.ctx.fg
       onActiveFocusChanged: page.ctx.editingValue = activeFocus
@@ -109,15 +109,15 @@ Column {
     }
     Button {
       id: saveButton
-      text: page.ctx.tr("looks.saveButton")
+      text: page.ctx.tr("presets.saveButton")
       bordered: true
-      enabled: Model.lookId(name.text) !== ""
+      enabled: Model.presetId(name.text) !== ""
       foreground: page.ctx.fg
       fontFamily: page.ctx.fontFamily
       function save() {
-        var id = Model.lookId(name.text)
+        var id = Model.presetId(name.text)
         if (id === "") return
-        page.ctx.send("look", ["save", id])
+        page.ctx.send("preset", ["save", id])
         name.text = ""
         page.ctx.refocus()
       }

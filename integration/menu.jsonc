@@ -14,7 +14,7 @@
   "appearance.kinetic.glass": {"icon":"󰂵","label":"Glass…","description":"Glass under the bar and behind windows","action":"kinetic app glass"},
   "appearance.kinetic.light": {"icon":"󰛨","label":"Light…","description":"A glow around windows, under the glass","action":"kinetic app light"},
   "appearance.kinetic.motion": {"icon":"󰁔","label":"Motion…","description":"Animations, parallax and pass-through","action":"kinetic app motion"},
-  "appearance.kinetic.looks": {"icon":"󰏘","label":"Looks…","description":"Wallpaper, bar and motion, saved together","action":"kinetic app looks"},
+  "appearance.kinetic.presets": {"icon":"󰏘","label":"Presets…","description":"Wallpaper, bar and motion, saved together","aliases":["looks"],"action":"kinetic app presets"},
   "appearance.kinetic.modules": {"icon":"󰕰","label":"Modules…","description":"Switch, add and remove modules","action":"kinetic app modules"},
   "appearance.top-bar.background.pill": {"icon":"󰍜","label":"Pill","description":"Kinetic's floating glass capsule","aliases":["pill","pill bar"],"checked":"[[ $(omarchy-bar background) == \"pill\" ]]","action":"kinetic bar on"},
   "appearance.top-bar.background.pill-settings": {"icon":"󰒓","label":"Pill settings…","description":"Style, shape, glass, spacing and shadow","aliases":["pill settings"],"action":"kinetic app bar"},

@@ -183,8 +183,8 @@ function parseShell(text) {
   }
 }
 
-// `kinetic look list --json`
-function parseLooks(text) {
+// `kinetic preset list --json`
+function parsePresets(text) {
   text = String(text || "")
   if (text.length === 0 || text.length > MAX_DESCRIBE) return []
   try {
@@ -197,8 +197,8 @@ function parseLooks(text) {
   }
 }
 
-// What a typed look name becomes as an id: "My Look!" -> "my-look"
-function lookId(name) {
+// What a typed preset name becomes as an id: "My Preset!" -> "my-preset"
+function presetId(name) {
   return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48)
 }
 
@@ -219,7 +219,7 @@ function parseMotion(text) {
 function isSpecial(item) { return !!item && item.special !== undefined && item.value === item.special }
 
 if (typeof module !== "undefined") module.exports = {
-  parseShell: parseShell, parseLooks: parseLooks, parseMotion: parseMotion, lookId: lookId, isSpecial: isSpecial,
+  parseShell: parseShell, parsePresets: parsePresets, parseMotion: parseMotion, presetId: presetId, isSpecial: isSpecial,
   parseDescribe: parseDescribe, decimalsFor: decimalsFor, stepFor: stepFor, formatValue: formatValue,
   formatNumber: formatNumber, isOn: isOn, isChanged: isChanged, hasBit: hasBit, toggleBit: toggleBit,
   bitsLabel: bitsLabel, choiceIndex: choiceIndex, choiceOptions: choiceOptions, choiceValue: choiceValue,

@@ -45,7 +45,7 @@ a link, or write your own.
 - [Glass](#glass)
 - [The pill bar](#the-pill-bar)
 - [Motion and parallax](#motion-and-parallax)
-- [Looks](#looks)
+- [Presets](#presets)
 - [Troubleshooting](#troubleshooting)
 - [Files](#files)
 - [Uninstalling](#uninstalling)
@@ -63,7 +63,7 @@ a link, or write your own.
   attention pulse.
 - **Motion with parallax**: workspace and window animations, with the
   wallpaper sliding along at its own depth.
-- **Looks** that save a wallpaper, bar and motion setup and apply it in one step.
+- **Presets** that save a wallpaper, bar and motion setup and apply it in one step.
 - **Add-ons**: add wallpapers and modules from a link, a folder or an archive.
 - **One app and one CLI** for all of it.
 
@@ -86,16 +86,16 @@ cd Kinetic
 
 The installer runs as your user, without root. It installs Kinetic under
 `~/.local`, adds it to the launcher and to **Omarchy menu → Appearance**, and
-starts the wallpaper engine. Anything it replaces is moved to
-`~/.local/share/kinetic/replaced/`, never deleted. If the bar doesn't change
-right away, run `omarchy restart shell`.
+starts the wallpaper engine. It writes only Kinetic's own files and never
+deletes yours. If the bar doesn't change right away, run
+`omarchy restart shell`.
 
 ## Quick start
 
 ```bash
 kinetic app                       # open the app
 kinetic wall set fluid            # change the wallpaper
-kinetic look apply contours       # a wallpaper and a bar together
+kinetic preset apply contours     # a wallpaper, a bar and motion together
 kinetic bar preset lens           # a strongly bending glass bar
 kinetic glass enable              # glass under the bar and behind see-through windows
 kinetic light enable              # a glow around the focused window
@@ -127,7 +127,7 @@ first if others depend on it. The app's Modules page does the same.
 | [`glass`](modules/glass/) | Glass under the bar and behind windows |
 | [`light`](modules/light/) | The glow around the focused window |
 | [`motion`](modules/motion/) | Animations, parallax and pass-through switching |
-| [`look`](modules/look/) | Saved looks across the other modules |
+| [`preset`](modules/preset/) | Saved presets across the other modules |
 
 Each has `kinetic <module> help`.
 
@@ -187,11 +187,11 @@ repository and anyone can `kinetic wall add` the link.
 
 ## Glass
 
-![The glass in three looks: clear, frosted and prismatic](docs/glass.png)
+![The glass three ways: clear, frosted and prismatic](docs/glass.png)
 
 Kinetic's glass bends what's actually behind it, most strongly at the rim. It
-can also frost, split into color fringes and catch a rim light. One look
-applies to both the bar and the windows:
+can also frost, split into color fringes and catch a rim light. The same
+settings apply to both the bar and the windows:
 
 ```bash
 kinetic glass set refraction 24
@@ -261,17 +261,17 @@ straight to the last.
 
 `omarchy toggle animations` still turns all animation off.
 
-## Looks
+## Presets
 
-A look saves a wallpaper, a bar and motion together.
+A preset saves a wallpaper, a bar and motion together.
 
 ```bash
-kinetic look list
-kinetic look apply ink
-kinetic look save mine            # save what's showing now
+kinetic preset list
+kinetic preset apply ink
+kinetic preset save mine          # save what's showing now
 ```
 
-Your looks are JSON files in `~/.config/kinetic/looks/`:
+Your presets are JSON files in `~/.config/kinetic/presets/`:
 
 ```json
 {
@@ -282,7 +282,12 @@ Your looks are JSON files in `~/.config/kinetic/looks/`:
 }
 ```
 
-Every part is optional; a look changes only what it names.
+Every part is optional; a preset changes only what it names. The bar and
+motion each have their own presets too (`kinetic bar preset`, `kinetic motion
+preset`), which a preset can name.
+
+Presets were called looks before 0.1.0. Reinstalling moves your saved looks
+into `~/.config/kinetic/presets/`, and `kinetic look` still works for now.
 
 ## Troubleshooting
 
@@ -301,7 +306,7 @@ Hyprland update, the rebuilt plugin loads at your next login.
 
 | Path | Contents |
 |---|---|
-| `~/.config/kinetic/` | Your settings, wallpapers and looks |
+| `~/.config/kinetic/` | Your settings, wallpapers and presets |
 | `~/.config/omarchy/shell.json` | The bar's options, under `bar.pill` |
 | `~/.local/state/kinetic/` | Live state and saved wallpaper worlds |
 | `~/.local/share/kinetic/` | The installed suite and bundled wallpapers |
@@ -327,7 +332,7 @@ docs/media.py                     # re-render this README's images
 Tests and media rendering run offscreen without touching your desktop.
 [AGENTS.md](AGENTS.md) covers the layout and internals. Kinetic follows
 [Semantic Versioning](https://semver.org); development builds carry a `-dev`
-label.
+label. Changes between releases are in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

@@ -522,7 +522,8 @@ def main(argv):
     elif cmd == "options":
         for o in SCHEMA["options"]:
             rng = "|".join(o["options"]) if o["type"] == "choice" else ("true|false" if o["type"] == "bool" else f"{o['min']}..{o['max']}")
-            print(f"{o['key']:<15} {rng:<48} {str(o['default']):<7} {o.get('description') or o['label']}")
+            d = json.dumps(o["default"]) if isinstance(o["default"], bool) else str(o["default"])
+            print(f"{o['key']:<15} {rng:<48} {d:<7} {o.get('description') or o['label']}")
         return 0
     elif cmd == "show":
         o = S.normalize(c["options"], SCHEMA)

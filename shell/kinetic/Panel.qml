@@ -9,7 +9,7 @@ import "pages"
 
 // The Kinetic bar widget: the wallpaper, at hand. What is showing, its presets
 // and parameters, and the library. Everything else (the bar, glass, motion,
-// looks, the engine) is in the Kinetic app, which the gear button opens.
+// presets, the engine) is in the Kinetic app, which the gear button opens.
 Panel {
   id: root
   moduleName: "kinetic"
@@ -37,7 +37,7 @@ Panel {
 
   ShellIpc {
     target: "kinetic.data"
-    function refresh(): void { kinetic.refresh(); kinetic.refreshLooks() }
+    function refresh(): void { kinetic.refresh(); kinetic.refreshPresets() }
     // the widget's own tabs here; anything else is in the app
     function showTab(name: string): void {
       if (root.tabs.indexOf(name) >= 0) kinetic.tab = name

@@ -1,7 +1,7 @@
 {
-  "id": "look",
-  "name": "Looks",
-  "summary": "Looks: a wallpaper and a bar saved and applied together",
+  "id": "preset",
+  "name": "Presets",
+  "summary": "Presets: a wallpaper, a bar and motion saved and applied together",
   "author": "Kinetic",
   "icon": "󰏘",
   "order": 60,
@@ -9,25 +9,25 @@
     {
       "id": "wall",
       "optional": true,
-      "why": "a look's wallpaper"
+      "why": "a preset's wallpaper"
     },
     {
       "id": "bar",
       "optional": true,
-      "why": "a look's bar"
+      "why": "a preset's bar"
     },
     {
       "id": "motion",
       "optional": true,
-      "why": "a look's motion"
+      "why": "a preset's motion"
     }
   ],
   "pages": [
     {
-      "id": "looks",
-      "label": "Looks",
+      "id": "presets",
+      "label": "Presets",
       "about": "Wallpaper, bar and motion, saved together",
-      "qml": "builtin:LooksPage"
+      "qml": "builtin:PresetsPage"
     }
   ]
 }

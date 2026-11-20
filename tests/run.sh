@@ -5,14 +5,15 @@ cd "$(dirname "$0")/.."
 node tests/pill.test.js
 node tests/schema.test.js
 node shell/kinetic/tests/model.test.js
+read -ra gl <<<"$(pkg-config --cflags glesv2 egl)"
 out=$(mktemp)
-cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function $(pkg-config --cflags glesv2 egl) tests/motion_test.c -lm -o "$out"
+cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function "${gl[@]}" tests/motion_test.c -lm -o "$out"
 "$out"
 rm -f "$out" /tmp/kinetic-motion-test-*
 out=$(mktemp)
-cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function $(pkg-config --cflags glesv2 egl) tests/layers_test.c -o "$out"
+cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function "${gl[@]}" tests/layers_test.c -o "$out"
 "$out"
-cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function $(pkg-config --cflags glesv2 egl) tests/run_test.c -lm -o "$out"
+cc -std=gnu11 -D_GNU_SOURCE -O1 -Wall -Wno-unused-function "${gl[@]}" tests/run_test.c -lm -o "$out"
 "$out"
 rm -f "$out"
 python3 tests/trip_test.py
@@ -23,17 +24,16 @@ python3 tests/versions_test.py
 for m in modules/*/; do python3 lib/modman.py validate "$m" >/dev/null || exit 1; done
 echo "every built-in module's manifest is valid"
 python3 modules/bar/build.py --check
-for m in modules/motion/schema.json; do
-  for p in $(jq -r '.presets | keys[]' "$m"); do for pt in False True; do
-    KINETIC_HOME=$PWD python3 -c "
+m=modules/motion/schema.json
+for p in $(jq -r '.presets | keys[]' "$m"); do for pt in False True; do
+  KINETIC_HOME=$PWD python3 -c "
 import sys; sys.path[:0] = ['modules/motion', 'lib']
 import motion, schema as S
 o = S.normalize(dict(motion.SCHEMA['presets']['$p'], passThrough=$pt, passSameTime=$pt), motion.SCHEMA)
 err = motion.verify(motion.render_lua(o))
 if err: sys.exit('motion preset $p (pass-through $pt): ' + err)
 "
-  done; done
-done
+done; done
 echo "motion presets accepted by Hyprland, with and without pass-through"
 KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall validate >/dev/null && echo "all wallpapers compile"
 # Wallpapers that move with workspaces (the engine pans them, or they read uParallax / lw_pan)
@@ -49,7 +49,7 @@ for w in $moving; do
     awk -v s="$sd" 'BEGIN { exit !(s > 0.01) }' || { echo "wallpaper $w goes flat when panned $pan screens"; exit 1; }
   done
 done
-echo "moving wallpapers hold up at the furthest pan: $(echo $moving | wc -w) of them"
+echo "moving wallpapers hold up at the furthest pan: $(wc -w <<<"$moving") of them"
 # One motion system: how far a wallpaper moves comes from uParallax (the motion settings), never
 # from the raw workspace position. uWorkspace.x may only appear in a switch's remaining distance.
 python3 - <<'PY' || exit 1
@@ -126,7 +126,8 @@ if command -v Hyprland >/dev/null; then
   echo "kinetic-window-blur rules accepted by Hyprland"
 fi
 # Every module answers `active` (true/false), so the app's Modules page can show it and switch it.
-n=$(ls -d modules/*/module.sh | wc -l)
+mods=(modules/*/module.sh)
+n=${#mods[@]}
 KINETIC_HOME=$PWD ./kinetic modules --json | jq -e --argjson n "$n" 'length == $n and all(.[]; .active == true or .active == false)' >/dev/null \
   || { echo "kinetic modules --json: a module does not answer 'active' (each module.sh needs active/enable/disable)"; exit 1; }
 for m in modules/*/module.sh; do
@@ -134,3 +135,26 @@ for m in modules/*/module.sh; do
     || { echo "$m: no active/enable/disable"; exit 1; }
 done
 echo "every module answers active/enable/disable ($n modules)"
+# The bundled presets name only bar presets, motion presets, wallpapers and wallpaper presets that exist.
+python3 - <<'PY' || exit 1
+import glob, json, os, re, sys
+bar = json.load(open("modules/bar/schema.json"))["presets"]
+motion = json.load(open("modules/motion/schema.json"))["presets"]
+bad = []
+for f in sorted(glob.glob("modules/preset/presets/*.json")):
+    p, n = json.load(open(f)), os.path.basename(f)
+    w = p.get("wall", {})
+    if "wallpaper" in w:
+        toml = f"modules/wall/wallpapers/{w['wallpaper']}/wallpaper.toml"
+        if not os.path.isfile(toml):
+            bad.append(f"{n}: no wallpaper {w['wallpaper']}")
+        elif "preset" in w and not re.search(r'^\[preset\.(?:"%s"|%s)\]' % (re.escape(w["preset"]), re.escape(w["preset"])), open(toml).read(), re.M):
+            bad.append(f"{n}: {w['wallpaper']} has no preset {w['preset']}")
+    if "preset" in p.get("bar", {}) and p["bar"]["preset"] not in bar:
+        bad.append(f"{n}: no bar preset {p['bar']['preset']}")
+    if "preset" in p.get("motion", {}) and p["motion"]["preset"] not in motion:
+        bad.append(f"{n}: no motion preset {p['motion']['preset']}")
+if bad:
+    print("\n".join(bad)); sys.exit(1)
+print(f"bundled presets name only what exists ({len(glob.glob('modules/preset/presets/*.json'))} presets)")
+PY

@@ -10,7 +10,7 @@ Kinetic is a look-and-feel suite for Omarchy (Arch + Hyprland + the Quickshell
 "Omarchy shell"). Its parts are modules: `wall` (the `kinetic-wall` C engine:
 live wallpapers and the glass under the bar), `bar` (a floating pill bar, built
 as hooks on Omarchy's stock bar rather than a fork), `glass` (window glass, a
-Hyprland plugin), `light`, `motion` and `look`, all driven by one CLI and one
+Hyprland plugin), `light`, `motion` and `preset`, all driven by one CLI and one
 Quickshell app.
 
 ## Layout
@@ -35,7 +35,7 @@ modules/bar/build.py      makes ~/.config/omarchy/plugins/kinetic.bar from the s
 modules/bar/blur          Hyprland blur toggle (installed as kinetic-bar-blur)
 modules/motion/           schema.json (options, curves, presets) + motion.py: Hyprland toggle + engine timing; trip.py: pass-through trips cut into per-step curves
 modules/wall/src/motion.c workspace easing on Hyprland's curve, parallax pan (uParallax, lw_Shift on the image pass)
-modules/look/             module.sh + looks/*.json (bundled looks)
+modules/preset/           module.sh + presets/*.json (bundled presets: wallpaper, bar and motion together)
 shell/kinetic/            the bar widget (Panel.qml, wallpaper and library) and the app (App.qml, every module),
                           both on KineticCtx.qml (state + commands); pages/, components/, Model.js.
                           Installed twice: plugins/kinetic (bar-widget) and plugins/kinetic.app (service,
@@ -60,7 +60,7 @@ python3 modules/bar/build.py --out /tmp/kb && /usr/lib/qt6/bin/qmlformat /tmp/kb
 tests/run.sh                                                   # every offline test
 KINETIC_WALL_PATH=modules/wall/wallpapers modules/wall/build/kinetic-wall thumbnail topo /tmp/p.png 1920x1200 8 --parallax 0.25,0
 ./kinetic motion show                                          # the Lua and engine line motion would write
-./kinetic bar options | ./kinetic look list                    # the CLIs run from the repo too
+./kinetic bar options | ./kinetic preset list                    # the CLIs run from the repo too
 ./install.sh                                                   # installs + migrates; touches the live desktop
 ```
 
@@ -73,6 +73,7 @@ one, and `tests/versions_test.py` fails when they drift. Breaking change:
 MAJOR; feature: MINOR; fix: PATCH (while MAJOR is 0, anything may change).
 Development builds are pre-releases, `X.Y.Z-dev`, tagged `vX.Y.Z-dev` (annotated);
 drop `-dev` only for a real release.
+Every user-visible change gets a line in `CHANGELOG.md` (Keep a Changelog) under the coming version.
 `modman.py` checks module versions and `requires` by SemVer precedence (`vkey`).
 
 ## Contracts (other parts depend on these)

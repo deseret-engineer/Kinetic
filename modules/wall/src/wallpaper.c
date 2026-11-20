@@ -188,7 +188,7 @@ bool lw_wallpaper_find(const char *id, char dir[LW_PATH]) {
   const char *base;
   for (int i = 0; (base = search_dirs(i, buf)); i++) {
     if (!*base) continue;
-    snprintf(dir, LW_PATH, "%s/%s", base, id);
+    if (snprintf(dir, LW_PATH, "%s/%s", base, id) >= LW_PATH) continue; /* too long to be one */
     if (is_wallpaper_dir(dir)) return true;
   }
   return false;
@@ -209,7 +209,9 @@ void lw_wallpaper_each(lw_wallpaper_cb cb, void *data) {
       snprintf(dir, sizeof dir, "%s/%s", base, name);
       bool dup = false;
       for (int k = 0; k < nseen; k++) dup |= !strcmp(seen[k], name);
-      if (name[0] != '.' && !dup && strlen(dir) < LW_PATH && is_wallpaper_dir(dir) && nseen < 128) {
+      /* a name that would not fit in seen[] could not be told from a longer one: skipped */
+      if (name[0] != '.' && !dup && strlen(name) < sizeof seen[0] && strlen(dir) < LW_PATH && is_wallpaper_dir(dir) &&
+          nseen < 128) {
         snprintf(seen[nseen++], 64, "%s", name);
         cb(name, dir, data);
       }
