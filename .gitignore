@@ -1,3 +1,30 @@
+# Build output
 modules/wall/build/
+*.o
+*.so
+
+# Python
 __pycache__/
+*.py[cod]
+
+# Backups and temporary files
 *.bak.*
+*.orig
+*.rej
+*.tmp
+*~
+*.swp
+.#*
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local tool state (Claude Code's worktrees and local settings)
+.claude/
+
+# Environment files and secrets
+.env
+.env.*
