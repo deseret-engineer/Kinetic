@@ -57,6 +57,9 @@ The first release.
 
 ### Fixed
 
+- The wlr-layer-shell protocol file Kinetic includes had lost its authors'
+  copyright and permission notice; it is back, and the glass plugin's corner
+  rounding, which follows Hyprland's, carries Hyprland's notice.
 - Installing a module from an archive checks the size limits before
   unpacking, so an archive that expands to gigabytes is refused before it
   fills the disk, and a link's subfolder can no longer point at a sibling

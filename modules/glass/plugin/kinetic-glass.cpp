@@ -291,8 +291,9 @@ vec3 fetch(vec2 q) {
   return t > 0.01 ? mix(a, bspline(uv, l0 + 1), t) : a; }
 void main() {
   vec2 p = gl_FragCoord.xy, c = uRect.xy, b = uRect.zw;
-  // coverage: Hyprland's own corner test and edge (rounding.glsl), so the glass
-  // ends exactly where the window does; straight edges are the quad's own
+  // coverage: Hyprland's own corner test and edge (rounding.glsl, BSD-3-Clause,
+  // Copyright (c) 2022-2026, vaxerski; see THIRD-PARTY.md), so the glass ends
+  // exactly where the window does; straight edges are the quad's own
   vec2 pc = abs(p - c) - (b - uRadius);
   float cover = uAlpha;
   if (uRadius > 0.0 && pc.x + pc.y > uRadius) {

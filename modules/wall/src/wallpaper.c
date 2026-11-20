@@ -126,10 +126,12 @@ static const char *preamble =
     /* Layered parallax: how far a layer at `depth` (0 still, 1 moves with the view)
      * has panned, in screen heights: add it to a position like vec2(uv.x * aspect, uv.y). */
     "vec2 lw_pan(float depth){ return uParallax * vec2(iResolution.x / iResolution.y, 1.0) * depth; }\n"
-    /* A small standard library, so most wallpapers need no boilerplate. */
+    /* A small standard library, so most wallpapers need no boilerplate.
+     * lw_hash: the short fract/dot hash popularized by The Art of Code (Martijn Steinrucken). */
     "float lw_hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }\n"
     "vec2 lw_hash2(vec2 p){ float n = lw_hash(p); return vec2(n, lw_hash(p + n + 17.17)); }\n"
-    /* integer hash: exact and uncorrelated for particle ids and seeds */
+    /* integer hash: exact and uncorrelated for particle ids and seeds. Chris Wellons'
+     * lowbias32, from hash-prospector (public domain). See THIRD-PARTY.md */
     "uint lw_uhash(uint x){ x ^= x >> 16; x *= 0x7feb352du; x ^= x >> 15; x *= 0x846ca68bu; x ^= x >> 16; return x; }\n"
     "float lw_rand(int id, int salt){ return float(lw_uhash(uint(id) * 1664525u + lw_uhash(uint(salt)))) / 4294967295.0; }\n"
     "float lw_noise(vec2 p);\n"
