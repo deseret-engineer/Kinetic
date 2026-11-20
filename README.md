@@ -301,7 +301,7 @@ kinetic settings set updateBranch main
 kinetic settings set updateCheck off   # don't look once a day when the app opens
 ```
 
-The app does the same under **Settings** (<kbd>Ctrl</kbd> + <kbd>,</kbd>), with
+The app does the same under **Settings** (the gear beside Reload), with
 what the update brings. Updates are fetched into a clone of Kinetic's own in
 `~/.cache/kinetic/source`, never into your working copy, and installed with its
 `install.sh`.

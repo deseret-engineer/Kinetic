@@ -44,9 +44,10 @@ Item {
     out.push({ id: "modules", module: "", label: kinetic.tr("app.modules"),
                icon: "󰕰", builtin: true, url: Qt.resolvedUrl("pages/ModulesPage.qml"), props: {},
                parent: "", parentLabel: "", children: 0, last: false })
+    // a page without a row in the list: the gear beside Reload opens it
     out.push({ id: "settings", module: "", label: kinetic.tr("app.settings"),
                icon: "󰒓", builtin: true, url: Qt.resolvedUrl("pages/SettingsPage.qml"), props: {},
-               parent: "", parentLabel: "", children: 0, last: false })
+               parent: "", parentLabel: "", children: 0, last: false, hidden: true })
     return out
   }
   readonly property var ids: entries.map(function(p) { return p.id })
@@ -69,7 +70,7 @@ Item {
     if (on && root.current.parent === id) kinetic.tab = id
   }
   // the rows the sidebar shows, in order: what Ctrl + 1-9 and Ctrl + Tab walk
-  readonly property var rowIds: entries.filter(function(p) { return p.parent === "" || !folded[p.parent] })
+  readonly property var rowIds: entries.filter(function(p) { return !p.hidden && (p.parent === "" || !folded[p.parent]) })
                                        .map(function(p) { return p.id })
   function step(by) {
     var r = rowIds, i = r.indexOf(kinetic.tab)
@@ -143,7 +144,6 @@ Item {
         if (event.key === Qt.Key_Escape && !kinetic.editingValue) { window.visible = false; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key >= Qt.Key_1 && event.key <= Qt.Key_9 && event.key - Qt.Key_1 < rows.length) { kinetic.tab = rows[event.key - Qt.Key_1]; event.accepted = true }
         else if (event.key === Qt.Key_F5 || ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_R)) { kinetic.reloadAll(); event.accepted = true }
-        else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Comma) { kinetic.tab = "settings"; event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Tab) { root.step(1); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_Backtab) { root.step(-1); event.accepted = true }
       }
@@ -198,7 +198,7 @@ Item {
                 readonly property bool open: group && !root.folded[modelData.id]
                 readonly property bool current: kinetic.tab === modelData.id
                 readonly property real indent: nested ? Style.space(30) : 0
-                visible: !nested || !root.folded[modelData.parent]
+                visible: !modelData.hidden && (!nested || !root.folded[modelData.parent])
                 x: indent
                 width: parent.width - indent
                 height: nested ? Style.space(36) : Math.max(Style.space(52), label.implicitHeight + Style.space(16))
@@ -236,19 +236,7 @@ Item {
                   anchors.rightMargin: Style.space(entry.group ? 4 : 10)
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: Style.space(1)
-                  PlainText { width: parent.width - (updateDot.visible ? updateDot.width + Style.space(6) : 0); text: entry.modelData.label; font.bold: entry.current }
-                }
-                // an update is waiting (Settings)
-                Rectangle {
-                  id: updateDot
-                  visible: entry.modelData.id === "settings" && kinetic.updateWaiting
-                  anchors.right: parent.right
-                  anchors.rightMargin: Style.space(12)
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: Style.space(8)
-                  height: width
-                  radius: width / 2
-                  color: kinetic.accent
+                  PlainText { width: parent.width; text: entry.modelData.label; font.bold: entry.current }
                 }
                 MouseArea {
                   id: hover
@@ -300,6 +288,29 @@ Item {
           foreground: kinetic.fg
           fontFamily: kinetic.fontFamily
           onClicked: kinetic.reloadAll()
+        }
+        // Settings: the app's own (updates, about, attributions); a dot when an update is waiting
+        Button {
+          id: settingsButton
+          anchors.left: reloadButton.right
+          anchors.leftMargin: Style.space(4)
+          anchors.verticalCenter: reloadButton.verticalCenter
+          iconText: "󰒓"
+          tooltipText: kinetic.tr("app.settings")
+          selected: kinetic.tab === "settings"
+          foreground: kinetic.fg
+          fontFamily: kinetic.fontFamily
+          onClicked: kinetic.tab = "settings"
+          Rectangle {
+            visible: kinetic.updateWaiting
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Style.space(3)
+            width: Style.space(7)
+            height: width
+            radius: width / 2
+            color: kinetic.accent
+          }
         }
 
         PlainText {

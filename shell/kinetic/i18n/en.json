@@ -62,7 +62,7 @@
   "openApp": "Open Kinetic",
   "app.title": "Kinetic",
   "app.subtitle": "For Omarchy",
-  "app.keys": "Ctrl + 1–9 or Ctrl + Tab: pages · Ctrl + ,: settings · Ctrl + R: reload · Esc: close",
+  "app.keys": "Ctrl + 1–9 or Ctrl + Tab: pages · Ctrl + R: reload · Esc: close",
   "app.reload": "Reload",
   "app.reload.about": "Restart the engine, glass, bar and this app",
   "glass.about": "Bends and frosts what is behind the bar and windows, and catches the light. Needs a live wallpaper or Omarchy's background.",

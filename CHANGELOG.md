@@ -29,9 +29,9 @@ The first release.
   folder or an archive (`kinetic module install`).
 - The Kinetic app, the bar widget, the `kinetic` CLI, and rows in the Omarchy
   menu.
-- A Settings page in the app (Ctrl + ,) for the app's own settings: updates,
-  about, and attributions for the work Kinetic includes or follows (also in
-  `THIRD-PARTY.md`).
+- A Settings page in the app (the gear beside Reload) for its own settings:
+  updates, about, and attributions for the work Kinetic includes or follows
+  (also in `THIRD-PARTY.md`).
 - `kinetic update`: check for and install updates from a branch of the
   repository Kinetic came from (main, dev or another), from the terminal or
   Settings, which can also look once a day when the app opens. Updates are
