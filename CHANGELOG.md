@@ -58,6 +58,9 @@ The first release. Changed and Fixed are against `0.1.0-dev`.
 
 ### Fixed
 
+- Every install that changed the Omarchy menu left another timestamped backup
+  of it; now there are two, the original and the latest.
+- The wallpaper picker removed every preview if the wallpaper list failed.
 - The app's Update button did nothing: `kinetic` passes `--yes` on as
   `KINETIC_YES`, which `kinetic update` didn't read. An update refused for want
   of a yes now says so in Settings.

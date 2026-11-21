@@ -5,12 +5,14 @@
     menu.py remove <menu.jsonc>               take Kinetic's rows out again
 
 Rows are found by their marker comments and ids, never by position, and the
-file is only rewritten when something changes (a backup is kept beside it).
+file is only rewritten when something changes. Two backups sit beside it: the
+menu as it was before Kinetic first changed it (.kinetic-original), and as it
+was before the latest change (.kinetic-backup).
 """
+import os
 import re
 import shutil
 import sys
-import time
 
 # Kinetic's rows, by id and by marker comment
 OLD_IDS = re.compile(r'^\s*"appearance\.(kinetic|top-bar\.background\.pill)[\w.-]*"\s*:')
@@ -45,7 +47,9 @@ def main():
             body += ","
         text = body + "\n\n" + block.rstrip() + "\n}\n"
     if text != original:
-        shutil.copy2(path, f"{path}.bak.{int(time.time())}")
+        if not os.path.exists(f"{path}.kinetic-original"):
+            shutil.copy2(path, f"{path}.kinetic-original")
+        shutil.copy2(path, f"{path}.kinetic-backup")
         with open(path, "w", encoding="utf-8") as f:
             f.write(text)
         print(f"updated {path}")

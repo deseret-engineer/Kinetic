@@ -4,9 +4,9 @@ set -u
 thumbs="${XDG_CACHE_HOME:-$HOME/.cache}/kinetic/wall/thumbs"
 
 kinetic-wall thumbnails >/dev/null
-# drop previews of wallpapers that no longer exist
-ids=$(kinetic-wall list --ids)
-for f in "$thumbs"/*.png; do
+# drop previews of wallpapers that no longer exist (not all of them, if the list failed)
+ids=$(kinetic-wall list --ids 2>/dev/null)
+[[ -n $ids ]] && for f in "$thumbs"/*.png; do
   [[ -e $f ]] || continue
   name=${f##*/}
   grep -qx "${name%.png}" <<<"$ids" || rm -f "$f"
