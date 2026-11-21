@@ -6,7 +6,7 @@
 
 Live wallpapers, rendered glass and fluid motion, as modules you can switch off, swap out or build on.
 
-![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-5b8def)
+![Version 0.1.1-dev](https://img.shields.io/badge/version-0.1.1--dev-5b8def)
 ![Status: early development](https://img.shields.io/badge/status-early%20development-e5a50a)
 ![License MIT](https://img.shields.io/badge/license-MIT-3fb68b)
 ![Hyprland 0.56](https://img.shields.io/badge/Hyprland-0.56-58e1ff)

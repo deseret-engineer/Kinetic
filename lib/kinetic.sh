@@ -16,7 +16,7 @@
 # KINETIC_HOME is set by the `kinetic` dispatcher (the install or the repo).
 
 : "${KINETIC_HOME:=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-KINETIC_VERSION=0.1.0
+KINETIC_VERSION=0.1.1-dev
 KINETIC_BIN="${KINETIC_BIN:-$HOME/.local/bin}"
 KINETIC_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/kinetic"
 KINETIC_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/kinetic"
