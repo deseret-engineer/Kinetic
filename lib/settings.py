@@ -21,8 +21,8 @@ BRANCH = re.compile(r"^(?!-)(?!.*\.\.)[A-Za-z0-9._/-]{1,100}(?<![./])$")
 
 # key -> type, default, label, description (and options for a choice)
 SCHEMA = {
-    "updateBranch": {"type": "branch", "default": "main", "label": "Update from",
-                     "description": "main for releases, dev for the newest work. Until you choose, "
+    "updateBranch": {"type": "branch", "default": "master", "label": "Update from",
+                     "description": "master for releases, dev for the newest work. Until you choose, "
                                     "the branch Kinetic was installed from"},
     "updateCheck": {"type": "bool", "default": True, "label": "Check for updates",
                     "description": "Once a day, when the app opens"},
@@ -63,7 +63,7 @@ def check(key, value):
         raise ValueError(f"{key} is true or false")
     if t == "branch":
         if not isinstance(value, str) or not BRANCH.match(value):
-            raise ValueError(f"{key} is a branch name, like main or dev")
+            raise ValueError(f"{key} is a branch name, like master or dev")
         return value
     raise ValueError(f"unknown type for {key}")
 

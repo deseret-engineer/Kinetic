@@ -48,7 +48,7 @@ keeps them, and can't reuse a built-in module's id.
   "author": "you",
   "icon": "󰥔",
   "order": 70,
-  "kinetic": ">=0.1.0-dev",
+  "kinetic": ">=0.1.0",
   "requires": [
     { "id": "wall", "why": "the clock is drawn by the wallpaper engine" },
     { "id": "fonts-extra", "version": ">=1.2", "source": "https://github.com/you/kinetic-fonts-extra" },
@@ -68,7 +68,7 @@ keeps them, and can't reuse a built-in module's id.
 | `name`, `summary`, `icon`, `author` | How it shows in `kinetic modules` and the app. `icon` is a Nerd Font glyph |
 | `version` | [Semantic Versioning](https://semver.org), like `1.2.0` or `1.2.0-beta.1`: MAJOR for changes that break modules using yours, MINOR for features, PATCH for fixes. Others can require one (`>=1.2`) |
 | `order` | Where it sorts in lists and in the app's sidebar (Kinetic's own use 10 to 90) |
-| `kinetic` | The Kinetic it needs, like `>=0.1.0-dev`; install refuses an older one. A development build ranks below its release, so `>=0.1` refuses `0.1.0-dev` |
+| `kinetic` | The Kinetic it needs, like `>=0.1.0`; install refuses an older one. A development build ranks below its release, so `>=0.2` refuses `0.2.0-dev` |
 | `requires` | What it needs. Each is an id, or `{id, why, version, source, optional}`. `source` is a link Kinetic fetches the dependency from if it is not installed (it asks first, with the rest). `optional`: used if there, never installed or switched on for you |
 | `pages` | Its app pages: `{id, label, icon, qml, order}` and an optional `about` (not shown now). `qml` is a file in the module; `order` sorts the module's own pages. Ids `modules` and `settings` are the app's. Several pages make a group in the sidebar: the first is the row, the rest nest under it (as Library and Engine do under Wallpaper) |
 | `engineGroups` | Option groups of the wallpaper engine your module shows on its own page (the Engine page leaves them out) |

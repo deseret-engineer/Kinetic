@@ -5,7 +5,7 @@ Notable changes to Kinetic, in the
 [Semantic Versioning](https://semver.org); while the major version is 0,
 anything may change between releases.
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-20
 
 The first release. Changed and Fixed are against `0.1.0-dev`.
 

@@ -6,7 +6,7 @@
 
 Live wallpapers, rendered glass and fluid motion, as modules you can switch off, swap out or build on.
 
-![Version 0.1.0-dev](https://img.shields.io/badge/version-0.1.0--dev-5b8def)
+![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-5b8def)
 ![Status: early development](https://img.shields.io/badge/status-early%20development-e5a50a)
 ![License MIT](https://img.shields.io/badge/license-MIT-3fb68b)
 ![Hyprland 0.56](https://img.shields.io/badge/Hyprland-0.56-58e1ff)
@@ -275,14 +275,14 @@ and `kinetic look` still works for now.
 
 ## Updating
 
-Kinetic updates from a branch of the repository you installed it from: `main`
+Kinetic updates from a branch of the repository you installed it from: `master`
 for releases, `dev` for the newest work. Until you choose, it follows the branch
 you installed from.
 
 ```bash
 kinetic update check              # look for a newer version
 kinetic update apply              # install it (asks first), then restart the bar and the app
-kinetic settings set updateBranch main
+kinetic settings set updateBranch master
 kinetic settings set updateCheck off   # stop the daily check when the app opens
 ```
 

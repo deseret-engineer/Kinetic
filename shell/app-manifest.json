@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "kinetic.app",
   "name": "Kinetic app",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "author": "Kinetic",
   "license": "MIT",
   "description": "The Kinetic app: every module (wallpaper, library, bar, glass, light, motion, presets, engine) in one window. Opened by `kinetic app` or the launcher.",
