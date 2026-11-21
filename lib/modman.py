@@ -666,7 +666,9 @@ def main(argv):
             print("\n".join(plan_enable(args[1])))
             return 0
         if cmd == "plan-disable" and len(args) == 2:
-            print("\n".join(plan_disable(args[1])))
+            users = plan_disable(args[1])
+            if users:  # nothing at all when none: an empty line would read as one
+                print("\n".join(users))
             return 0
         if cmd == "validate" and len(args) == 2:
             m = load_manifest(os.path.abspath(args[1]), os.path.abspath(args[1]).startswith(BUILTIN + "/"))

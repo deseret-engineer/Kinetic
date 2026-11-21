@@ -5,6 +5,14 @@ Notable changes to Kinetic, in the
 [Semantic Versioning](https://semver.org); while the major version is 0,
 anything may change between releases.
 
+## [Unreleased]
+
+### Fixed
+
+- Switching off a module that nothing depends on failed from the app (and
+  from any script): `kinetic` read an empty line as a dependent module and
+  stopped to ask about it, with no terminal to ask on.
+
 ## [0.1.0] - 2026-11-20
 
 The first release. Changed and Fixed are against `0.1.0-dev`.
@@ -85,4 +93,5 @@ The first release. Changed and Fixed are against `0.1.0-dev`.
 - The wlr-layer-shell protocol file had lost its authors' notice; it is
   restored, and the glass plugin's corner code carries Hyprland's.
 
+[Unreleased]: https://github.com/deseret-engineer/Kinetic/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/deseret-engineer/Kinetic/releases/tag/v0.1.0

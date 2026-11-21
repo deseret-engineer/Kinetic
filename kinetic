@@ -127,7 +127,7 @@ case "$cmd" in
         done
         ;;
       disable)  # what needs it stops too, if you say so
-        mapfile -t users < <(modman plan-disable "$cmd")
+        mapfile -t users < <(modman plan-disable "$cmd" | grep -v '^$' || true)
         if (( ${#users[@]} )); then
           if (( ${#users[@]} == 1 )); then q="${users[0]} needs $cmd and stops with it. Switch it off too?"
           else q="$(printf '%s, ' "${users[@]}" | sed 's/, $//') need $cmd and stop with it. Switch them off too?"; fi

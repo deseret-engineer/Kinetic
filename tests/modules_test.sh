@@ -52,6 +52,11 @@ K modules --json | jq -e '[.[] | select(.id == "demo")][0] | (.builtin | not) an
 rm -f "$T/state-dep" "$T/state-demo"
 K demo enable >/dev/null 2>&1 || fail "enable failed"
 [[ -f $T/state-dep && -f $T/state-demo ]] || fail "enabling demo should switch dep on first"
+# a module nothing needs switches off with no question, as the app's toggle does it
+K demo disable >/dev/null 2>&1 || fail "disabling demo (nothing needs it) should not ask"
+[[ ! -f $T/state-demo && -f $T/state-dep ]] || fail "disabling demo should switch only demo off"
+[[ -z $(K module plan-disable demo) ]] || fail "plan-disable of a module nothing needs should print nothing"
+K demo enable >/dev/null 2>&1 || fail "enable failed"
 K dep disable 2>/dev/null && fail "disabling dep should ask first (demo needs it)"
 K dep disable --yes >/dev/null 2>&1 || fail "disable --yes failed"
 [[ ! -f $T/state-dep && ! -f $T/state-demo ]] || fail "disabling dep should switch demo off too"
